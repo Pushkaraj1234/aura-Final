@@ -1,0 +1,151 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
+  --font-serif: "Playfair Display", Georgia, serif;
+
+  /* ---- Warm editorial palette --------------------------------------------
+     Cream / apricot ground with a soft radial glow, terracotta as the primary
+     accent, caramel + dusty rose for signal warmth, a muted olive reserved
+     for "improving / on track". No saturated reds, no cold blues. Used
+     app-wide via these tokens and the retuned legacy names below. */
+  --color-canvas: #F8F0E7;
+  --color-surface: #FDFAF4;
+  --color-ink: #3A2A1E;
+  --color-ink-soft: #8A7A6B;
+  --color-ink-faint: #A99A8A;
+  --color-line: #ECE1D3;
+
+  --color-accent: #A85D2E;
+  --color-accent-deep: #8A4A20;
+  --color-accent-soft: #F3E7D8;
+
+  --color-amber: #D89F63;
+  --color-amber-soft: #F5E8D6;
+
+  /* elevated signal — dusty rose, never a clinical red */
+  --color-rose: #CE9088;
+  --color-rose-deep: #A65D52;
+  --color-rose-soft: #F3E1DC;
+
+  --color-olive: #6E8A5E;
+  --color-olive-deep: #5E7148;
+  --color-olive-soft: #E9EFE2;
+
+  --color-info: #8A8478;
+  --color-info-soft: #EFEAE1;
+
+  /* ---- Legacy names, retuned to the warm palette ------------------------ */
+  --color-natural-bg: #F8F0E7;
+  --color-natural-dark: #3A2A1E;
+  --color-natural-slate: #5A4636;
+  --color-natural-muted: #8A7A6B;
+  --color-natural-sage: #DBC3B2;
+  --color-natural-terracotta: #A85D2E;
+  --color-natural-border: #ECE1D3;
+  --color-natural-gray: #A99A8A;
+
+  /* Semantic palette — muted, warm, non-clinical. */
+  --color-clinical-red: #CE9088;
+  --color-clinical-red-soft: #F3E1DC;
+  --color-clinical-amber: #C08A45;
+  --color-clinical-amber-soft: #F5E8D6;
+  --color-clinical-green: #6E8A5E;
+  --color-clinical-green-soft: #E9EFE2;
+  --color-clinical-blue: #8A8478;
+  --color-clinical-blue-soft: #EFEAE1;
+}
+
+body {
+  background-color: #F8F0E7;
+  /* Soft apricot glow, warmest toward the top, fading to cream. */
+  background-image:
+    radial-gradient(1200px 720px at 82% -10%, rgba(232, 174, 120, 0.34), transparent 60%),
+    radial-gradient(1100px 700px at 12% 4%, rgba(240, 212, 182, 0.24), transparent 56%),
+    radial-gradient(1000px 800px at 50% 128%, rgba(214, 190, 166, 0.14), transparent 60%);
+  background-attachment: fixed;
+  color: #3A2A1E;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Consistent elevated card surface used across dashboards. */
+.card-elev {
+  background-color: #FDFAF4;
+  border: 1px solid #ECE1D3;
+  box-shadow:
+    0 1px 2px rgba(58, 42, 30, 0.04),
+    0 16px 34px -22px rgba(58, 42, 30, 0.16);
+}
+
+/* Serif for display headings only. Editorial, warm, not heavy — no blanket
+   bold, and small utility labels stay in the sans family. */
+h1, h2, h3, .font-serif,
+.text-3xl, .text-4xl, .text-5xl, .text-6xl, .text-7xl {
+  font-family: var(--font-serif) !important;
+  font-weight: 550 !important;
+  letter-spacing: -0.015em;
+}
+
+h4, h5, h6 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+/* Eyebrows / small caps: used sparingly, gentle tracking, not black. */
+.uppercase, .tracking-widest {
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em;
+}
+
+/* Shared, friendly button primitives. These set identity only (colour, shape,
+   weight) — callers add their own padding / text-size utilities so Tailwind
+   stays in control of layout. */
+.btn-primary,
+.btn-ghost,
+.btn-soft {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border-radius: 0.85rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.btn-primary { background: #A85D2E; color: #FFFFFF; }
+.btn-primary:hover { background: #8A4A20; }
+.btn-ghost { background: #FFFFFF; color: #3A2A1E; border: 1px solid #ECE1D3; }
+.btn-ghost:hover { background: #F5EDE1; }
+.btn-soft { background: #F3E7D8; color: #9A5B33; }
+.btn-soft:hover { background: #EBDAC6; }
+
+/* Visible, warm focus ring everywhere for keyboard users. */
+*:focus-visible {
+  outline: 2px solid #C88A5A;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Custom natural-tone scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #DCCBB8;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A85D2E;
+}

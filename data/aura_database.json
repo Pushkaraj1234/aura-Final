@@ -1,0 +1,605 @@
+{
+  "users": [
+    {
+      "id": "worker-1",
+      "email": "worker@aura.test",
+      "role": "support_worker",
+      "name": "Sarah Jenkins, MSW",
+      "language": "English",
+      "consent_given": true,
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "password_hash": "$2b$10$ElSuchJESkaWJ2MosK2LouyxZPEeYNqaNi3lKSHlV.18Bl2pyumUi"
+    },
+    {
+      "id": "user-1001",
+      "email": "maria@aura.test",
+      "role": "participant",
+      "name": "Maria Santos",
+      "language": "Spanish",
+      "age_range": "25-34",
+      "support_preference": "Human support worker",
+      "consent_given": true,
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "password_hash": "$2b$10$MLYSyd5L0W1RMyMiJ9oQ2.UqGLVFdKgyXJKXVYKSDG9eDpzvmq1au"
+    },
+    {
+      "id": "user-1002",
+      "email": "david@aura.test",
+      "role": "participant",
+      "name": "David Kim",
+      "language": "English",
+      "age_range": "35-44",
+      "support_preference": "Human support worker",
+      "consent_given": true,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "user-1003",
+      "email": "amara@aura.test",
+      "role": "participant",
+      "name": "Amara Diallo",
+      "language": "English",
+      "age_range": "18-24",
+      "support_preference": "Self-guided tools",
+      "consent_given": true,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "participants": [
+    {
+      "id": "P-1001",
+      "user_id": "user-1001",
+      "consent_given": true,
+      "status": "ELEVATED",
+      "preferred_support": "Human support worker",
+      "language": "Spanish",
+      "age_group": "25-34",
+      "assigned_worker": "Sarah Jenkins, MSW",
+      "last_review_date": "2026-09-05T11:17:06.991Z",
+      "region": "North America",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "P-1002",
+      "user_id": "user-1002",
+      "consent_given": true,
+      "status": "REVIEW_NEEDED",
+      "preferred_support": "Human support worker",
+      "language": "English",
+      "age_group": "35-44",
+      "assigned_worker": "Sarah Jenkins, MSW",
+      "last_review_date": "2026-09-05T11:17:06.991Z",
+      "region": "North America",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "P-1003",
+      "user_id": "user-1003",
+      "consent_given": true,
+      "status": "Stable",
+      "preferred_support": "Self-guided tools",
+      "language": "English",
+      "age_group": "18-24",
+      "assigned_worker": "Marcus Vance",
+      "last_review_date": "2026-09-05T11:17:06.991Z",
+      "region": "Europe",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "P-1004",
+      "consent_given": true,
+      "status": "Stable",
+      "preferred_support": "Human support worker",
+      "language": "Ukrainian",
+      "age_group": "45-54",
+      "assigned_worker": "Elena Rostova, LCSW",
+      "last_review_date": "2026-09-05T11:17:06.991Z",
+      "region": "Europe",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "P-1005",
+      "consent_given": true,
+      "status": "Stable",
+      "preferred_support": "Bilingual Specialist",
+      "language": "Arabic",
+      "age_group": "25-34",
+      "assigned_worker": "Tariq Al-Mansoor",
+      "last_review_date": "2026-09-05T11:17:06.991Z",
+      "region": "Middle East",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "check_ins": [
+    {
+      "id": "chk-1788643049679",
+      "participant_id": "P-1001",
+      "wellbeing": 4,
+      "stress": 2,
+      "sleep": 4,
+      "safety": "Mostly",
+      "connection": 4,
+      "support_requested": false,
+      "immediate_safety_concern": false,
+      "calculated_score": 35,
+      "notes": "Feeling much calmer today.",
+      "optional_note": "",
+      "share_note_with_worker": true,
+      "voice_input_used": false,
+      "timestamp": "2026-09-05T21:17:29.679Z",
+      "created_at": "2026-09-05T21:17:29.679Z"
+    },
+    {
+      "id": "chk-1788607046861",
+      "participant_id": "P-1001",
+      "wellbeing": 3,
+      "stress": 3,
+      "sleep": 3,
+      "safety": "Yes",
+      "connection": 3,
+      "support_requested": false,
+      "immediate_safety_concern": false,
+      "share_note_with_worker": true,
+      "voice_input_used": false,
+      "timestamp": "2026-09-05T11:17:26.861Z",
+      "created_at": "2026-09-05T11:17:26.861Z"
+    },
+    {
+      "id": "chk-1001-1",
+      "participant_id": "P-1001",
+      "wellbeing": 2,
+      "stress": 4,
+      "sleep": 2,
+      "safety": "Mostly",
+      "connection": 2,
+      "support_requested": true,
+      "immediate_safety_concern": false,
+      "calculated_score": 74,
+      "notes": "Frequent nightmares returning; struggling to concentrate at work.",
+      "optional_note": "Frequent nightmares returning; struggling to concentrate at work.",
+      "share_note_with_worker": true,
+      "voice_input_used": false,
+      "timestamp": "2026-09-05T11:17:06.991Z",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "chk-1002-1",
+      "participant_id": "P-1002",
+      "wellbeing": 2,
+      "stress": 5,
+      "sleep": 1,
+      "safety": "Mostly",
+      "connection": 1,
+      "support_requested": true,
+      "immediate_safety_concern": false,
+      "calculated_score": 82.5,
+      "notes": "Intense flashbacks past two days after legal hearing.",
+      "optional_note": "Intense flashbacks past two days after legal hearing.",
+      "share_note_with_worker": true,
+      "voice_input_used": false,
+      "timestamp": "2026-09-05T11:17:06.991Z",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "chk-1003-1",
+      "participant_id": "P-1003",
+      "wellbeing": 4,
+      "stress": 2,
+      "sleep": 4,
+      "safety": "Yes",
+      "connection": 4,
+      "support_requested": false,
+      "immediate_safety_concern": false,
+      "calculated_score": 28,
+      "notes": "Feeling calmer after connecting with the community art group.",
+      "optional_note": "Feeling calmer after connecting with the community art group.",
+      "share_note_with_worker": true,
+      "voice_input_used": false,
+      "timestamp": "2026-09-05T11:17:06.991Z",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "reflections": [
+    {
+      "id": "ref-1001",
+      "participant_id": "P-1001",
+      "type": "text",
+      "transcript": "It has been really hard to sleep lately. The sounds outside wake me up and remind me of home.",
+      "audio_recorded": false,
+      "share_with_worker": true,
+      "sentiment": "Negative",
+      "language_signal": "Trauma trigger recall",
+      "has_urgent_safety_mention": false,
+      "submitted_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "risk_predictions": [
+    {
+      "id": "pred-1001",
+      "participant_id": "P-1001",
+      "distress_score": 74,
+      "risk_level": "HIGH",
+      "trajectory": "Rapid Escalation",
+      "confidence": 0.91,
+      "change_delta": 18,
+      "contributing_factors": [
+        "Severe sleep disturbance (Score 2/5)",
+        "Elevated anxiety & stress (Score 4/5)",
+        "Trauma recall cues in note"
+      ],
+      "factor_breakdown": {
+        "Sleep Deficit": 38,
+        "Stress/Anxiety": 32,
+        "Isolation": 18,
+        "External Triggers": 12
+      },
+      "explanation": "Sharp drop in reported sleep quality paired with acute nightmare recall over 72 hours.",
+      "requires_human_review": true,
+      "is_explicit_safety_concern": false,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "pred-1002",
+      "participant_id": "P-1002",
+      "distress_score": 82.5,
+      "risk_level": "CRITICAL",
+      "trajectory": "Crisis Warning",
+      "confidence": 0.94,
+      "change_delta": 24.5,
+      "contributing_factors": [
+        "Legal proceeding trigger",
+        "Extreme sleep deprivation",
+        "Acute social withdrawal"
+      ],
+      "factor_breakdown": {
+        "Flashbacks": 42,
+        "Insomnia": 30,
+        "Social Alienation": 28
+      },
+      "explanation": "Acute distress spike following court appearance; participant explicitly requested human worker check-in.",
+      "requires_human_review": true,
+      "is_explicit_safety_concern": false,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "risk_history": [
+    {
+      "id": "rh-1",
+      "participant_id": "P-1001",
+      "score": 45,
+      "level": "MODERATE",
+      "source": "check_in",
+      "recorded_at": "2026-09-02T11:17:06.992Z"
+    },
+    {
+      "id": "rh-2",
+      "participant_id": "P-1001",
+      "score": 56,
+      "level": "MODERATE",
+      "source": "check_in",
+      "recorded_at": "2026-09-03T11:17:06.992Z"
+    },
+    {
+      "id": "rh-3",
+      "participant_id": "P-1001",
+      "score": 74,
+      "level": "HIGH",
+      "source": "check_in",
+      "recorded_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "rh-4",
+      "participant_id": "P-1002",
+      "score": 58,
+      "level": "MODERATE",
+      "source": "check_in",
+      "recorded_at": "2026-09-03T11:17:06.992Z"
+    },
+    {
+      "id": "rh-5",
+      "participant_id": "P-1002",
+      "score": 82.5,
+      "level": "CRITICAL",
+      "source": "check_in",
+      "recorded_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "alerts": [
+    {
+      "id": "ALT-1001",
+      "participant_id": "P-1001",
+      "category": "ELEVATED_DISTRESS",
+      "severity": "ORANGE",
+      "title": "Elevated Distress Spike (+18 pts)",
+      "reason": "Score rose from 56 to 74 with marked sleep deprivation and recurring trauma dreams.",
+      "description": "Participant Maria Santos reported acute difficulty sleeping with intrusive thoughts.",
+      "recommended_action": "Initiate supportive reach-out within 4 hours; offer grounding techniques.",
+      "status": "NEW",
+      "score": 74,
+      "change_delta": 18,
+      "assigned_to": "Sarah Jenkins, MSW",
+      "trajectory": "Rapid Escalation",
+      "requires_human_review": true,
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "ALT-1002",
+      "participant_id": "P-1002",
+      "category": "CRITICAL_RISK",
+      "severity": "RED",
+      "title": "Critical Distress & Worker Outreach Requested",
+      "reason": "Flashback recurrence following legal testimony with distress score 82.5.",
+      "description": "David Kim requested immediate support worker check-in.",
+      "recommended_action": "Direct human contact protocol required within 60 minutes.",
+      "status": "NEW",
+      "score": 82.5,
+      "change_delta": 24.5,
+      "assigned_to": "Sarah Jenkins, MSW",
+      "trajectory": "Crisis Warning",
+      "requires_human_review": true,
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1",
+      "user_id": "worker-1",
+      "participant_id": "P-1002",
+      "category": "CRISIS_ALERT",
+      "filter_category": "alert",
+      "severity": "HIGH",
+      "title": "High Priority Alert: David Kim (P-1002)",
+      "message": "Acute distress spike (82.5) after legal proceedings. Check-in requested.",
+      "read": false,
+      "action_label": "Review Alert",
+      "action_view": "alerts",
+      "action_participant_id": "P-1002",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "notif-2",
+      "user_id": "worker-1",
+      "participant_id": "P-1001",
+      "category": "ELEVATED_ALERT",
+      "filter_category": "alert",
+      "severity": "MEDIUM",
+      "title": "Distress Escalation: Maria Santos (P-1001)",
+      "message": "Nightmare recall and sleep disruption reported. Follow-up recommended.",
+      "read": false,
+      "action_label": "View Participant",
+      "action_view": "participants",
+      "action_participant_id": "P-1001",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "interventions": [
+    {
+      "id": "intv-1",
+      "participant_id": "P-1001",
+      "alert_id": "ALT-1001",
+      "intervention_type": "Trauma Grounding & Sleep Hygiene Protocol",
+      "assigned_worker": "Sarah Jenkins, MSW",
+      "date": "2026-09-05T11:17:06.991Z",
+      "outcome": "in_progress",
+      "notes": "Provided sensory grounding exercises; scheduled follow-up call tomorrow at 10 AM.",
+      "previous_risk": 74,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "follow_ups": [
+    {
+      "id": "flw-1",
+      "participant_id": "P-1001",
+      "intervention_id": "intv-1",
+      "alert_id": "ALT-1001",
+      "original_score": 74,
+      "intervention_type": "Trauma Grounding & Sleep Hygiene Protocol",
+      "intervention_date": "2026-09-05T11:17:06.991Z",
+      "worker_name": "Sarah Jenkins, MSW",
+      "outcome": "pending",
+      "outcome_label": "Pending Next Check-in",
+      "notes": "Participant agreed to test 5-4-3-2-1 technique before sleep tonight.",
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "consents": [
+    {
+      "id": "cst-1001",
+      "participant_id": "P-1001",
+      "user_id": "user-1001",
+      "wellbeing_check_ins": true,
+      "support_worker_sharing": true,
+      "optional_free_text_sharing": true,
+      "optional_voice_feature": true,
+      "community_aggregate_analytics": false,
+      "status": "active",
+      "version": "1.0",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "cst-1002",
+      "participant_id": "P-1002",
+      "user_id": "user-1002",
+      "wellbeing_check_ins": true,
+      "support_worker_sharing": true,
+      "optional_free_text_sharing": true,
+      "optional_voice_feature": false,
+      "community_aggregate_analytics": false,
+      "status": "active",
+      "version": "1.0",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "cst-1003",
+      "participant_id": "P-1003",
+      "user_id": "user-1003",
+      "wellbeing_check_ins": true,
+      "support_worker_sharing": true,
+      "optional_free_text_sharing": true,
+      "optional_voice_feature": true,
+      "community_aggregate_analytics": true,
+      "status": "active",
+      "version": "1.0",
+      "created_at": "2026-09-05T11:17:06.991Z",
+      "updated_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "support_resources": [
+    {
+      "id": "res-1",
+      "name": "Global Trauma Survivor Hotline",
+      "category": "Crisis Support",
+      "region": "Global",
+      "phone": "+1-800-273-8255",
+      "sms": "Text HOME to 741741",
+      "online_url": "https://findahelpline.com",
+      "description": "24/7 confidential crisis line supporting trauma, human rights abuse, and violence survivors.",
+      "languages": [
+        "English",
+        "Spanish",
+        "French",
+        "Arabic"
+      ],
+      "is_24_7": true,
+      "confidential": true,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "res-2",
+      "name": "Freedom from Torture & Survivor Network",
+      "category": "Legal & Psychological",
+      "region": "Europe / International",
+      "phone": "+44 20 7697 7777",
+      "online_url": "https://freedomfromtorture.org",
+      "description": "Dedicated psychological rehabilitation, forensic reporting, and trauma-informed casework.",
+      "languages": [
+        "English",
+        "Ukrainian",
+        "Farsi",
+        "Arabic"
+      ],
+      "is_24_7": false,
+      "confidential": true,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "res-3",
+      "name": "Community Grounding & Peer Circles",
+      "category": "Peer Connection",
+      "region": "Global",
+      "online_url": "https://aura-support.org/community",
+      "description": "Moderated peer circles with trauma-informed facilitators for collective healing.",
+      "languages": [
+        "English",
+        "Spanish"
+      ],
+      "is_24_7": false,
+      "confidential": true,
+      "created_at": "2026-09-05T11:17:06.991Z"
+    }
+  ],
+  "support_notes": [
+    {
+      "id": "sn-1",
+      "participant_id": "P-1001",
+      "author": "Sarah Jenkins, MSW",
+      "timestamp": "2026-09-05T11:17:06.991Z",
+      "text": "Participant expressed gratitude for the prompt follow-up. Agreed to trial sleep grounding audio tonight.",
+      "action_taken": "Sent grounding audio guide; scheduled check-in."
+    }
+  ],
+  "audit_logs": [
+    {
+      "id": "aud-1788631725223-241",
+      "actor_id": "worker-1",
+      "actor_role": "SUPPORT_WORKER",
+      "actor_name": "Sarah Jenkins, MSW",
+      "action": "PARTICIPANT_REVIEWED",
+      "category": "SUPPORT",
+      "participant_id": "P-1053",
+      "description": "Support worker reviewed participant P-1053",
+      "severity": "INFO",
+      "timestamp": "2026-09-05T18:08:45.223Z"
+    },
+    {
+      "id": "aud-1788631689124-835",
+      "actor_id": "worker-1",
+      "actor_role": "SUPPORT_WORKER",
+      "actor_name": "Sarah Jenkins, MSW",
+      "action": "PARTICIPANT_REVIEWED",
+      "category": "SUPPORT",
+      "participant_id": "P-1002",
+      "description": "Support worker reviewed participant P-1002",
+      "severity": "INFO",
+      "timestamp": "2026-09-05T18:08:09.124Z"
+    },
+    {
+      "id": "aud-1788631674266-496",
+      "actor_id": "worker-1",
+      "actor_role": "SUPPORT_WORKER",
+      "actor_name": "Sarah Jenkins, MSW",
+      "action": "USER_LOGGED_IN",
+      "category": "AUTH",
+      "description": "User logged in (Sarah Jenkins, MSW)",
+      "severity": "INFO",
+      "timestamp": "2026-09-05T18:07:54.266Z"
+    },
+    {
+      "id": "aud-1",
+      "actor_id": "worker-1",
+      "actor_role": "support_worker",
+      "actor_name": "Sarah Jenkins, MSW",
+      "action": "VIEW_PARTICIPANT_PROFILE",
+      "category": "data_access",
+      "participant_id": "P-1001",
+      "target_id": "P-1001",
+      "description": "Support worker accessed profile for Maria Santos following distress alert.",
+      "severity": "INFO",
+      "timestamp": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "aud-2",
+      "actor_id": "system",
+      "actor_role": "system",
+      "actor_name": "AURA Dynamic AI Engine",
+      "action": "GENERATE_RISK_PREDICTION",
+      "category": "ai_evaluation",
+      "participant_id": "P-1001",
+      "target_id": "pred-1001",
+      "description": "Model v2.4 generated risk assessment with 91% confidence for P-1001.",
+      "severity": "INFO",
+      "timestamp": "2026-09-05T11:17:06.991Z"
+    },
+    {
+      "id": "audit-1788631689186",
+      "participant_id": "P-1002",
+      "action": "ML_PREDICTION_RUN",
+      "actor_role": "support_worker",
+      "actor_name": "Sarah Jenkins, MSW",
+      "timestamp": "2026-09-05T18:08:09.186Z",
+      "category": "SYSTEM",
+      "description": "Generated Predictive ML Risk Score. Model: AURA-Predictive-LogReg v1.0.synthetic",
+      "severity": "INFO"
+    },
+    {
+      "id": "audit-1788631689263",
+      "participant_id": "P-1002",
+      "action": "ML_PREDICTION_RUN",
+      "actor_role": "support_worker",
+      "actor_name": "Sarah Jenkins, MSW",
+      "timestamp": "2026-09-05T18:08:09.263Z",
+      "category": "SYSTEM",
+      "description": "Generated Predictive ML Risk Score. Model: AURA-Predictive-LogReg v1.0.synthetic",
+      "severity": "INFO"
+    }
+  ]
+}

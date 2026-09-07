@@ -1,0 +1,493 @@
+import {
+  CheckIn,
+  CheckInAnalysis,
+  DistressLevel,
+  Recommendation,
+  RecommendationCategory
+} from "../types";
+import { ALERT_CONFIG } from "./alertConfig";
+import { calculateRawScore } from "./riskEngine";
+
+/**
+ * AURA Recommendation and Supportive Reflection Engine
+ * 
+ * IMPORTANT:
+ * AURA is a non-diagnostic, decision-support prototype.
+ * It provides non-clinical wellbeing summaries and compassionate guidance.
+ * It does NOT replace medical or psychiatric evaluation.
+ */
+
+/**
+ * Classifies numerical score into standard prototype distress level
+ */
+export function getDistressLevel(score: number): { level: DistressLevel; label: string } {
+  if (score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
+    return { level: "LOW", label: "Calmer Reported Distress" };
+  } else if (score <= ALERT_CONFIG.MILD_MAX) {
+    return { level: "MILD", label: "Mild / Monitoring" };
+  } else if (score <= ALERT_CONFIG.MODERATE_MAX) {
+    return { level: "MODERATE", label: "Moderate Reported Distress" };
+  } else if (score <= ALERT_CONFIG.ELEVATED_MAX) {
+    return { level: "ELEVATED", label: "Elevated Reported Distress" };
+  } else if (score <= ALERT_CONFIG.HIGH_MAX) {
+    return { level: "HIGH", label: "High Reported Distress" };
+  } else {
+    return { level: "VERY_HIGH", label: "High-Priority Wellbeing Signal" };
+  }
+}
+
+/**
+ * Calculates factor percentage representations for visual breakdown (Response Patterns)
+ */
+export function calculateFactorPercentages(checkIn: CheckIn) {
+  // Stress: 1 (calm) -> 15%, 5 (very stressed) -> 95%
+  const stressPct = Math.round(15 + ((checkIn.stress - 1) / 4) * 80);
+
+  // Sleep concern: 5 (good) -> 10%, 1 (very difficult) -> 90%
+  const sleepPct = Math.round(10 + ((5 - checkIn.sleep) / 4) * 80);
+
+  // Emotional wellbeing concern: 5 (good) -> 10%, 1 (very difficult) -> 85%
+  const wellbeingPct = Math.round(10 + ((5 - checkIn.wellbeing) / 4) * 75);
+
+  // Social isolation concern: 5 (connected) -> 10%, 1 (isolated) -> 80%
+  const socialPct = Math.round(10 + ((5 - checkIn.connection) / 4) * 70);
+
+  // Functioning / strain proxy
+  const functioningPct = Math.round((stressPct * 0.4 + wellbeingPct * 0.4 + sleepPct * 0.2));
+
+  return {
+    stress: Math.min(100, Math.max(10, stressPct)),
+    sleep: Math.min(100, Math.max(10, sleepPct)),
+    emotionalWellbeing: Math.min(100, Math.max(10, wellbeingPct)),
+    socialConnection: Math.min(100, Math.max(10, socialPct)),
+    functioning: Math.min(100, Math.max(10, functioningPct))
+  };
+}
+
+/**
+ * Generates explainable, understandable factors that contributed to the score
+ */
+export function generateContributingFactors(checkIn: CheckIn): { factors: string[]; explanationPoints: string[] } {
+  const factors: string[] = [];
+  const explanationPoints: string[] = [];
+
+  // Perceived Safety
+  if (checkIn.immediateSafetyConcern) {
+    factors.push("Immediate safety alert recorded");
+    explanationPoints.push("You indicated an immediate safety concern in your responses.");
+  } else if (checkIn.safety === "No") {
+    factors.push("Reported unsafe environment");
+    explanationPoints.push("You reported not feeling safe in your current surroundings.");
+  } else if (checkIn.safety === "Unsure") {
+    factors.push("Safety uncertainty reported");
+    explanationPoints.push("You expressed uncertainty regarding physical or emotional security.");
+  }
+
+  // Stress
+  if (checkIn.stress >= 4) {
+    factors.push("Elevated stress & overwhelm");
+    explanationPoints.push("You reported high day-to-day stress or feeling overwhelmed.");
+  } else if (checkIn.stress === 3) {
+    factors.push("Moderate stress");
+  }
+
+  // Sleep
+  if (checkIn.sleep <= 2) {
+    factors.push("Disrupted sleep & rest");
+    explanationPoints.push("You indicated restless or interrupted sleep recently.");
+  }
+
+  // Emotional Wellbeing
+  if (checkIn.wellbeing <= 2) {
+    factors.push("Challenging emotional state");
+    explanationPoints.push("You noted a particularly difficult emotional or mental state today.");
+  }
+
+  // Social Connection
+  if (checkIn.connection <= 2) {
+    factors.push("Feelings of isolation");
+    explanationPoints.push("You reported feeling mostly alone or lacking trusted connection.");
+  }
+
+  // Explicit Support Request
+  if (checkIn.supportRequested) {
+    factors.push("Voluntary support requested");
+    explanationPoints.push("You requested a voluntary conversation with a counselor.");
+  }
+
+  // Reflection Language Signal (optional secondary factor)
+  if (checkIn.reflection?.analysis) {
+    const sent = checkIn.reflection.analysis.sentiment;
+    if (sent === "stressed" || sent === "overwhelmed") {
+      factors.push("Reflection language signal");
+      explanationPoints.push("Your written/voice reflection contained language associated with stress or fatigue.");
+    } else if (sent === "positive") {
+      factors.push("Positive reflection language");
+    }
+  }
+
+  if (factors.length === 0) {
+    factors.push("Calm baseline responses across all categories");
+    explanationPoints.push("Your responses reflect a calm, relatively balanced baseline.");
+  }
+
+  return { factors, explanationPoints };
+}
+
+/**
+ * Builds the top-level explainability narrative (Why did AURA generate this result?)
+ */
+export function buildExplainabilityNarrative(
+  score: number,
+  points: string[],
+  change: number,
+  isExplicitSafety: boolean
+): string {
+  if (isExplicitSafety) {
+    return "An immediate safety priority was signaled in your response. This bypasses routine score calculation to ensure immediate support options are available.";
+  }
+
+  if (points.length === 0 || score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
+    return "Your responses reflect low reported distress across stress, sleep, safety, and social connection. No immediate areas of strain were flagged.";
+  }
+
+  const primaryDrivers = points.slice(0, 3).join(" ");
+  if (change >= 15) {
+    return `Your indicator is elevated mainly because ${primaryDrivers} Additionally, your reported distress increased significantly (+${change} pts) compared to your previous check-in.`;
+  }
+
+  if (score >= 75) {
+    return `Your indicator is in the higher range mainly because ${primaryDrivers}`;
+  }
+
+  return `AURA identified moderate response patterns because ${primaryDrivers}`;
+}
+
+/**
+ * Generates compassionate, non-clinical supportive reflection
+ */
+export function generateSupportiveReflection(
+  score: number,
+  checkIn: CheckIn,
+  change: number,
+  isExplicitSafety: boolean
+): string {
+  if (isExplicitSafety) {
+    return "Your safety and wellbeing are the absolute priority. Please consider connecting right now with one of the available crisis contacts or reaching out to someone you trust.";
+  }
+
+  if (score >= 86) {
+    return "It sounds like you have been carrying an intense level of stress or difficulty recently. You don't have to carry this all on your own. Consider taking one small, gentle step today toward rest, and connecting with someone you trust or a qualified counselor.";
+  }
+
+  if (score >= 75) {
+    if (checkIn.sleep <= 2 && checkIn.stress >= 4) {
+      return "It sounds like stress and disrupted sleep have been making things difficult recently. You don't have to handle everything at once. Consider taking one manageable step toward rest, and reaching out for support if that feels comfortable.";
+    }
+    return "Some of your recent responses suggest that you may be experiencing a higher level of distress than usual. Taking things one day at a time and talking with someone you trust can offer meaningful relief.";
+  }
+
+  if (change <= -10) {
+    return "Your latest responses suggest things may be feeling somewhat easier than before. It's okay to take things one day at a time and hold on to what has been helpful.";
+  }
+
+  if (change >= 15) {
+    return "Your responses suggest a noticeable increase in stress or difficulty since your last check-in. Remember that fluctuations are natural; giving yourself extra patience and space right now is important.";
+  }
+
+  if (score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
+    return "Your responses suggest a relatively calmer period right now. Keep using the check-in whenever you feel it would be useful to check in with yourself.";
+  }
+
+  if (score <= ALERT_CONFIG.MILD_MAX) {
+    return "Your responses suggest manageable day-to-day levels. Taking short moments for rest and routine can help maintain your stability.";
+  }
+
+  return "Thank you for taking a moment to reflect today. You don't have to have everything figured out right now. Focus on what is manageable for you today.";
+}
+
+/**
+ * Generates ranked, personalized recommendations based on actual answers
+ */
+export function generateRecommendations(
+  analysis: CheckInAnalysis,
+  checkIn: CheckIn,
+  previousCheckIn: CheckIn | null
+): {
+  recommendations: Recommendation[];
+  primaryAction: string;
+  supportiveMessage: string;
+} {
+  const recommendations: Recommendation[] = [];
+  const score = analysis.distressScore;
+  const change = analysis.change ?? 0;
+
+  // 1. SAFETY (Highest priority if explicit concern)
+  if (analysis.isExplicitSafetyConcern) {
+    recommendations.push({
+      category: "SAFETY",
+      title: "Immediate Safety & Crisis Resources",
+      description: "Please access available immediate crisis hotlines, on-site shelter coordinators, or trusted community workers.",
+      priority: "HIGH",
+      actionLabel: "Access Crisis Help",
+      actionType: "emergency"
+    });
+  }
+
+  // 2. PROFESSIONAL SUPPORT / HUMAN WORKER (For score >= 75 or explicit support request)
+  if (score >= 75 || checkIn.supportRequested) {
+    recommendations.push({
+      category: "PROFESSIONAL_SUPPORT",
+      title: "Consider additional support",
+      description: "Because your responses indicate a higher level of distress, you may benefit from speaking with a qualified mental-health professional or counselor.",
+      priority: score >= 86 ? "HIGH" : "MEDIUM",
+      actionLabel: "Talk to a Counselor",
+      actionType: "support_contact"
+    });
+  }
+
+  // 3. EMOTIONAL SUPPORT (If score >= 60)
+  if (score >= 60 && score < 75 && !checkIn.supportRequested) {
+    recommendations.push({
+      category: "EMOTIONAL_SUPPORT",
+      title: "Consider talking to someone",
+      description: "Talking with a trusted person or qualified support professional may help you feel less alone and give you space to talk about what you're experiencing.",
+      priority: "MEDIUM",
+      actionLabel: "View Support Options",
+      actionType: "support_options"
+    });
+  }
+
+  // 4. STRESS MANAGEMENT (If stress >= 4)
+  if (checkIn.stress >= 4) {
+    recommendations.push({
+      category: "STRESS",
+      title: "Managing stress",
+      description: "Consider taking short breaks, using slow breathing or grounding exercises, and breaking overwhelming tasks into smaller steps. You don't have to manage everything at once.",
+      priority: "HIGH",
+      actionLabel: "View Calming Techniques",
+      actionType: "calm"
+    });
+  }
+
+  // 5. SLEEP SUPPORT (If sleep <= 2)
+  if (checkIn.sleep <= 2) {
+    recommendations.push({
+      category: "SLEEP",
+      title: "Sleep support",
+      description: "You may find it helpful to keep a consistent sleep and wake time, reduce stimulating activities close to bedtime, and create a quieter sleep environment where possible. If sleep difficulties continue, consider discussing them with a qualified professional.",
+      priority: "MEDIUM",
+      actionLabel: "Sleep Guidance",
+      actionType: "sleep"
+    });
+  }
+
+  // 6. SOCIAL CONNECTION (If connection <= 2)
+  if (checkIn.connection <= 2) {
+    recommendations.push({
+      category: "SOCIAL",
+      title: "Connection may help",
+      description: "If it feels comfortable, consider reaching out to someone you trust, such as a friend, family member, community worker, or peer support contact.",
+      priority: "MEDIUM",
+      actionLabel: "Explore Community",
+      actionType: "social"
+    });
+  }
+
+  // 7. ROUTINE RECOMMENDATION (If wellbeing is difficult, or stress is high)
+  if (checkIn.wellbeing <= 2 || checkIn.stress >= 4) {
+    recommendations.push({
+      category: "ROUTINE",
+      title: "Consider a gentler daily routine",
+      description: "Try keeping a simple daily structure around meals, rest, personal care, and activities you find manageable. Avoid adding unnecessary burdens.",
+      priority: "LOW",
+      actionLabel: "Routine Tips",
+      actionType: "routine"
+    });
+  }
+
+  // 8. FOLLOW-UP / VOLUNTARY MONITORING (For lower scores or general progress)
+  if (score <= ALERT_CONFIG.MILD_MAX && recommendations.length < 3) {
+    recommendations.push({
+      category: "FOLLOW_UP",
+      title: "Continue voluntary check-ins",
+      description: "Keep tracking your wellbeing at your own pace whenever it feels helpful. Continued reflections help identify your personal baseline.",
+      priority: "LOW",
+      actionLabel: "Schedule Next Reminder",
+      actionType: "reminder"
+    });
+
+    recommendations.push({
+      category: "ROUTINE",
+      title: "Maintain routines that feel helpful",
+      description: "Continue the daily habits, connections, and restful practices that currently support your sense of balance.",
+      priority: "LOW"
+    });
+  }
+
+  // 9. DYNAMIC TREND ADJUSTMENT
+  if (change >= 15) {
+    recommendations.unshift({
+      category: "FOLLOW_UP",
+      title: "Increasing distress pattern",
+      description: `Your current indicator is +${change} points higher than your previous check-in. Consider checking in again soon or connecting with your chosen support option.`,
+      priority: "HIGH"
+    });
+  } else if (change <= -10) {
+    recommendations.push({
+      category: "FOLLOW_UP",
+      title: "Improvement detected",
+      description: `Your reported distress indicator has decreased by ${Math.abs(change)} points since your previous check-in. Continue the supportive routines that are working for you.`,
+      priority: "LOW"
+    });
+  }
+
+  // Cap recommendations to top 3 to 4 to avoid cognitive overwhelm
+  const ranked = recommendations
+    .sort((a, b) => {
+      const pOrder = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+      return pOrder[a.priority] - pOrder[b.priority];
+    })
+    .slice(0, 4);
+
+  // Primary Action determination for "What you can do now"
+  let primaryAction = "Continue your normal routine and check in again when you feel comfortable.";
+  if (analysis.isExplicitSafetyConcern) {
+    primaryAction = "Please use the available immediate support and emergency resources.";
+  } else if (score >= 86) {
+    primaryAction = "Consider connecting with a qualified support professional or trusted person today. A counselor has also been alerted for review.";
+  } else if (score >= 75) {
+    primaryAction = "Consider connecting with a qualified support professional. A counselor may also review your check-in.";
+  } else if (score >= 61) {
+    primaryAction = "Consider talking with someone you trust or connecting with your chosen support option.";
+  } else if (score >= 41) {
+    primaryAction = "Consider taking some time for rest and establishing a gentle, manageable routine today.";
+  }
+
+  const supportiveMessage = generateSupportiveReflection(
+    score,
+    checkIn,
+    change,
+    analysis.isExplicitSafetyConcern
+  );
+
+  return {
+    recommendations: ranked,
+    primaryAction,
+    supportiveMessage
+  };
+}
+
+/**
+ * MASTER FUNCTION: Analyzes a check-in completely and returns CheckInAnalysis
+ */
+export function calculateCheckInAnalysis(
+  current: CheckIn,
+  previous: CheckIn | null,
+  history: CheckIn[] = []
+): CheckInAnalysis {
+  // If comprehensive AI analysis exists, merge it
+  if (current.aiComprehensiveAnalysis) {
+    const ai = current.aiComprehensiveAnalysis;
+    const factorPercentages = calculateFactorPercentages(current);
+    return {
+      checkInId: current.id,
+      participantId: current.participantId,
+      distressScore: ai.distressScore,
+      level: ai.level,
+      levelLabel: ai.levelLabel,
+      previousScore: previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined,
+      change: previous ? ai.distressScore - (previous.calculatedScore ?? calculateRawScore(previous)) : undefined,
+      trend: ai.trend,
+      factors: {
+        stress: current.stress,
+        sleep: current.sleep,
+        mood: current.wellbeing,
+        safety: current.safety,
+        socialConnection: current.connection,
+        functioning: current.wellbeing
+      },
+      factorPercentages,
+      contributingFactors: ai.factors || [],
+      explanation: ai.supportiveMessage,
+      explanationPoints: ai.factors || [],
+      recommendations: ai.recommendations || [],
+      primaryAction: ai.primaryAction,
+      supportiveMessage: ai.supportiveMessage,
+      requiresHumanReview: ai.distressScore >= 75 || ai.isExplicitSafetyConcern || current.supportRequested,
+      isExplicitSafetyConcern: ai.isExplicitSafetyConcern,
+      createdAt: current.timestamp || new Date().toISOString()
+    };
+  }
+
+  // Score is calculated from actual responses
+  const score = current.calculatedScore ?? calculateRawScore(current);
+  const prevScore = previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined;
+  const change = prevScore !== undefined ? score - prevScore : undefined;
+
+  const { level, label: levelLabel } = getDistressLevel(score);
+
+  // Explicit safety condition
+  const isExplicitSafety = Boolean(
+    current.immediateSafetyConcern === true ||
+    current.safety === "No" ||
+    current.safety === "concern"
+  );
+
+  // Trend classification
+  let trend: "IMPROVING" | "STABLE" | "INCREASING" | "RAPID_INCREASE" = "STABLE";
+  if (change !== undefined) {
+    if (change >= 15) trend = "RAPID_INCREASE";
+    else if (change > 3) trend = "INCREASING";
+    else if (change <= -10) trend = "IMPROVING";
+  }
+
+  // Factor percentage breakdown
+  const factorPercentages = calculateFactorPercentages(current);
+
+  // Contributing factors & explanations
+  const { factors, explanationPoints } = generateContributingFactors(current);
+  const explanation = buildExplainabilityNarrative(score, explanationPoints, change ?? 0, isExplicitSafety);
+
+  // Partial analysis object to generate recommendations
+  const partialAnalysis: CheckInAnalysis = {
+    checkInId: current.id,
+    participantId: current.participantId,
+    distressScore: score,
+    level,
+    levelLabel,
+    previousScore: prevScore,
+    change,
+    trend,
+    factors: {
+      stress: current.stress,
+      sleep: current.sleep,
+      mood: current.wellbeing,
+      safety: current.safety,
+      socialConnection: current.connection,
+      functioning: current.wellbeing
+    },
+    factorPercentages,
+    contributingFactors: factors,
+    explanation,
+    explanationPoints,
+    recommendations: [],
+    primaryAction: "",
+    supportiveMessage: "",
+    requiresHumanReview: score >= 75 || isExplicitSafety || current.supportRequested,
+    isExplicitSafetyConcern: isExplicitSafety,
+    createdAt: current.timestamp || new Date().toISOString()
+  };
+
+  const { recommendations, primaryAction, supportiveMessage } = generateRecommendations(
+    partialAnalysis,
+    current,
+    previous
+  );
+
+  partialAnalysis.recommendations = recommendations;
+  partialAnalysis.primaryAction = primaryAction;
+  partialAnalysis.supportiveMessage = supportiveMessage;
+
+  return partialAnalysis;
+}

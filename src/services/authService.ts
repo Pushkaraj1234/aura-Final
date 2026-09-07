@@ -1,0 +1,429 @@
+import { User, UserRole } from "../types";
+import { participantStore } from "./participantStore";
+import { auditService } from "./auditService";
+import { supabase } from "./supabaseClient";
+
+const AUTH_KEY = "aura_auth_session";
+const TOKEN_KEY = "aura_auth_token";
+
+export interface SignUpPayload {
+  email: string;
+  password?: string;
+  name: string;
+  language: string;
+  ageRange: string;
+  supportPreference: string;
+  consentGiven: boolean;
+  emergencyContact?: string;
+}
+
+export const DEMO_CREDENTIALS = {
+  participant: {
+    // Supabase's email validator rejects the ".test" reserved TLD outright
+    // (auth.signUp fails with "Email address is invalid"), which silently
+    // broke demo provisioning — every demo login fell through to the fully
+    // local, never-persisted fallback. ".dev" is a real, valid TLD.
+    email: "maria.demo@auraapp.dev",
+    password: "Demo@123",
+    role: "participant" as UserRole,
+    name: "Maria Santos",
+    language: "Spanish",
+    ageRange: "25-34",
+    supportPreference: "Human counselor",
+    consentGiven: true,
+  },
+  supportWorker: {
+    email: "worker.demo@auraapp.dev",
+    password: "Demo@123",
+    role: "support_worker" as UserRole,
+    name: "Sarah Jenkins, MSW",
+    language: "English",
+    ageRange: "35-44",
+    supportPreference: "Human counselor",
+    consentGiven: true,
+  },
+};
+
+// Initialize Supabase Auth state change listener to keep session reactive
+if (typeof window !== "undefined") {
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session?.user && event === "SIGNED_IN") {
+      const meta = session.user.user_metadata || {};
+      const user: User = {
+        id: session.user.id,
+        email: session.user.email || "",
+        name: meta.name || session.user.email?.split("@")[0] || "User",
+        role: (meta.role as UserRole) || (session.user.email?.includes("worker") ? "support_worker" : "participant"),
+        language: meta.language || "English",
+        ageRange: meta.ageRange || "25-34",
+        supportPreference: meta.supportPreference || "Human counselor",
+        consentGiven: meta.consentGiven ?? true,
+        createdAt: session.user.created_at || new Date().toISOString(),
+        emergencyContact: meta.emergencyContact || undefined,
+        languages: meta.languages || undefined,
+        availability: meta.availability || undefined,
+        maxCaseload: typeof meta.maxCaseload === "number" ? meta.maxCaseload : undefined,
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+      if (session.access_token) {
+        localStorage.setItem(TOKEN_KEY, session.access_token);
+      }
+      // A real Supabase session exists now (this fires on every genuine
+      // sign-in, including the first login after confirming an email — the
+      // moment sign-up's own participant-creation call may have silently
+      // failed against RLS because no session existed yet). Re-assert the
+      // participant record server-side; safe to call every time (upsert).
+      if (user.role === "participant") {
+        participantStore.getParticipantForUser(user);
+      }
+    } else if (event === "SIGNED_OUT") {
+      localStorage.removeItem(AUTH_KEY);
+      localStorage.removeItem(TOKEN_KEY);
+    }
+  });
+}
+
+export const authService = {
+  /**
+   * One-click demo login
+   */
+  loginAsDemo: async (role: UserRole): Promise<User> => {
+    const creds = role === "participant" ? DEMO_CREDENTIALS.participant : DEMO_CREDENTIALS.supportWorker;
+    return authService.login(creds.email, creds.password);
+  },
+
+  /**
+   * Live Supabase Authentication (Sign In)
+   */
+  login: async (email: string, password?: string): Promise<User> => {
+    const cleanEmail = email.trim().toLowerCase();
+    const pwd = password || "Demo@123";
+
+    // 1. Attempt Supabase live sign in
+    const { data: supaAuth, error: supaError } = await supabase.auth.signInWithPassword({
+      email: cleanEmail,
+      password: pwd,
+    });
+
+    if (!supaError && supaAuth.user) {
+      const meta = supaAuth.user.user_metadata || {};
+      const user: User = {
+        id: supaAuth.user.id,
+        email: supaAuth.user.email || cleanEmail,
+        name: meta.name || cleanEmail.split("@")[0] || "User",
+        role: (meta.role as UserRole) || (cleanEmail.includes("worker") ? "support_worker" : "participant"),
+        language: meta.language || "English",
+        ageRange: meta.ageRange || "25-34",
+        supportPreference: meta.supportPreference || "Human counselor",
+        consentGiven: meta.consentGiven ?? true,
+        createdAt: supaAuth.user.created_at || new Date().toISOString(),
+        emergencyContact: meta.emergencyContact || undefined,
+        languages: meta.languages || undefined,
+        availability: meta.availability || undefined,
+        maxCaseload: typeof meta.maxCaseload === "number" ? meta.maxCaseload : undefined,
+      };
+
+      if (supaAuth.session?.access_token) {
+        localStorage.setItem(TOKEN_KEY, supaAuth.session.access_token);
+      }
+      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+
+      auditService.recordAuditEvent({
+        actorId: user.id,
+        actorRole: user.role.toUpperCase() as any,
+        actorName: user.name,
+        action: "USER_LOGGED_IN",
+        category: "AUTH",
+        participantId: user.role === "participant" ? user.id : undefined,
+        description: `User logged in via Supabase Auth (${user.name})`,
+        severity: "INFO",
+      });
+
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("aura_auth_updated"));
+      }
+
+      // Sync data from Supabase 'items' table
+      await participantStore.syncWithBackend();
+      return user;
+    }
+
+    // 2. If it's a demo account and not yet provisioned in Supabase, provision it live
+    const isDemoParticipant = cleanEmail === DEMO_CREDENTIALS.participant.email.toLowerCase();
+    const isDemoWorker = cleanEmail === DEMO_CREDENTIALS.supportWorker.email.toLowerCase();
+
+    if (isDemoParticipant || isDemoWorker) {
+      const demoRole: UserRole = isDemoWorker ? "support_worker" : "participant";
+      const demoData = isDemoWorker ? DEMO_CREDENTIALS.supportWorker : DEMO_CREDENTIALS.participant;
+
+      try {
+        const { data: autoSignData } = await supabase.auth.signUp({
+          email: demoData.email,
+          password: demoData.password,
+          options: {
+            data: {
+              name: demoData.name,
+              role: demoRole,
+              language: demoData.language,
+              ageRange: demoData.ageRange,
+              supportPreference: demoData.supportPreference,
+              consentGiven: true,
+            },
+          },
+        });
+
+        if (autoSignData?.user) {
+          const u: User = {
+            id: autoSignData.user.id,
+            email: demoData.email,
+            name: demoData.name,
+            role: demoRole,
+            language: demoData.language,
+            ageRange: demoData.ageRange,
+            supportPreference: demoData.supportPreference,
+            consentGiven: true,
+            createdAt: autoSignData.user.created_at || new Date().toISOString(),
+          };
+          if (autoSignData.session?.access_token) {
+            localStorage.setItem(TOKEN_KEY, autoSignData.session.access_token);
+          }
+          localStorage.setItem(AUTH_KEY, JSON.stringify(u));
+          if (typeof window !== "undefined") {
+            window.dispatchEvent(new Event("aura_auth_updated"));
+          }
+          await participantStore.syncWithBackend();
+          return u;
+        }
+      } catch (autoErr) {
+        console.warn("[AuthService] Demo provisioning in Supabase:", autoErr);
+      }
+
+      // Fallback demo session if network offline
+      const fallbackUser: User = {
+        id: isDemoWorker ? "worker-1" : "user-1001",
+        email: demoData.email,
+        name: demoData.name,
+        role: demoRole,
+        language: demoData.language,
+        ageRange: demoData.ageRange,
+        supportPreference: demoData.supportPreference,
+        consentGiven: true,
+        createdAt: new Date().toISOString(),
+      };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(fallbackUser));
+      localStorage.setItem(TOKEN_KEY, `demo-token-${fallbackUser.id}`);
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new Event("aura_auth_updated"));
+      }
+      await participantStore.syncWithBackend();
+      return fallbackUser;
+    }
+
+    // 3. Normal user error response from Supabase
+    throw new Error(supaError?.message || "Invalid email or password. Please try again.");
+  },
+
+  /**
+   * Live Supabase Authentication (Sign Up)
+   */
+  signUp: async (data: SignUpPayload): Promise<User> => {
+    const cleanEmail = data.email.trim().toLowerCase();
+    const password = data.password || "Demo@123";
+
+    // Call Supabase Auth API
+    const { data: supaAuth, error: supaError } = await supabase.auth.signUp({
+      email: cleanEmail,
+      password: password,
+      options: {
+        data: {
+          name: data.name,
+          language: data.language,
+          ageRange: data.ageRange,
+          supportPreference: data.supportPreference,
+          consentGiven: data.consentGiven,
+          emergencyContact: data.emergencyContact || null,
+          role: "participant",
+        },
+      },
+    });
+
+    if (supaError) {
+      console.warn("[AuthService] Supabase signUp error:", supaError.message);
+      if (
+        supaError.message.toLowerCase().includes("already registered") ||
+        supaError.message.toLowerCase().includes("exists")
+      ) {
+        throw new Error("This email is already registered. Please sign in instead.");
+      }
+      throw new Error(supaError.message);
+    }
+
+    const supaUser = supaAuth.user;
+    const userId = supaUser?.id || `user-${Date.now()}`;
+    const token = supaAuth.session?.access_token || `supa-token-${userId}`;
+
+    const userProfile: User = {
+      id: userId,
+      email: cleanEmail,
+      name: data.name,
+      role: "participant",
+      language: data.language,
+      ageRange: data.ageRange,
+      supportPreference: data.supportPreference,
+      consentGiven: data.consentGiven,
+      createdAt: supaUser?.created_at || new Date().toISOString(),
+      emergencyContact: data.emergencyContact || undefined,
+    };
+
+    localStorage.setItem(AUTH_KEY, JSON.stringify(userProfile));
+    localStorage.setItem(TOKEN_KEY, token);
+
+    // Register into participant store (this also persists the participant
+    // row into Supabase Postgres — see participantStore.registerNewParticipant)
+    participantStore.registerNewParticipant(userProfile);
+
+    auditService.recordAuditEvent({
+      actorId: userProfile.id,
+      actorRole: "PARTICIPANT",
+      actorName: userProfile.name,
+      action: "USER_SIGNED_UP",
+      category: "AUTH",
+      participantId: userProfile.id,
+      description: `Participant registered via Supabase Auth (${userProfile.name})`,
+      severity: "INFO",
+    });
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("aura_auth_updated"));
+    }
+    return userProfile;
+  },
+
+  getCurrentUser: (): User | null => {
+    try {
+      const raw = localStorage.getItem(AUTH_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch {
+      return null;
+    }
+  },
+
+  getToken: (): string | null => {
+    try {
+      return localStorage.getItem(TOKEN_KEY);
+    } catch {
+      return null;
+    }
+  },
+
+  updateConsent: (status: boolean): User | null => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      user.consentGiven = status;
+      localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+      participantStore.saveUser(user);
+      return user;
+    }
+    return null;
+  },
+
+  updatePreferences: (updates: Partial<User>): User | null => {
+    const user = authService.getCurrentUser();
+    if (user) {
+      const updated = { ...user, ...updates };
+      localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+      participantStore.saveUser(updated);
+      return updated;
+    }
+    return null;
+  },
+
+  // Optional emergency/trusted contact — persisted to Supabase Auth
+  // user_metadata (so it survives across devices) as well as the local
+  // session. Passing an empty string clears it.
+  updateEmergencyContact: async (contact: string): Promise<User | null> => {
+    const user = authService.getCurrentUser();
+    if (!user) return null;
+    const value = contact.trim();
+    try {
+      await supabase.auth.updateUser({ data: { emergencyContact: value || null } });
+    } catch (err) {
+      console.warn("[AuthService] updateEmergencyContact (Supabase):", err);
+    }
+    const updated = { ...user, emergencyContact: value || undefined };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    participantStore.saveUser(updated);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("aura_auth_updated"));
+    return updated;
+  },
+
+  // Persist the participant's support preference to Supabase Auth metadata
+  // (survives across devices) as well as the local session. The caller is
+  // responsible for also updating participants.preferred_support.
+  updateSupportPreference: async (pref: string): Promise<User | null> => {
+    const user = authService.getCurrentUser();
+    if (!user) return null;
+    try {
+      await supabase.auth.updateUser({ data: { supportPreference: pref } });
+    } catch (err) {
+      console.warn("[AuthService] updateSupportPreference (Supabase):", err);
+    }
+    const updated = { ...user, supportPreference: pref };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    participantStore.saveUser(updated);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("aura_auth_updated"));
+    return updated;
+  },
+
+  // Counsellor self-service profile (languages / availability / max caseload).
+  // Stored in Supabase Auth metadata + the local session; display-only for now.
+  updateWorkerProfile: async (fields: {
+    languages?: string;
+    availability?: string;
+    maxCaseload?: number;
+  }): Promise<User | null> => {
+    const user = authService.getCurrentUser();
+    if (!user) return null;
+    const clean = {
+      languages: (fields.languages ?? "").trim() || undefined,
+      availability: (fields.availability ?? "").trim() || undefined,
+      maxCaseload:
+        typeof fields.maxCaseload === "number" && Number.isFinite(fields.maxCaseload)
+          ? Math.max(0, Math.round(fields.maxCaseload))
+          : undefined,
+    };
+    try {
+      await supabase.auth.updateUser({ data: { ...clean } });
+    } catch (err) {
+      console.warn("[AuthService] updateWorkerProfile (Supabase):", err);
+    }
+    const updated = { ...user, ...clean };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    participantStore.saveUser(updated);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("aura_auth_updated"));
+    return updated;
+  },
+
+  logout: async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch (e) {
+      console.warn("[AuthService] Supabase signOut notice:", e);
+    }
+    localStorage.removeItem(AUTH_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("aura_auth_updated"));
+    }
+  },
+
+  isAuthenticated: (): boolean => {
+    return authService.getCurrentUser() !== null;
+  },
+
+  getUserRole: (): UserRole | null => {
+    const user = authService.getCurrentUser();
+    return user ? user.role : null;
+  },
+};
