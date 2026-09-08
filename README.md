@@ -108,4 +108,58 @@ Click **"Presentation Mode"** (top navbar) to trigger the interactive **14-step 
 > Note: the check-in scoring/trend engine is a transparent, hand-authored rule model (see §3) — it was not trained on a labeled clinical dataset, because no such dataset exists in this project. The trauma-informed screening and voice-tone signals are produced by prompting an LLM (Gemini) with a fixed taxonomy, not by a model trained in-house.
 
 ---
+
+## 8. Deployment (Vercel)
+
+The deployment has two halves and `vercel.json` is what connects them:
+
+| Request | Handled by |
+| --- | --- |
+| `/assets/*`, `/favicon`, any real file | The static `vite build` output in `dist/` |
+| `/api/*` | The serverless function at `api/index.ts` (mounts the same Express routers as `server.ts`) |
+| Everything else (`/`, `/admin`, …) | Rewritten to `/index.html` so the SPA boots and reads the path itself |
+
+That last rule matters: routing is client-side. `src/main.tsx` decides between the
+participant/counselor app and the isolated admin app by reading
+`window.location.pathname`, and `/admin` is reached through a plain `<a href="/admin">`
+(a full page load, not an in-app transition). Without the SPA fallback rewrite,
+Vercel looks for a file called `admin` in `dist/`, finds nothing, and serves its own
+`404: NOT_FOUND` page before any JavaScript runs.
+
+Likewise, `api/index.ts` only becomes a serverless function because it sits in the
+top-level `api/` directory — Vercel does not look anywhere else, and never runs
+`server.ts` (that entry calls `app.listen()`, which is for local dev and
+self-hosting only).
+
+### Required environment variables
+
+Set these in **Vercel → Project → Settings → Environment Variables**, then redeploy
+(env-var changes only take effect on a new build). See `.env.example` for the full
+annotated list.
+
+| Variable | Needed for |
+| --- | --- |
+| `ADMIN_PASSCODE` | Admin login — the passcode typed at `/admin` |
+| `ADMIN_JWT_SECRET` | Signing the 2-hour admin session token |
+| `SUPABASE_SERVICE_ROLE_KEY` | Every authenticated admin action (dashboard, queue, counselors, assignments, audit log) |
+| `GEMINI_API_KEY` | The `/api/ai/*` and `/api/chat` routes |
+| `SMTP_*` | Optional — counselor approval/rejection emails |
+
+### Checking a deployment
+
+`GET /api/config-status` reports which of the above are present. It returns booleans
+only, never a value:
+
+```json
+{
+  "status": "ok",
+  "runtime": "vercel-serverless",
+  "configured": { "ADMIN_PASSCODE": true, "ADMIN_JWT_SECRET": true, "SUPABASE_SERVICE_ROLE_KEY": false, ... }
+}
+```
+
+If `/admin` shows Vercel's `404: NOT_FOUND`, the rewrites aren't live. If it loads but
+login fails, read the message on the login form — it names the missing variable.
+
+---
 *Developed for Smart India Hackathon (SIH) • Humanitarian Mental Health & Disaster Response Innovation*
