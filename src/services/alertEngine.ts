@@ -32,17 +32,17 @@ export function evaluateCheckIn(
   existingAlerts: Alert[] = [],
   participantName?: string
 ): AlertDecision {
-  const currentScore = currentCheckIn.calculatedScore ?? calculateRawScore(currentCheckIn);
+  const currentScore = calculateRawScore(currentCheckIn);
   
   // Previous check-in (excluding the current one if it is already in history)
   const prevCheckIns = history.filter(h => h.id !== currentCheckIn.id && h.timestamp < currentCheckIn.timestamp);
   const previousCheckIn = prevCheckIns.length > 0 ? prevCheckIns[prevCheckIns.length - 1] : null;
-  const previousScore = previousCheckIn ? (previousCheckIn.calculatedScore ?? calculateRawScore(previousCheckIn)) : null;
+  const previousScore = previousCheckIn ? calculateRawScore(previousCheckIn) : null;
 
   const change = previousScore !== null ? currentScore - previousScore : 0;
 
   // Multi-check-in trajectory analysis
-  const recentScores = [...prevCheckIns.slice(-4).map(c => c.calculatedScore ?? calculateRawScore(c)), currentScore];
+  const recentScores = [...prevCheckIns.slice(-4).map(c => calculateRawScore(c)), currentScore];
   
   // Consecutive increases count
   let consecutiveIncreases = 0;
