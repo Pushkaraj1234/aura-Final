@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Heart,
   Shield,
@@ -35,7 +35,7 @@ import {
   HeartHandshake,
   MessageSquare
 } from "lucide-react";
-import { CheckIn, SafetyResponse, WellbeingScore, RiskAnalysis, ParticipantReflection } from "../types";
+import { CheckIn, SafetyResponse, WellbeingScore, RiskAnalysis, ParticipantReflection, SomaticSymptom } from "../types";
 import { analyzeDistress } from "../services/riskEngine";
 import { getTranslation, Language } from "../services/i18n";
 import { VoiceRecorder } from "../components/VoiceRecorder";
@@ -108,6 +108,36 @@ export const ParticipantCheckin: React.FC<Props> = ({
   // Q12: Immediate Crisis & Safety Confirmation (MCQ - Single-select)
   const [immediateSafetyConcern, setImmediateSafetyConcern] = useState<boolean>(false);
 
+  // Q11: Behavioural and somatic answers. These ask what a person did and
+  // what their body is doing, not how they feel — someone who will not say
+  // "I am struggling" will still say they slept three hours, and distress is
+  // very often voiced through the body rather than the mood. All optional,
+  // and none of them move the distress score: they are what the concordance
+  // check weighs the self-report against.
+  const [sleepHours, setSleepHours] = useState<number | undefined>(undefined);
+  const [mealsYesterday, setMealsYesterday] = useState<number | undefined>(undefined);
+  const [leftHome, setLeftHome] = useState<boolean | undefined>(undefined);
+  const [spokeToAnyone, setSpokeToAnyone] = useState<boolean | undefined>(undefined);
+  const [somaticSymptoms, setSomaticSymptoms] = useState<SomaticSymptom[]>([]);
+
+  // Asked on the consent gate. Someone answering with the person who harmed
+  // them in the room gives answers meant for that audience, so the session is
+  // marked low-confidence rather than recorded as fact.
+  const [privateSpace, setPrivateSpace] = useState<boolean | undefined>(undefined);
+
+  // Wall-clock start, used only to spot a form cleared rather than answered.
+  const startedAtRef = useRef<number>(Date.now());
+
+  const toggleSomatic = (symptom: SomaticSymptom) => {
+    setSomaticSymptoms((prev) => {
+      if (symptom === "none_reported") return prev.includes(symptom) ? [] : ["none_reported"];
+      const withoutNone = prev.filter((x) => x !== "none_reported");
+      return withoutNone.includes(symptom)
+        ? withoutNone.filter((x) => x !== symptom)
+        : [...withoutNone, symptom];
+    });
+  };
+
   // Qualitative voice reflection component state
   const [currentReflection, setCurrentReflection] = useState<ParticipantReflection | null>(null);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState<boolean>(false);
@@ -121,7 +151,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
   // Calculated analysis
   const [resultAnalysis, setResultAnalysis] = useState<RiskAnalysis | null>(null);
 
-  const totalQuestions = 12;
+  const totalQuestions = 13;
   const currentQuestionNumber = Math.min(step, totalQuestions);
 
   const [isProcessingAI, setIsProcessingAI] = useState(false);
@@ -139,7 +169,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
   ].filter(Boolean).join("\n\n");
 
   const handleNext = async (safetyOverride?: boolean) => {
-    if (step >= 12) {
+    if (step >= 13) {
       setIsProcessingAI(true);
       try {
         const isSafetyConcern = safetyOverride !== undefined ? safetyOverride : immediateSafetyConcern;
@@ -192,13 +222,24 @@ export const ParticipantCheckin: React.FC<Props> = ({
           voiceInputUsed: currentReflection?.type === "voice" || currentReflection?.audioRecorded,
           shareNoteWithWorker: currentReflection ? currentReflection.shareWithWorker : true,
           reflection: updatedReflection,
-          aiComprehensiveAnalysis
+          aiComprehensiveAnalysis,
+          functional: {
+            sleepHours,
+            mealsYesterday,
+            leftHome,
+            spokeToAnyone,
+            somaticSymptoms: somaticSymptoms.length ? somaticSymptoms : undefined,
+          },
+          responseMeta: {
+            completionSeconds: Math.round((Date.now() - startedAtRef.current) / 1000),
+            privateSpace,
+          }
         };
 
         const analysis = analyzeDistress(newCheckIn, previousCheckIn);
         setResultAnalysis(analysis);
         onSaveCheckIn(newCheckIn);
-        setStep(13);
+        setStep(14);
       } finally {
         setIsProcessingAI(false);
       }
@@ -228,7 +269,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
     const analysis = analyzeDistress(newCheckIn, previousCheckIn);
     setResultAnalysis(analysis);
     onSaveCheckIn(newCheckIn);
-    setStep(13);
+    setStep(14);
   };
 
   // Step 0: Consent Gate
@@ -323,6 +364,39 @@ export const ParticipantCheckin: React.FC<Props> = ({
             </label>
           </div>
 
+          {/* Asked before anything else, because the answer changes how much
+              the rest of the check-in can be trusted. Someone answering with
+              the person who harmed them nearby gives answers meant for that
+              audience — the session is marked low-confidence rather than
+              recorded as fact, and nobody is asked to explain themselves. */}
+          <div className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] p-4 space-y-3">
+            <p className="text-sm font-bold text-[#3C3530]">
+              Are you somewhere you can answer freely right now?
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {[["Yes", true], ["Not really", false]].map(([label, val]) => (
+                <button
+                  key={String(label)}
+                  type="button"
+                  onClick={() => setPrivateSpace(privateSpace === val ? undefined : (val as boolean))}
+                  className={`px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                    privateSpace === val
+                      ? "bg-[#3C3530] text-white border-[#3C3530]"
+                      : "bg-white text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+            {privateSpace === false && (
+              <p className="text-[11px] text-[#A55D25] leading-relaxed">
+                That is completely fine — you can carry on now, or come back when you have more privacy.
+                Either way we will treat today's answers gently.
+              </p>
+            )}
+          </div>
+
           <div className="pt-2 flex flex-col sm:flex-row gap-3">
             <button
               onClick={onGoToProfile}
@@ -332,7 +406,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
             </button>
             <button
               disabled={!consentVoluntary || !consentNoDiag}
-              onClick={() => setStep(1)}
+              onClick={() => { startedAtRef.current = Date.now(); setStep(1); }}
               className="w-full sm:w-2/3 py-3.5 rounded-xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#3F4E4E] transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
             >
               <span>{t.beginReflection}</span>
@@ -1311,12 +1385,145 @@ export const ParticipantCheckin: React.FC<Props> = ({
         )}
 
         {/* Step 11: Question 11 (MCQ - Single-select) */}
+        {/* Step 11: behaviour and body — deliberately factual, low-stigma,
+            and entirely skippable. None of it changes the distress score. */}
         {step === 11 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
+                <Activity size={14} />
+                <span>Step 11 • The Last Day or Two</span>
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
+                A few practical questions about the last day or two.
+              </h3>
+              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+                Not about how you felt — just what happened. Answer only what you want to; skip anything you would rather not say.
+              </p>
+            </div>
+
+            <div className="space-y-5 pt-1">
+              <div className="space-y-2">
+                <p className="text-sm font-bold text-[#3C3530]">Roughly how many hours did you sleep last night?</p>
+                <div className="flex flex-wrap gap-2">
+                  {[0, 2, 4, 6, 8, 10].map((h) => (
+                    <button
+                      key={h}
+                      type="button"
+                      onClick={() => setSleepHours(sleepHours === h ? undefined : h)}
+                      className={`px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                        sleepHours === h
+                          ? "bg-[#3C3530] text-white border-[#3C3530]"
+                          : "bg-[#FDF9F5] text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                      }`}
+                    >
+                      {h === 0 ? "Barely any" : h === 10 ? "10+" : `~${h}`}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-bold text-[#3C3530]">How many meals did you eat yesterday?</p>
+                <div className="flex flex-wrap gap-2">
+                  {[0, 1, 2, 3].map((m) => (
+                    <button
+                      key={m}
+                      type="button"
+                      onClick={() => setMealsYesterday(mealsYesterday === m ? undefined : m)}
+                      className={`px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                        mealsYesterday === m
+                          ? "bg-[#3C3530] text-white border-[#3C3530]"
+                          : "bg-[#FDF9F5] text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                      }`}
+                    >
+                      {m === 3 ? "3 or more" : m === 0 ? "None" : m}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-bold text-[#3C3530]">Did you leave where you are staying?</p>
+                  <div className="flex gap-2">
+                    {[["Yes", true], ["No", false]].map(([label, val]) => (
+                      <button
+                        key={String(label)}
+                        type="button"
+                        onClick={() => setLeftHome(leftHome === val ? undefined : (val as boolean))}
+                        className={`flex-1 px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                          leftHome === val
+                            ? "bg-[#3C3530] text-white border-[#3C3530]"
+                            : "bg-[#FDF9F5] text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <p className="text-sm font-bold text-[#3C3530]">Did you speak with anyone?</p>
+                  <div className="flex gap-2">
+                    {[["Yes", true], ["No", false]].map(([label, val]) => (
+                      <button
+                        key={String(label)}
+                        type="button"
+                        onClick={() => setSpokeToAnyone(spokeToAnyone === val ? undefined : (val as boolean))}
+                        className={`flex-1 px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                          spokeToAnyone === val
+                            ? "bg-[#3C3530] text-white border-[#3C3530]"
+                            : "bg-[#FDF9F5] text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <p className="text-sm font-bold text-[#3C3530]">
+                  Has your body been troubling you in any of these ways?
+                </p>
+                <p className="text-[11px] text-[#7F8C8D]">Select any that apply, or none.</p>
+                <div className="flex flex-wrap gap-2 pt-1">
+                  {([
+                    ["headaches", "Headaches"],
+                    ["appetite_change", "Appetite changed"],
+                    ["unexplained_pain", "Body pain"],
+                    ["palpitations", "Racing heart"],
+                    ["exhaustion", "Exhaustion"],
+                    ["none_reported", "None of these"],
+                  ] as [SomaticSymptom, string][]).map(([key, label]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => toggleSomatic(key)}
+                      className={`px-4 py-2.5 rounded-xl border text-sm font-bold transition-colors cursor-pointer ${
+                        somaticSymptoms.includes(key)
+                          ? "bg-[#3C3530] text-white border-[#3C3530]"
+                          : "bg-[#FDF9F5] text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {step === 12 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <HeartHandshake size={14} />
-                <span>Step 11 • Counselor Connection & Support Preference</span>
+                <span>Step 12 • Counselor Connection & Support Preference</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Would you like to connect with a confidential, specialized human counselor?
@@ -1386,13 +1593,13 @@ export const ParticipantCheckin: React.FC<Props> = ({
           </div>
         )}
 
-        {/* Step 12: Question 12 (MCQ - Single-select) */}
-        {step === 12 && (
+        {/* Step 13: Question 13 (MCQ - Single-select) */}
+        {step === 13 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#A55D25] flex items-center space-x-1.5">
                 <AlertTriangle size={14} />
-                <span>Step 12 • Immediate Safety Confirmation</span>
+                <span>Step 13 • Immediate Safety Confirmation</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Are you in immediate physical danger or thinking of hurting yourself right now?
@@ -1458,7 +1665,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           </button>
 
           <div className="flex items-center space-x-3">
-            {step < 12 && (
+            {step < 13 && (
               <button
                 type="button"
                 onClick={() => handleNext()}
@@ -1468,7 +1675,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               </button>
             )}
 
-            {step < 12 ? (
+            {step < 13 ? (
               <button
                 type="button"
                 onClick={() => handleNext()}

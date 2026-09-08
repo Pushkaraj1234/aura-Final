@@ -46,6 +46,78 @@ export interface User {
   maxCaseload?: number;
 }
 
+/**
+ * Somatic complaints reported alongside the mood questions. Across much of
+ * South Asia distress is voiced through the body — heaviness, heat, pain,
+ * exhaustion — by people who will sincerely rate their mood as fine, so
+ * asking only about feelings misses them entirely.
+ */
+export type SomaticSymptom =
+  | "headaches"
+  | "appetite_change"
+  | "unexplained_pain"
+  | "palpitations"
+  | "exhaustion"
+  | "none_reported";
+
+/**
+ * Questions about what a person did, not how they feel. Someone who will not
+ * say "I feel hopeless" will still say they slept three hours and have not
+ * left the house — behaviour is far harder to posture on than mood, and
+ * these answers are what the concordance check weighs the self-report
+ * against. Every field is optional: all of it is skippable, like the rest of
+ * the check-in.
+ */
+export interface FunctionalSignals {
+  /** Hours slept last night, 0-12. */
+  sleepHours?: number;
+  /** Meals eaten yesterday, 0-4. */
+  mealsYesterday?: number;
+  leftHome?: boolean;
+  spokeToAnyone?: boolean;
+  somaticSymptoms?: SomaticSymptom[];
+}
+
+/**
+ * How the check-in was answered rather than what was answered. Collected
+ * passively and disclosed on the consent gate; used only to mark a
+ * submission low-confidence, never to raise anyone's distress score.
+ */
+export interface ResponseMetadata {
+  /** Wall-clock seconds from first question to submission. */
+  completionSeconds?: number;
+  /** Whether the person said they were somewhere they could answer freely. */
+  privateSpace?: boolean;
+}
+
+/** One signal weighed against what the participant reported about themselves. */
+export interface ConcordanceSignal {
+  key: string;
+  label: string;
+  /** The measured value, formatted for a support worker to read. */
+  reading: string;
+  verdict: "supports" | "contradicts" | "neutral";
+  /** Why this reading disagrees, shown only when it does. */
+  note?: string;
+  /** Strong enough to warrant a second look on its own, with no corroboration. */
+  strong?: boolean;
+}
+
+export interface ConcordanceResult {
+  /** How the person rated themselves, bucketed. */
+  claim: "fine" | "struggling" | "middling";
+  signals: ConcordanceSignal[];
+  contradicting: number;
+  supporting: number;
+  level: "aligned" | "partial" | "diverging" | "insufficient";
+  /** Whether a support worker should look at this despite a low score. */
+  needsSecondLook: boolean;
+  /** Reasons to trust the whole submission less (privacy, straight-lining). */
+  caveats: string[];
+  summary: string;
+  assessedAt: string;
+}
+
 export interface CheckIn {
   id: string;
   participantId: string;
@@ -65,6 +137,10 @@ export interface CheckIn {
   voiceInputUsed?: boolean;
   reflection?: ParticipantReflection;
   analysis?: CheckInAnalysis;
+  /** Behavioural and somatic answers — see FunctionalSignals. */
+  functional?: FunctionalSignals;
+  /** How the check-in was answered — see ResponseMetadata. */
+  responseMeta?: ResponseMetadata;
 }
 
 export type LanguageSignalCategory =

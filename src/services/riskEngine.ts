@@ -17,6 +17,13 @@ import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakd
  * formula actually used. Change a weight here and the explanation follows.
  */
 export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
+  // Asking for support is deliberately NOT scored. It used to add 10 points,
+  // which meant an identical person who said "I'm fine, I don't need anyone"
+  // scored ten points lower and could fall below the follow-up threshold —
+  // the model quietly rewarded denial with a quieter alert, on exactly the
+  // people least likely to ask. The request still escalates the priority
+  // level in analyzeDistress; it just no longer moves the number, so the five
+  // weighted questions below carry the whole 0-100 scale between them.
   // A declared immediate-safety concern short-circuits the weighted model
   // entirely: no arithmetic is performed and the score is pinned to 100. Said
   // plainly here because a participant seeing 100 deserves to know it was
@@ -33,7 +40,7 @@ export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
   }
 
   const safetyPoints =
-    checkIn.safety === "No" ? 25 : checkIn.safety === "Unsure" ? 16 : checkIn.safety === "Mostly" ? 5 : 0;
+    checkIn.safety === "No" ? 28 : checkIn.safety === "Unsure" ? 18 : checkIn.safety === "Mostly" ? 6 : 0;
 
   const terms: ScoreTerm[] = [
     {
@@ -42,55 +49,46 @@ export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
       response: checkIn.safety,
       // Not a scale question — a lookup, so show the table rather than a sum.
       expression: `"${checkIn.safety}" → ${safetyPoints}`,
-      formula: "No = 25 · Unsure = 16 · Mostly = 5 · Yes = 0",
+      formula: "No = 28 · Unsure = 18 · Mostly = 6 · Yes = 0",
       points: safetyPoints,
-      maxPoints: 25,
+      maxPoints: 28,
     },
     {
       key: "stress",
       label: "Reported stress level",
       response: `${checkIn.stress}/5`,
-      expression: `((${checkIn.stress} − 1) ÷ 4) × 20`,
-      formula: "((stress − 1) ÷ 4) × 20",
-      points: ((checkIn.stress - 1) / 4) * 20,
-      maxPoints: 20,
+      expression: `((${checkIn.stress} − 1) ÷ 4) × 22`,
+      formula: "((stress − 1) ÷ 4) × 22",
+      points: ((checkIn.stress - 1) / 4) * 22,
+      maxPoints: 22,
     },
     {
       key: "wellbeing",
       label: "Emotional wellbeing",
       response: `${checkIn.wellbeing}/5`,
       // Reversed: 5 is a good day, so a high rating must contribute 0 points.
-      expression: `((5 − ${checkIn.wellbeing}) ÷ 4) × 20`,
-      formula: "((5 − wellbeing) ÷ 4) × 20",
-      points: ((5 - checkIn.wellbeing) / 4) * 20,
-      maxPoints: 20,
+      expression: `((5 − ${checkIn.wellbeing}) ÷ 4) × 22`,
+      formula: "((5 − wellbeing) ÷ 4) × 22",
+      points: ((5 - checkIn.wellbeing) / 4) * 22,
+      maxPoints: 22,
     },
     {
       key: "sleep",
       label: "Sleep & rest quality",
       response: `${checkIn.sleep}/5`,
-      expression: `((5 − ${checkIn.sleep}) ÷ 4) × 15`,
-      formula: "((5 − sleep) ÷ 4) × 15",
-      points: ((5 - checkIn.sleep) / 4) * 15,
-      maxPoints: 15,
+      expression: `((5 − ${checkIn.sleep}) ÷ 4) × 17`,
+      formula: "((5 − sleep) ÷ 4) × 17",
+      points: ((5 - checkIn.sleep) / 4) * 17,
+      maxPoints: 17,
     },
     {
       key: "connection",
       label: "Social connection",
       response: `${checkIn.connection}/5`,
-      expression: `((5 − ${checkIn.connection}) ÷ 4) × 10`,
-      formula: "((5 − connection) ÷ 4) × 10",
-      points: ((5 - checkIn.connection) / 4) * 10,
-      maxPoints: 10,
-    },
-    {
-      key: "support",
-      label: "Support requested",
-      response: checkIn.supportRequested ? "Yes" : "No",
-      expression: checkIn.supportRequested ? "Yes → 10" : "No → 0",
-      formula: "Yes = 10 · No = 0",
-      points: checkIn.supportRequested ? 10 : 0,
-      maxPoints: 10,
+      expression: `((5 − ${checkIn.connection}) ÷ 4) × 11`,
+      formula: "((5 − connection) ÷ 4) × 11",
+      points: ((5 - checkIn.connection) / 4) * 11,
+      maxPoints: 11,
     },
   ];
 

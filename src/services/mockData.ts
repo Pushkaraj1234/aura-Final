@@ -1,4 +1,4 @@
-import { Participant, CheckIn, Alert, DemoScenario } from "../types";
+import { Participant, CheckIn, Alert, DemoScenario, SomaticSymptom } from "../types";
 import { calculateRawScore } from "./riskEngine";
 
 const createTimestamp = (daysAgo: number, hour = 10, minute = 30) => {
@@ -35,7 +35,23 @@ export const MOCK_PARTICIPANTS: Participant[] = [
       { id: "c-1042-4", participantId: "P-1042", timestamp: createTimestamp(3), wellbeing: 3, stress: 4, sleep: 3, safety: "Mostly", connection: 3, supportRequested: false, immediateSafetyConcern: false },
       { id: "c-1042-5", participantId: "P-1042", timestamp: createTimestamp(2), wellbeing: 2, stress: 4, sleep: 2, safety: "Unsure", connection: 2, supportRequested: false, immediateSafetyConcern: false },
       { id: "c-1042-6", participantId: "P-1042", timestamp: createTimestamp(1), wellbeing: 2, stress: 5, sleep: 2, safety: "Unsure", connection: 2, supportRequested: true, immediateSafetyConcern: false },
-      { id: "c-1042-7", participantId: "P-1042", timestamp: createTimestamp(0, 9, 15), wellbeing: 1, stress: 5, sleep: 1, safety: "No", connection: 1, supportRequested: true, immediateSafetyConcern: false }
+      // Openly struggling and asking for help. The behavioural answers agree
+      // with the self-report, so this person belongs in the ordinary priority
+      // queue and must NOT also appear under "worth a second look" — nothing
+      // here is hidden.
+      {
+        id: "c-1042-7", participantId: "P-1042", timestamp: createTimestamp(0, 9, 15),
+        wellbeing: 1, stress: 5, sleep: 1, safety: "No", connection: 1,
+        supportRequested: true, immediateSafetyConcern: false,
+        functional: {
+          sleepHours: 3,
+          mealsYesterday: 1,
+          leftHome: false,
+          spokeToAnyone: false,
+          somaticSymptoms: ["exhaustion"] as SomaticSymptom[]
+        },
+        responseMeta: { completionSeconds: 132, privateSpace: true }
+      }
     ].map(c => ({ ...c, calculatedScore: calculateRawScore(c) }))
   },
   {
@@ -63,7 +79,23 @@ export const MOCK_PARTICIPANTS: Participant[] = [
       { id: "c-1047-4", participantId: "P-1047", timestamp: createTimestamp(3), wellbeing: 3, stress: 3, sleep: 3, safety: "Yes", connection: 3, supportRequested: false, immediateSafetyConcern: false },
       { id: "c-1047-5", participantId: "P-1047", timestamp: createTimestamp(2), wellbeing: 4, stress: 2, sleep: 4, safety: "Yes", connection: 4, supportRequested: false, immediateSafetyConcern: false },
       { id: "c-1047-6", participantId: "P-1047", timestamp: createTimestamp(1), wellbeing: 4, stress: 2, sleep: 4, safety: "Yes", connection: 4, supportRequested: false, immediateSafetyConcern: false },
-      { id: "c-1047-7", participantId: "P-1047", timestamp: createTimestamp(0, 10, 20), wellbeing: 5, stress: 1, sleep: 5, safety: "Yes", connection: 5, supportRequested: false, immediateSafetyConcern: false }
+      // Reports a complete recovery — 5/5, feels safe, wants no support — while
+      // every behavioural answer says otherwise. This is the case the distress
+      // score cannot see: it is low precisely because they said so. Seeded here
+      // so the second-look queue is demonstrable without waiting for real data.
+      {
+        id: "c-1047-7", participantId: "P-1047", timestamp: createTimestamp(0, 10, 20),
+        wellbeing: 5, stress: 1, sleep: 5, safety: "Yes", connection: 5,
+        supportRequested: false, immediateSafetyConcern: false,
+        functional: {
+          sleepHours: 3,
+          mealsYesterday: 1,
+          leftHome: false,
+          spokeToAnyone: false,
+          somaticSymptoms: ["headaches", "exhaustion", "appetite_change"] as SomaticSymptom[]
+        },
+        responseMeta: { completionSeconds: 74, privateSpace: true }
+      }
     ].map(c => ({ ...c, calculatedScore: calculateRawScore(c) }))
   },
   {
