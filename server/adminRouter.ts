@@ -10,10 +10,10 @@ import {
   getAdminConfigError,
   requireAdmin,
   AdminRequest,
-} from './adminAuth';
-import { getAdminSupabase } from './adminSupabase';
-import { sendSupportWorkerCredentials, sendSupportWorkerRejection, sendPasswordReset } from './mailService';
-import { analyzeCredentialDocument } from './aiService';
+} from './adminAuth.js';
+import { getAdminSupabase } from './adminSupabase.js';
+import { sendSupportWorkerCredentials, sendSupportWorkerRejection, sendPasswordReset } from './mailService.js';
+import { analyzeCredentialDocument } from './aiService.js';
 
 const router = Router();
 const upload = multer({

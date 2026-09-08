@@ -6,9 +6,9 @@ import {
   generateCaseSummary,
   handleChat,
   AcousticFeatures,
-} from './aiService';
-import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel';
-import { getSupabaseForRequest } from './supabaseServer';
+} from './aiService.js';
+import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
+import { getSupabaseForRequest } from './supabaseServer.js';
 
 const router = Router();
 
