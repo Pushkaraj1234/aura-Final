@@ -9,6 +9,10 @@ interface Props {
   displayedScore: number;
   /** Points the AI moved the rule-based score by, if it was consulted. */
   aiAdjustment?: number;
+  /** Whether the AI ran at all. It only does when a reflection was written or spoken. */
+  aiConsulted?: boolean;
+  /** True when the AI wanted to move the score further than it was allowed to. */
+  aiClamped?: boolean;
 }
 
 /** Trims trailing zeros so 7.5 stays 7.5 but 10.0 reads as 10. */
@@ -20,7 +24,13 @@ const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(
  * engine scores with — so what is displayed here is the calculation that
  * actually ran, not a description of it written alongside.
  */
-export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiAdjustment = 0 }) => {
+export const ScoreFormulaCard: React.FC<Props> = ({
+  checkIn,
+  displayedScore,
+  aiAdjustment = 0,
+  aiConsulted = false,
+  aiClamped = false,
+}) => {
   const [open, setOpen] = useState(false);
   const breakdown = explainRawScore(checkIn);
 
@@ -128,15 +138,21 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiA
             {/* Only shown when the AI actually moved the number. Without this
                 the card printed the questionnaire subtotal above a different
                 headline figure and called one the rounding of the other. */}
-            {aiAdjustment !== 0 && (
+            {aiConsulted && (
               <>
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-[10px] text-[#7F8C8D]">
                     AI review of your written or spoken reflection
+                    {aiClamped && " (limited to 15)"}
                   </span>
-                  <span className="text-[12px] font-mono font-bold text-[#A55D25] whitespace-nowrap">
-                    {aiAdjustment > 0 ? "+" : "−"}
-                    {Math.abs(aiAdjustment)}
+                  <span
+                    className={`text-[12px] font-mono font-bold whitespace-nowrap ${
+                      aiAdjustment === 0 ? "text-[#7F8C8D]" : "text-[#A55D25]"
+                    }`}
+                  >
+                    {aiAdjustment === 0
+                      ? "no change"
+                      : `${aiAdjustment > 0 ? "+" : "−"}${Math.abs(aiAdjustment)}`}
                   </span>
                 </div>
                 <div className="flex items-baseline justify-between gap-3 pt-1.5 border-t border-[#DBC3B2]">
@@ -181,11 +197,18 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiA
             </p>
           </div>
 
-          {aiAdjustment !== 0 && (
+          {aiConsulted ? (
             <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
               The questionnaire above is scored by fixed rules. Anything you wrote or said is read separately by
-              the AI, which can move the total by at most 15 points either way — enough to weigh something the six
+              the AI, which can move the total by at most 15 points either way — enough to weigh something the
               questions could not ask about, not enough to replace an answer you can check for yourself.
+              {aiClamped &&
+                " Here it wanted to move the score further than that, so it was held at the limit and your support worker has been told the two readings disagree."}
+            </p>
+          ) : (
+            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+              No AI review this time — that only happens when you write or record a reflection. This score is the
+              questionnaire alone.
             </p>
           )}
 

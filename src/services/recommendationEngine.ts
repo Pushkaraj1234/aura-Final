@@ -435,9 +435,13 @@ export function calculateCheckInAnalysis(
 
     const ruleScore = calculateRawScore(current);
     const aiScore = Number(ai.distressScore);
-    const aiAdjustment = Number.isFinite(aiScore)
-      ? Math.max(-AI_SCORE_ADJUSTMENT_LIMIT, Math.min(AI_SCORE_ADJUSTMENT_LIMIT, Math.round(aiScore) - ruleScore))
-      : 0;
+    const aiUsable = Number.isFinite(aiScore);
+    const wanted = aiUsable ? Math.round(aiScore) - ruleScore : 0;
+    const aiAdjustment = Math.max(-AI_SCORE_ADJUSTMENT_LIMIT, Math.min(AI_SCORE_ADJUSTMENT_LIMIT, wanted));
+    // Whether the model asked for more room than it was given. A clamped
+    // adjustment is not the model's judgement, it is the ceiling — worth
+    // recording so the difference is not passed off as a considered figure.
+    const aiClamped = aiUsable && Math.abs(wanted) > AI_SCORE_ADJUSTMENT_LIMIT;
     const score = Math.min(100, Math.max(0, ruleScore + aiAdjustment));
 
     // Recompute the band from the score actually shown, so the label can never
@@ -451,6 +455,9 @@ export function calculateCheckInAnalysis(
       distressScore: score,
       ruleScore,
       aiAdjustment,
+      aiConsulted: true,
+      aiRawScore: aiUsable ? Math.round(aiScore) : undefined,
+      aiClamped,
       level,
       levelLabel,
       previousScore: prevScore,
@@ -517,6 +524,7 @@ export function calculateCheckInAnalysis(
     distressScore: score,
     ruleScore: score,
     aiAdjustment: 0,
+    aiConsulted: false,
     level,
     levelLabel,
     previousScore: prevScore,
