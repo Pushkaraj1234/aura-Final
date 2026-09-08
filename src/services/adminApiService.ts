@@ -11,6 +11,14 @@ const ADMIN_TOKEN_KEY = "aura_admin_token";
 
 export class AdminSessionExpiredError extends Error {}
 
+/**
+ * Fired when the admin JWT is rejected mid-session (it has a 2h TTL, so this
+ * happens on any long-lived tab). AdminApp listens for it and drops straight
+ * back to the passcode screen — without this the dashboard just painted a red
+ * error banner on every tab and left no way back in except the Log Out button.
+ */
+export const ADMIN_SESSION_EXPIRED_EVENT = "aura_admin_session_expired";
+
 class AdminApiService {
   getToken(): string | null {
     try {
@@ -54,8 +62,17 @@ class AdminApiService {
 
     const res = await fetch(`${ADMIN_API_BASE}${endpoint}`, { ...options, headers });
 
-    if (res.status === 401) {
+    // A 401 from /login means the passcode was wrong, not that a session
+    // lapsed — fall through so the server's own "Incorrect passcode." message
+    // reaches the login form. Treating it as an expiry (the old behaviour)
+    // told first-time visitors their session had expired before they had one.
+    if (res.status === 401 && endpoint !== "/login") {
       this.clearToken();
+      try {
+        window.dispatchEvent(new Event(ADMIN_SESSION_EXPIRED_EVENT));
+      } catch {
+        // non-browser context; nothing to notify
+      }
       throw new AdminSessionExpiredError("Admin session expired or invalid. Please log in again.");
     }
 
