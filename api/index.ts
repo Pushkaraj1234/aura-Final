@@ -1,7 +1,5 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, RequestHandler, Response, Router } from 'express';
 import cors from 'cors';
-import apiRouter from '../server/apiRouter';
-import adminRouter from '../server/adminRouter';
 
 // ---------------------------------------------------------------------------
 // Vercel serverless entry point.
@@ -99,8 +97,51 @@ app.post('/api/config-status', (req: Request, res: Response) => {
   });
 });
 
-app.use('/api', apiRouter);
-app.use('/api/admin', adminRouter);
+/**
+ * Mounts a router that is imported on first use rather than at module load,
+ * and turns a failure to import it into a readable JSON 500.
+ *
+ * Both routers used to be imported at the top of this file, which meant every
+ * dependency of both — @google/genai, nodemailer, multer, bcryptjs,
+ * jsonwebtoken — had to initialise before the function could serve anything.
+ * If any one of them threw on cold start, the platform killed the whole
+ * invocation and answered with its own bodyless 500: the admin login screen
+ * then showed a bare "HTTP 500:" with no message, and /api/config-status died
+ * with it, so nothing could report what had actually gone wrong.
+ *
+ * Loading lazily and per-router contains that. A broken dependency now
+ * degrades one route group instead of the entire API, says which group and
+ * why, and leaves the diagnostics endpoint above still answering.
+ */
+function lazyRouter(name: string, load: () => Promise<{ default: Router }>): RequestHandler {
+  let cached: Router | null = null;
+  let failure: string | null = null;
+
+  return (req, res, next) => {
+    if (failure) {
+      return res.status(500).json({ detail: failure, initializationError: true });
+    }
+    if (cached) return cached(req, res, next);
+
+    load()
+      .then((mod) => {
+        cached = mod.default;
+        cached(req, res, next);
+      })
+      .catch((err: any) => {
+        failure = `The ${name} API failed to start on the server: ${err?.message || err}`;
+        console.error(`[AURA API] ${name} router failed to load:`, err);
+        res.status(500).json({ detail: failure, initializationError: true });
+      });
+  };
+}
+
+// Admin first, and deliberately so. Express tries mounts in order, so with
+// '/api' first every admin request was dragged through the AI/ML router
+// before reaching this one. Admin login has no business loading the Gemini
+// client to check a passcode.
+app.use('/api/admin', lazyRouter('admin', () => import('../server/adminRouter')));
+app.use('/api', lazyRouter('core', () => import('../server/apiRouter')));
 
 // Unknown /api/* path — answer with JSON, not Express's HTML error page, so
 // the frontend's `await res.json()` never blows up on an HTML body.

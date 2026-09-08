@@ -123,7 +123,15 @@ class AdminApiService {
           `The admin API route ${ADMIN_API_BASE}${endpoint} was not found (HTTP 404). Open /api/config-status to check whether the API is reachable at all.`
         );
       }
-      throw new Error(body?.detail || body?.message || `HTTP ${res.status}: ${res.statusText}`);
+      if (body?.detail || body?.message) {
+        throw new Error(body.detail || body.message);
+      }
+      // No message came back at all. On Vercel this is what a crashed
+      // serverless invocation looks like, and res.statusText is always empty
+      // over HTTP/2, so the old fallback rendered the useless "HTTP 500:".
+      throw new Error(
+        `The server returned HTTP ${res.status} with no error message — the API most likely crashed while starting up. Open /api/config-status to see whether the API is running.`
+      );
     }
 
     return body as T;

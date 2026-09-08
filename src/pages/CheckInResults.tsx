@@ -23,6 +23,7 @@ import {
 import { CheckInAnalysis, CheckIn, User } from "../types";
 import { ALERT_CONFIG } from "../services/alertConfig";
 import { ScoreFormulaCard } from "../components/ScoreFormulaCard";
+import { explainFactorPercentages } from "../services/recommendationEngine";
 
 interface Props {
   analysis: CheckInAnalysis;
@@ -110,6 +111,11 @@ export const CheckInResults: React.FC<Props> = ({
   };
 
   const style = getLevelColor(analysis.level);
+
+  // The rule behind each bar, with this participant's rating substituted.
+  // Shown under each bar because "55%" on its own invites being read as a
+  // share of the score, which it is not — every factor has its own band.
+  const factorFormula = explainFactorPercentages(checkIn);
 
   // Loading Screen Animation
   if (loadingStage < 3) {
@@ -301,6 +307,9 @@ export const CheckInResults: React.FC<Props> = ({
               <span className="text-[10px] text-[#7F8C8D] block">
                 Questionnaire rating: {analysis.factors.stress}/5
               </span>
+              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                {factorFormula.stress} = {analysis.factorPercentages.stress}%
+              </span>
             </div>
 
             {/* Sleep Factor */}
@@ -320,6 +329,9 @@ export const CheckInResults: React.FC<Props> = ({
               </div>
               <span className="text-[10px] text-[#7F8C8D] block">
                 Restfulness rating: {analysis.factors.sleep}/5
+              </span>
+              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                {factorFormula.sleep} = {analysis.factorPercentages.sleep}%
               </span>
             </div>
 
@@ -341,6 +353,9 @@ export const CheckInResults: React.FC<Props> = ({
               <span className="text-[10px] text-[#7F8C8D] block">
                 Day rating: {analysis.factors.mood}/5
               </span>
+              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                {factorFormula.emotionalWellbeing} = {analysis.factorPercentages.emotionalWellbeing}%
+              </span>
             </div>
 
             {/* Social Connection */}
@@ -360,6 +375,9 @@ export const CheckInResults: React.FC<Props> = ({
               </div>
               <span className="text-[10px] text-[#7F8C8D] block">
                 Peer support rating: {analysis.factors.socialConnection}/5
+              </span>
+              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                {factorFormula.socialConnection} = {analysis.factorPercentages.socialConnection}%
               </span>
             </div>
           </div>

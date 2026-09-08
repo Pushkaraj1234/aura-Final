@@ -37,6 +37,25 @@ export function getDistressLevel(score: number): { level: DistressLevel; label: 
 }
 
 /**
+ * The rule behind each percentage bar, with the participant's own rating
+ * substituted, so the results screen can show its working next to the bar
+ * instead of asserting a number. Each factor is mapped into its own band —
+ * the bands differ per factor, which is exactly why a bar reading 55% is not
+ * 55 points of the distress score and cannot be read as one.
+ *
+ * Kept beside calculateFactorPercentages so the two are edited together; the
+ * expressions below restate that function's arithmetic term for term.
+ */
+export function explainFactorPercentages(checkIn: CheckIn): Record<string, string> {
+  return {
+    stress: `15 + ((${checkIn.stress} − 1) ÷ 4) × 80`,
+    sleep: `10 + ((5 − ${checkIn.sleep}) ÷ 4) × 80`,
+    emotionalWellbeing: `10 + ((5 − ${checkIn.wellbeing}) ÷ 4) × 75`,
+    socialConnection: `10 + ((5 − ${checkIn.connection}) ÷ 4) × 70`,
+  };
+}
+
+/**
  * Calculates factor percentage representations for visual breakdown (Response Patterns)
  */
 export function calculateFactorPercentages(checkIn: CheckIn) {
