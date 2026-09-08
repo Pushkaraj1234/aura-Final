@@ -71,6 +71,17 @@ export const App: React.FC = () => {
         // Automatically log out if auth is cleared elsewhere (like on 401 error)
         setCurrentUser(null);
         setCurrentView("landing");
+        return;
+      }
+      // Profile edits — the first-aid kit, emergency contact, support
+      // preference — write to storage and fire this event, but nothing here
+      // used to read them back, so React kept rendering the session as it was
+      // at sign-in. Someone saved their kit and the page looked like nothing
+      // had happened until they reloaded. Compared serialized rather than by
+      // reference, since getCurrentUser parses a fresh object every call and
+      // an unconditional setState would re-render on every event.
+      if (user && currentUser && JSON.stringify(user) !== JSON.stringify(currentUser)) {
+        setCurrentUser(user);
       }
     };
 

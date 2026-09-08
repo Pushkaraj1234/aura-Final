@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { FirstAidKitCard } from "../components/FirstAidKitCard";
+import { FirstAidKit } from "../types";
 import {
   Activity,
   User as UserIcon,
@@ -374,6 +376,16 @@ ${
           </button>
         </div>
       </div>
+
+      {/* The participant's own coping kit. Placed above the charts because the
+          moment it matters is the moment someone opens this page struggling,
+          and a list of what helps them should not sit below a graph. */}
+      <FirstAidKitCard
+        user={user}
+        onSave={(kit: FirstAidKit) => {
+          void authService.updateFirstAidKit(kit);
+        }}
+      />
 
       {/* Gentle check-in nudge — only when recent signals warrant it */}
       {showNudge && (

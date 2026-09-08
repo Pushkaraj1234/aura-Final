@@ -1,4 +1,5 @@
-import { User, UserRole } from "../types";
+import { User, UserRole, FirstAidKit } from "../types";
+import { normalizeKit } from "./firstAidKit";
 import { participantStore } from "./participantStore";
 import { auditService } from "./auditService";
 import { supabase } from "./supabaseClient";
@@ -60,6 +61,7 @@ if (typeof window !== "undefined") {
         consentGiven: meta.consentGiven ?? true,
         createdAt: session.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
+        firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
         maxCaseload: typeof meta.maxCaseload === "number" ? meta.maxCaseload : undefined,
@@ -118,6 +120,7 @@ export const authService = {
         consentGiven: meta.consentGiven ?? true,
         createdAt: supaAuth.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
+        firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
         maxCaseload: typeof meta.maxCaseload === "number" ? meta.maxCaseload : undefined,
@@ -273,6 +276,7 @@ export const authService = {
       consentGiven: data.consentGiven,
       createdAt: supaUser?.created_at || new Date().toISOString(),
       emergencyContact: data.emergencyContact || undefined,
+      firstAidKit: normalizeKit((data as any).firstAidKit),
     };
 
     localStorage.setItem(AUTH_KEY, JSON.stringify(userProfile));
@@ -352,6 +356,27 @@ export const authService = {
       console.warn("[AuthService] updateEmergencyContact (Supabase):", err);
     }
     const updated = { ...user, emergencyContact: value || undefined };
+    localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
+    participantStore.saveUser(updated);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("aura_auth_updated"));
+    return updated;
+  },
+
+  // The participant's own first-aid kit. Held in their auth metadata rather
+  // than the participants table, so it travels with them across devices and
+  // stays out of the staff-facing record unless they turn sharing on. A
+  // Supabase failure is not allowed to lose the edit: the local session is
+  // updated either way, and the offline queue carries it later.
+  updateFirstAidKit: async (kit: FirstAidKit): Promise<User | null> => {
+    const user = authService.getCurrentUser();
+    if (!user) return null;
+    const next: FirstAidKit = { ...kit, updatedAt: new Date().toISOString() };
+    try {
+      await supabase.auth.updateUser({ data: { firstAidKit: next } });
+    } catch (err) {
+      console.warn("[AuthService] updateFirstAidKit (Supabase):", err);
+    }
+    const updated = { ...user, firstAidKit: next };
     localStorage.setItem(AUTH_KEY, JSON.stringify(updated));
     participantStore.saveUser(updated);
     if (typeof window !== "undefined") window.dispatchEvent(new Event("aura_auth_updated"));
