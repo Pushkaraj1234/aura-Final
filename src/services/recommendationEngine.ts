@@ -20,6 +20,15 @@ import { calculateRawScore } from "./riskEngine";
 /**
  * Classifies numerical score into standard prototype distress level
  */
+/**
+ * How far the language model may move the rule-based distress score, in
+ * points. It exists so the model can weigh what the five questions cannot see
+ * — usually the reflection transcript — without being able to overwrite a
+ * number the participant is shown a full derivation for. Safety escalation is
+ * deliberately not routed through this and is not capped.
+ */
+export const AI_SCORE_ADJUSTMENT_LIMIT = 15;
+
 export function getDistressLevel(score: number): { level: DistressLevel; label: string } {
   if (score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
     return { level: "LOW", label: "Calmer Reported Distress" };
@@ -405,18 +414,47 @@ export function calculateCheckInAnalysis(
   previous: CheckIn | null,
   history: CheckIn[] = []
 ): CheckInAnalysis {
-  // If comprehensive AI analysis exists, merge it
+  // If comprehensive AI analysis exists, merge it.
+  //
+  // The rule-based score stays authoritative and the model is allowed to move
+  // it by a bounded amount, rather than replacing it outright. Previously
+  // `distressScore` was taken straight from the model: a sampled value could
+  // put someone at 100 on answers the transparent formula scored in the
+  // twenties, the "how this number was calculated" box then displayed
+  // arithmetic that did not reconcile ("28.8 → 100"), and `change` compared an
+  // LLM number against a rule-based previous score as though they were the
+  // same scale.
+  //
+  // Bounding it does not mute a real crisis: genuine safety escalation runs
+  // through isExplicitSafetyConcern and the transcript safety check, neither
+  // of which is capped. What is capped is the model's ability to silently
+  // rewrite a number the participant is shown a derivation for.
   if (current.aiComprehensiveAnalysis) {
     const ai = current.aiComprehensiveAnalysis;
     const factorPercentages = calculateFactorPercentages(current);
+
+    const ruleScore = current.calculatedScore ?? calculateRawScore(current);
+    const aiScore = Number(ai.distressScore);
+    const aiAdjustment = Number.isFinite(aiScore)
+      ? Math.max(-AI_SCORE_ADJUSTMENT_LIMIT, Math.min(AI_SCORE_ADJUSTMENT_LIMIT, Math.round(aiScore) - ruleScore))
+      : 0;
+    const score = Math.min(100, Math.max(0, ruleScore + aiAdjustment));
+
+    // Recompute the band from the score actually shown, so the label can never
+    // describe a different number than the one beside it.
+    const { level, label: levelLabel } = getDistressLevel(score);
+    const prevScore = previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined;
+
     return {
       checkInId: current.id,
       participantId: current.participantId,
-      distressScore: ai.distressScore,
-      level: ai.level,
-      levelLabel: ai.levelLabel,
-      previousScore: previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined,
-      change: previous ? ai.distressScore - (previous.calculatedScore ?? calculateRawScore(previous)) : undefined,
+      distressScore: score,
+      ruleScore,
+      aiAdjustment,
+      level,
+      levelLabel,
+      previousScore: prevScore,
+      change: prevScore !== undefined ? score - prevScore : undefined,
       trend: ai.trend,
       factors: {
         stress: current.stress,
@@ -433,7 +471,7 @@ export function calculateCheckInAnalysis(
       recommendations: ai.recommendations || [],
       primaryAction: ai.primaryAction,
       supportiveMessage: ai.supportiveMessage,
-      requiresHumanReview: ai.distressScore >= 75 || ai.isExplicitSafetyConcern || current.supportRequested,
+      requiresHumanReview: score >= 75 || ai.isExplicitSafetyConcern || current.supportRequested,
       isExplicitSafetyConcern: ai.isExplicitSafetyConcern,
       createdAt: current.timestamp || new Date().toISOString()
     };
@@ -473,6 +511,8 @@ export function calculateCheckInAnalysis(
     checkInId: current.id,
     participantId: current.participantId,
     distressScore: score,
+    ruleScore: score,
+    aiAdjustment: 0,
     level,
     levelLabel,
     previousScore: prevScore,

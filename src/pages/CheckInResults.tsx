@@ -388,7 +388,11 @@ export const CheckInResults: React.FC<Props> = ({
 
           {/* The arithmetic behind the score, drawn straight from the scoring
               function so it always matches the number shown above. */}
-          <ScoreFormulaCard checkIn={checkIn} displayedScore={analysis.distressScore} />
+          <ScoreFormulaCard
+            checkIn={checkIn}
+            displayedScore={analysis.distressScore}
+            aiAdjustment={analysis.aiAdjustment ?? 0}
+          />
         </div>
       </div>
 

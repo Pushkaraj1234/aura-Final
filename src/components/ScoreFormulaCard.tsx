@@ -7,6 +7,8 @@ interface Props {
   checkIn: CheckIn;
   /** The score actually shown on screen, so the two can be reconciled. */
   displayedScore: number;
+  /** Points the AI moved the rule-based score by, if it was consulted. */
+  aiAdjustment?: number;
 }
 
 /** Trims trailing zeros so 7.5 stays 7.5 but 10.0 reads as 10. */
@@ -18,7 +20,7 @@ const fmt = (n: number): string => (Number.isInteger(n) ? String(n) : n.toFixed(
  * engine scores with — so what is displayed here is the calculation that
  * actually ran, not a description of it written alongside.
  */
-export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore }) => {
+export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiAdjustment = 0 }) => {
   const [open, setOpen] = useState(false);
   const breakdown = explainRawScore(checkIn);
 
@@ -53,7 +55,9 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore }) =
               How this number was calculated
             </span>
             <span className="block text-[11px] text-[#7F8C8D] font-mono truncate">
-              {breakdown.terms.map((t) => fmt(t.points)).join(" + ")} = {fmt(breakdown.subtotal)} → {displayedScore}
+              {breakdown.terms.map((t) => fmt(t.points)).join(" + ")} = {fmt(breakdown.subtotal)} →{" "}
+              {breakdown.score}
+              {aiAdjustment !== 0 && ` ${aiAdjustment > 0 ? "+" : "−"} ${Math.abs(aiAdjustment)} = ${displayedScore}`}
             </span>
           </span>
         </span>
@@ -107,9 +111,32 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore }) =
             <div className="flex items-baseline justify-between gap-3">
               <span className="text-[10px] text-[#7F8C8D]">Rounded to the nearest whole number</span>
               <span className="text-[13px] font-mono font-black text-[#3C3530] whitespace-nowrap">
-                {displayedScore} / 100
+                {breakdown.score}
               </span>
             </div>
+
+            {/* Only shown when the AI actually moved the number. Without this
+                the card printed the questionnaire subtotal above a different
+                headline figure and called one the rounding of the other. */}
+            {aiAdjustment !== 0 && (
+              <>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-[10px] text-[#7F8C8D]">
+                    AI review of your written or spoken reflection
+                  </span>
+                  <span className="text-[12px] font-mono font-bold text-[#A55D25] whitespace-nowrap">
+                    {aiAdjustment > 0 ? "+" : "−"}
+                    {Math.abs(aiAdjustment)}
+                  </span>
+                </div>
+                <div className="flex items-baseline justify-between gap-3 pt-1.5 border-t border-[#DBC3B2]">
+                  <span className="text-[11px] font-bold text-[#3C3530]">Final score</span>
+                  <span className="text-[13px] font-mono font-black text-[#3C3530] whitespace-nowrap">
+                    {displayedScore} / 100
+                  </span>
+                </div>
+              </>
+            )}
           </div>
 
           <div className="rounded-xl bg-white border border-[#EFE8E2] p-3 space-y-1.5">
@@ -129,6 +156,14 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore }) =
               score look calmer than your answers earned.
             </p>
           </div>
+
+          {aiAdjustment !== 0 && (
+            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+              The questionnaire above is scored by fixed rules. Anything you wrote or said is read separately by
+              the AI, which can move the total by at most 15 points either way — enough to weigh something the six
+              questions could not ask about, not enough to replace an answer you can check for yourself.
+            </p>
+          )}
 
           <p className="text-[10px] text-[#7F8C8D] leading-relaxed italic">
             The percentage bars above are a separate visual scale for reading each area at a glance — they are not
