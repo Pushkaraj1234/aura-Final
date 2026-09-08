@@ -11,12 +11,32 @@ import { Request, Response, NextFunction } from 'express';
  * that hash via bcrypt.compare, never a plaintext string comparison.
  */
 
-const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || '';
+// Read on use, not at module load: import order decides whether
+// dotenv.config() (called from aiService) has run yet, and a secret
+// captured as '' at load time would stay '' for the whole process.
+const getJwtSecret = (): string => process.env.ADMIN_JWT_SECRET || '';
 const ADMIN_SESSION_TTL = '2h';
 const MAX_FAILED_ATTEMPTS = 5;
 const LOCKOUT_MS = 15 * 60 * 1000; // 15 minutes
 
 let cachedPasscodeHash: string | null = null;
+
+/**
+ * Names the first piece of admin configuration that is missing, or null when
+ * the server can actually issue a session. Checked up front by the login
+ * route so a misconfigured deployment answers "ADMIN_PASSCODE is not set"
+ * instead of failing halfway through and reporting a bare 500 — on a hosted
+ * deployment nobody can read the logs from the login screen.
+ */
+export function getAdminConfigError(): string | null {
+  if (!process.env.ADMIN_PASSCODE) {
+    return 'ADMIN_PASSCODE is not set on the server. Add it in your hosting provider\'s environment variables, then redeploy — environment changes only take effect on a new build.';
+  }
+  if (!getJwtSecret()) {
+    return 'ADMIN_JWT_SECRET is not set on the server. Add it in your hosting provider\'s environment variables, then redeploy — environment changes only take effect on a new build.';
+  }
+  return null;
+}
 
 function getPasscodeHash(): string {
   if (cachedPasscodeHash) return cachedPasscodeHash;
@@ -75,10 +95,11 @@ export function verifyPasscode(candidate: string): boolean {
 }
 
 export function issueAdminToken(): string {
-  if (!ADMIN_JWT_SECRET) {
+  const secret = getJwtSecret();
+  if (!secret) {
     throw new Error('ADMIN_JWT_SECRET is not configured on the server.');
   }
-  return jwt.sign({ role: 'admin' }, ADMIN_JWT_SECRET, { expiresIn: ADMIN_SESSION_TTL });
+  return jwt.sign({ role: 'admin' }, secret, { expiresIn: ADMIN_SESSION_TTL });
 }
 
 export interface AdminRequest extends Request {
@@ -88,11 +109,12 @@ export interface AdminRequest extends Request {
 export function requireAdmin(req: AdminRequest, res: Response, next: NextFunction) {
   const authHeader = req.headers['authorization'];
   const token = typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
-  if (!token || !ADMIN_JWT_SECRET) {
+  const secret = getJwtSecret();
+  if (!token || !secret) {
     return res.status(401).json({ detail: 'Admin session required.' });
   }
   try {
-    const payload = jwt.verify(token, ADMIN_JWT_SECRET) as { role?: string };
+    const payload = jwt.verify(token, secret) as { role?: string };
     if (payload.role !== 'admin') throw new Error('wrong role');
     req.isAdmin = true;
     next();

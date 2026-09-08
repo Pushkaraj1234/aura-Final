@@ -54,11 +54,23 @@ app.use(express.urlencoded({ extended: true, limit: '4mb' }));
 // Deployment self-check. Deliberately reports presence only — never a value —
 // so a misconfigured deployment can be diagnosed from the browser without
 // leaking a passcode, JWT secret or service-role key.
-app.get('/api/config-status', (_req: Request, res: Response) => {
+//
+// It also echoes the path this function actually received. That is the one
+// fact that cannot be checked any other way from outside: /api/* reaches here
+// through a vercel.json rewrite, and if the platform delivered a truncated
+// path instead of the original, every nested route (all of /api/admin/*)
+// would 404 while this endpoint still answered. Seeing the full request path
+// come back proves the rewrite is intact.
+const adminReady = () => !!process.env.ADMIN_PASSCODE && !!process.env.ADMIN_JWT_SECRET;
+
+app.get('/api/config-status', (req: Request, res: Response) => {
   res.json({
     status: 'ok',
     service: 'aura-api',
     runtime: 'vercel-serverless',
+    receivedPath: req.originalUrl,
+    routingOk: req.originalUrl.startsWith('/api/config-status'),
+    adminLoginReady: adminReady(),
     configured: {
       ADMIN_PASSCODE: !!process.env.ADMIN_PASSCODE,
       ADMIN_JWT_SECRET: !!process.env.ADMIN_JWT_SECRET,
@@ -66,6 +78,24 @@ app.get('/api/config-status', (_req: Request, res: Response) => {
       GEMINI_API_KEY: !!(process.env.GEMINI_API_KEY || process.env.API_KEY),
       SMTP_HOST: !!process.env.SMTP_HOST,
     },
+  });
+});
+
+// Proves JSON bodies survive the trip through the platform into Express.
+// If a POST arrives here with a body and comes back with parsedBody: false,
+// the login route was never going to see its passcode either. Echoes only
+// which keys were present, never their values, so it is safe to call with a
+// real payload.
+app.post('/api/config-status', (req: Request, res: Response) => {
+  const body = req.body;
+  const isObject = !!body && typeof body === 'object' && !Array.isArray(body);
+  res.json({
+    status: 'ok',
+    receivedPath: req.originalUrl,
+    contentType: req.headers['content-type'] || null,
+    parsedBody: isObject && Object.keys(body).length > 0,
+    bodyKeys: isObject ? Object.keys(body) : [],
+    adminLoginReady: adminReady(),
   });
 });
 

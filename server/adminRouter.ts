@@ -7,6 +7,7 @@ import {
   clearFailedAttempts,
   verifyPasscode,
   issueAdminToken,
+  getAdminConfigError,
   requireAdmin,
   AdminRequest,
 } from './adminAuth';
@@ -118,9 +119,22 @@ router.post('/applications', upload.single('credentialFile'), async (req: Reques
 // Admin login
 // ---------------------------------------------------------------------------
 router.post('/login', checkAdminLockout, (req: Request, res: Response) => {
+  // Configuration first. Without this, a deployment missing ADMIN_PASSCODE
+  // reports "Incorrect passcode." (getPasscodeHash throws inside the try
+  // below and lands in the generic 500), which sends people off hunting for
+  // a typo in a passcode that was never going to work.
+  const configError = getAdminConfigError();
+  if (configError) {
+    return res.status(503).json({ detail: configError, configurationError: true });
+  }
+
   const { passcode } = req.body || {};
   if (!passcode) {
-    return res.status(400).json({ detail: 'Passcode is required.' });
+    // An empty body here usually means the request never reached this router
+    // as JSON — worth saying so rather than blaming the operator's typing.
+    return res.status(400).json({
+      detail: 'No passcode reached the server. If you did enter one, the API route may be misconfigured — check /api/config-status.',
+    });
   }
   try {
     if (!verifyPasscode(String(passcode))) {
