@@ -115,13 +115,18 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore }) =
           <div className="rounded-xl bg-white border border-[#EFE8E2] p-3 space-y-1.5">
             <p className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D]">The general formula</p>
             <p className="text-[11px] font-mono text-[#5A5049] leading-relaxed break-words">
-              score = safety + ((stress − 1) ÷ 4) × 20 + ((5 − wellbeing) ÷ 4) × 20 + ((5 − sleep) ÷ 4) × 15 +
-              ((5 − connection) ÷ 4) × 10 + support
+              score = safety + ((stress − 1) ÷ 4) × 22 + ((5 − wellbeing) ÷ 4) × 22 + ((5 − sleep) ÷ 4) × 17 +
+              ((5 − connection) ÷ 4) × 11
             </p>
             <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
-              safety: No = 25 · Unsure = 16 · Mostly = 5 · Yes = 0 &nbsp;|&nbsp; support requested: Yes = 10 · No = 0.
-              Scales run 1–5, and the reversed ones (wellbeing, sleep, connection) score 0 points at 5, because a
-              higher rating there means things are going better.
+              safety: No = 28 · Unsure = 18 · Mostly = 6 · Yes = 0. Scales run 1–5, and the reversed ones
+              (wellbeing, sleep, connection) score 0 points at 5, because a higher rating there means things are
+              going better.
+            </p>
+            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+              Asking for support is deliberately <em>not</em> scored. It still brings a counsellor sooner — it just
+              does not change this number, so saying you would rather not talk to anyone can never make your
+              score look calmer than your answers earned.
             </p>
           </div>
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { assessLatest } from "../services/concordanceEngine";
 import {
   Users,
   AlertTriangle,
@@ -20,7 +21,8 @@ import {
   Bell,
   ArrowUpRight,
   Info
-} from "lucide-react";
+,
+  ScanSearch} from "lucide-react";
 import {
   ResponsiveContainer,
   BarChart,
@@ -353,6 +355,29 @@ export const SupportDashboard: React.FC<Props> = ({
       });
   }, [participants, searchQuery, statusFilter, sortBy, caseloadScope, currentWorker, workerNameById]);
 
+  // People whose latest check-in does not hang together — reported as fine,
+  // but the behavioural, somatic, voice or cadence signals say otherwise.
+  // Deliberately NOT filtered by distress score: the whole point is that
+  // these are the people a score-ordered queue never shows, because their
+  // score is low and it is low because they said so.
+  const secondLookQueue = useMemo(() => {
+    // Same fallback the rest of this dashboard uses: `assignedWorker` holds a
+    // display name rather than a worker id, so a strict match can legitimately
+    // return nobody. Falling back to the full list keeps the queue populated
+    // instead of silently hiding the one thing it exists to show.
+    const assigned = currentWorker
+      ? participants.filter((p) => p.assignedWorker === currentWorker.id)
+      : [];
+    const mine = assigned.length > 0 ? assigned : participants;
+
+    return mine
+      .map((p) => ({ participant: p, concordance: assessLatest(p.checkIns || []) }))
+      .filter((row) => row.concordance?.needsSecondLook)
+      .sort((a, b) => (b.concordance!.contradicting) - (a.concordance!.contradicting))
+      .slice(0, 6);
+  }, [participants, currentWorker]);
+
+
   return (
     <div className="max-w-7xl mx-auto py-10 sm:py-14 px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 font-sans">
       {/* Header — warm, personal, not an ops centre */}
@@ -446,6 +471,76 @@ export const SupportDashboard: React.FC<Props> = ({
           </div>
         </div>
       </section>
+
+      {/* Second-look queue: divergence between the self-report and everything else */}
+      {secondLookQueue.length > 0 && (
+        <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+              <ScanSearch size={13} />
+              Worth a second look
+            </span>
+            <h2 className="font-serif text-2xl text-[#3A2A1E]">
+              The self-report may not be the whole picture
+            </h2>
+            <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
+              These people did not report high distress — that is exactly why they are here. What they
+              said and what everything else suggests do not line up, so the usual queue would never
+              have shown them to you. Nothing here says anyone is being untruthful; it is a prompt to
+              ask again, gently.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {secondLookQueue.map(({ participant, concordance }) => (
+              <button
+                key={participant.id}
+                onClick={() => onSelectParticipant(participant.id)}
+                className="text-left rounded-2xl border border-[#ECE1D3] bg-[#FDFAF4] p-4 hover:border-[#DBC3B2] transition-colors cursor-pointer flex flex-col gap-2.5"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
+                      {participant.name || participant.id}
+                    </p>
+                    <p className="text-[13px] text-[#8A7A6B] leading-snug">{concordance!.summary}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full ${
+                      concordance!.level === "diverging"
+                        ? "bg-[#A85D2E]/12 text-[#8A4A20]"
+                        : "bg-[#8A7A6B]/12 text-[#6B5D50]"
+                    }`}
+                  >
+                    {concordance!.level === "diverging" ? "Diverging" : "Low confidence"}
+                  </span>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5">
+                  {concordance!.signals
+                    .filter((sig) => sig.verdict === "contradicts")
+                    .map((sig) => (
+                      <span
+                        key={sig.key}
+                        className="text-[11px] text-[#6B5D50] bg-white border border-[#ECE1D3] rounded-lg px-2 py-1"
+                      >
+                        {sig.label}: <span className="font-semibold">{sig.reading}</span>
+                      </span>
+                    ))}
+                  {concordance!.caveats.map((c) => (
+                    <span
+                      key={c}
+                      className="text-[11px] text-[#8A4A20] bg-[#A85D2E]/8 border border-[#A85D2E]/20 rounded-lg px-2 py-1"
+                    >
+                      {c}
+                    </span>
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Needs-attention list */}
       <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">

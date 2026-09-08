@@ -46,22 +46,27 @@ Victims of armed conflict, humanitarian crises, and atrocities face acute psycho
 
 ### A. Raw Distress Score Formula
 
-Six weighted questions, summed and rounded to a $0-100$ signal. This is the
+Five weighted questions, summed and rounded to a $0-100$ signal. This is the
 formula implemented in `calculateRawScore` (`src/services/riskEngine.ts`) and
 the one the app shows participants on their results screen — the
 "How this number was calculated" box renders these exact terms from
 `explainRawScore`, so screen and source cannot drift apart.
 
-$$\text{Distress Score} = \text{round}\Big(\text{Safety} + \tfrac{S - 1}{4}\cdot 20 + \tfrac{5 - W}{4}\cdot 20 + \tfrac{5 - L}{4}\cdot 15 + \tfrac{5 - C}{4}\cdot 10 + \text{Support}\Big)$$
+$$\text{Distress Score} = \text{round}\Big(\text{Safety} + \tfrac{S - 1}{4}\cdot 22 + \tfrac{5 - W}{4}\cdot 22 + \tfrac{5 - L}{4}\cdot 17 + \tfrac{5 - C}{4}\cdot 11\Big)$$
 
 | Factor | Scale | Contribution | Max |
 | --- | --- | --- | --- |
-| Environmental Safety | Yes / Mostly / Unsure / No | $0$ / $5$ / $16$ / $25$ | 25 |
-| Reported Stress $(S)$ | $1$ calm → $5$ very stressed | $\frac{S-1}{4} \times 20$ | 20 |
-| Emotional Wellbeing $(W)$ | $1$ very difficult → $5$ good | $\frac{5-W}{4} \times 20$ | 20 |
-| Sleep & Rest $(L)$ | $1$ very difficult → $5$ good | $\frac{5-L}{4} \times 15$ | 15 |
-| Social Connection $(C)$ | $1$ isolated → $5$ connected | $\frac{5-C}{4} \times 10$ | 10 |
-| Support Requested | Yes / No | $10$ / $0$ | 10 |
+| Environmental Safety | Yes / Mostly / Unsure / No | $0$ / $6$ / $18$ / $28$ | 28 |
+| Reported Stress $(S)$ | $1$ calm → $5$ very stressed | $\frac{S-1}{4} \times 22$ | 22 |
+| Emotional Wellbeing $(W)$ | $1$ very difficult → $5$ good | $\frac{5-W}{4} \times 22$ | 22 |
+| Sleep & Rest $(L)$ | $1$ very difficult → $5$ good | $\frac{5-L}{4} \times 17$ | 17 |
+| Social Connection $(C)$ | $1$ isolated → $5$ connected | $\frac{5-C}{4} \times 11$ | 11 |
+
+**Asking for support is not scored.** It previously added $10$ points, which meant
+an identical person who declined help scored ten points lower and could fall below
+the follow-up threshold — the model rewarded denial with a quieter alert, on exactly
+the people least likely to ask. A support request still escalates the priority level;
+it no longer moves the number.
 
 The three reversed scales ($W$, $L$, $C$) contribute $0$ points at a rating of
 $5$, because a higher answer there means things are going better. The weights
@@ -77,6 +82,44 @@ happen.
 > `calculateFactorPercentages` and are a *separate* readability scale (each
 > factor mapped into its own $10-95\%$ band for at-a-glance comparison). They
 > are deliberately not the point values above and do not sum to the score.
+
+### A2. Concordance — how far the self-report can be trusted
+
+The distress score answers *how bad does this person say it is*. That question is
+useless for anyone who cannot or will not say — someone numb, frightened of what an
+honest answer triggers, or describing distress through their body rather than their
+mood. `src/services/concordanceEngine.ts` answers a second question: **does
+everything else we have agree with that answer?**
+
+Each available signal is weighed against the stated wellbeing and marked
+*supports*, *contradicts* or *neutral*:
+
+| Signal | Source | Contradicts a self-report of "fine" when |
+| --- | --- | --- |
+| Hours slept | Check-in, behavioural | $\le 4$ hours |
+| Meals yesterday | Check-in, behavioural | $\le 1$ |
+| Left home / spoke to anyone | Check-in, behavioural | both false |
+| Physical symptoms | Check-in, somatic | $\ge 2$ reported |
+| Words vs. delivery | Voice-tone model | verdict is `mismatched` |
+| Pitch variability | Measured on-device | $< 0.15$ (flat affect) |
+| Pause ratio | Measured on-device | $> 0.35$ |
+| Reflection language | LLM screening | stressed / overwhelmed / safety concern |
+| Check-in rhythm | Their own history | gap $> 3\times$ their median — *stands alone* |
+
+Two confidence caveats lower trust in the whole submission without touching any
+score: answering somewhere they could not speak freely, and identical answers
+submitted in under 25 seconds.
+
+**Silence is the one signal that stands alone.** Withdrawal from the check-in
+produces no other signals by definition — the person is not there to produce them —
+so requiring corroboration would guarantee that whoever goes quiet is exactly
+whoever never gets looked at.
+
+Divergence routes a person to the counsellor's *"Worth a second look"* queue
+**regardless of how low their distress score is**, which is the only way the quiet
+cases surface at all. Two rules keep it honest: it never overwrites the self-report,
+and it is never shown to the participant as an accusation. Most people it flags are
+not concealing anything.
 
 ### B. Dynamic Delta & Trajectory Slope
 $$\Delta_{\text{distress}} = \text{Score}_t - \text{Score}_{t-1}$$
