@@ -140,8 +140,8 @@ function lazyRouter(name: string, load: () => Promise<{ default: Router }>): Req
 // '/api' first every admin request was dragged through the AI/ML router
 // before reaching this one. Admin login has no business loading the Gemini
 // client to check a passcode.
-app.use('/api/admin', lazyRouter('admin', () => import('../server/adminRouter')));
-app.use('/api', lazyRouter('core', () => import('../server/apiRouter')));
+app.use('/api/admin', lazyRouter('admin', () => import('../server/adminRouter.js')));
+app.use('/api', lazyRouter('core', () => import('../server/apiRouter.js')));
 
 // Unknown /api/* path — answer with JSON, not Express's HTML error page, so
 // the frontend's `await res.json()` never blows up on an HTML body.

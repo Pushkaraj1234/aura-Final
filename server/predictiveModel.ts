@@ -1,4 +1,4 @@
-import { CheckIn } from "../src/types";
+import { CheckIn } from "../src/types/index.js";
 
 export interface PersonalBaseline {
   participantId: string;
