@@ -20,10 +20,11 @@ import {
   AlertTriangle,
   RefreshCw
 } from "lucide-react";
-import { CheckInAnalysis, CheckIn, User } from "../types";
+import { CheckInAnalysis, CheckIn, User, Recommendation } from "../types";
 import { ALERT_CONFIG } from "../services/alertConfig";
 import { ScoreFormulaCard } from "../components/ScoreFormulaCard";
 import { explainFactorPercentages } from "../services/recommendationEngine";
+import { RecommendationActionModal } from "../components/RecommendationActionModal";
 
 interface Props {
   analysis: CheckInAnalysis;
@@ -43,6 +44,8 @@ export const CheckInResults: React.FC<Props> = ({
   // 1-2 second loading animation sequence for demo and authentic UX
   const [loadingStage, setLoadingStage] = useState<number>(0);
   const [supportRequestedConfirmed, setSupportRequestedConfirmed] = useState(false);
+  // Which recommendation's action panel is open, if any.
+  const [openAction, setOpenAction] = useState<Recommendation | null>(null);
 
   useEffect(() => {
     const timer1 = setTimeout(() => setLoadingStage(1), 500);
@@ -534,10 +537,14 @@ export const CheckInResults: React.FC<Props> = ({
 
               {rec.actionLabel && (
                 <div className="pt-2 border-t border-[#EFE8E2]/60">
-                  <span className="text-xs font-bold text-[#5A5049] flex items-center space-x-1">
+                  <button
+                    type="button"
+                    onClick={() => setOpenAction(rec)}
+                    className="w-full text-left text-xs font-bold text-[#5A5049] hover:text-[#3C3530] flex items-center space-x-1 group cursor-pointer"
+                  >
                     <span>{rec.actionLabel}</span>
-                    <ArrowRight size={12} />
-                  </span>
+                    <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                  </button>
                 </div>
               )}
             </div>
@@ -600,6 +607,12 @@ export const CheckInResults: React.FC<Props> = ({
           <ArrowRight size={16} />
         </button>
       </div>
+      <RecommendationActionModal
+        recommendation={openAction}
+        onClose={() => setOpenAction(null)}
+        onNavigate={onNavigate}
+        onOpenEmergency={onOpenEmergency}
+      />
     </div>
   );
 };
