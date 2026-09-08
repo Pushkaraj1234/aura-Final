@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { CheckInAnalysis, CheckIn, User } from "../types";
 import { ALERT_CONFIG } from "../services/alertConfig";
+import { ScoreFormulaCard } from "../components/ScoreFormulaCard";
 
 interface Props {
   analysis: CheckInAnalysis;
@@ -366,6 +367,10 @@ export const CheckInResults: React.FC<Props> = ({
           <p className="text-[11px] text-[#7F8C8D] text-center italic">
             Note: These percentages represent voluntary self-reported response patterns and are not clinical or medical measurements.
           </p>
+
+          {/* The arithmetic behind the score, drawn straight from the scoring
+              function so it always matches the number shown above. */}
+          <ScoreFormulaCard checkIn={checkIn} displayedScore={analysis.distressScore} />
         </div>
       </div>
 

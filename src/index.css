@@ -3,6 +3,9 @@
 @theme {
   --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, sans-serif;
   --font-serif: "Playfair Display", Georgia, serif;
+  /* Already preloaded in index.html; used for score arithmetic and other
+     figures where digits need to line up column-to-column. */
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* ---- Warm editorial palette --------------------------------------------
      Cream / apricot ground with a soft radial glow, terracotta as the primary

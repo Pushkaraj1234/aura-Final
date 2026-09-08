@@ -1,4 +1,4 @@
-import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution } from "../types";
+import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakdown, ScoreTerm } from "../types";
 
 /**
  * Transparent Simulated AI Distress Risk Engine
@@ -8,37 +8,103 @@ import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution } from "../t
  * It is NOT a clinical diagnosis and never claims to detect medical disorders.
  */
 
-export const calculateRawScore = (checkIn: CheckIn): number => {
+/**
+ * Produces the same number as calculateRawScore, but keeps every intermediate
+ * term so the UI can show the participant exactly how their score was reached.
+ *
+ * calculateRawScore is defined in terms of this function rather than repeating
+ * the arithmetic, so the formula shown on screen can never drift away from the
+ * formula actually used. Change a weight here and the explanation follows.
+ */
+export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
+  // A declared immediate-safety concern short-circuits the weighted model
+  // entirely: no arithmetic is performed and the score is pinned to 100. Said
+  // plainly here because a participant seeing 100 deserves to know it was
+  // their own answer that set it, not a hidden calculation.
   if (checkIn.immediateSafetyConcern) {
-    return 100;
+    return {
+      terms: [],
+      subtotal: 100,
+      score: 100,
+      overridden: true,
+      overrideReason:
+        "You indicated an immediate safety concern. That answer alone sets the signal to its maximum — the weighted questions below are not used.",
+    };
   }
 
-  // Weightings breakdown (Total = 100 max points):
-  // 1. Perceived Safety: 25% (No=25, Unsure=16, Mostly=5, Yes=0)
-  let safetyScore = 0;
-  if (checkIn.safety === "No") safetyScore = 25;
-  else if (checkIn.safety === "Unsure") safetyScore = 16;
-  else if (checkIn.safety === "Mostly") safetyScore = 5;
-  else safetyScore = 0;
+  const safetyPoints =
+    checkIn.safety === "No" ? 25 : checkIn.safety === "Unsure" ? 16 : checkIn.safety === "Mostly" ? 5 : 0;
 
-  // 2. Stress Level: 20% (scale 1-5 -> 0 to 20 pts)
-  const stressScore = ((checkIn.stress - 1) / 4) * 20;
+  const terms: ScoreTerm[] = [
+    {
+      key: "safety",
+      label: "Environmental safety",
+      response: checkIn.safety,
+      // Not a scale question — a lookup, so show the table rather than a sum.
+      expression: `"${checkIn.safety}" → ${safetyPoints}`,
+      formula: "No = 25 · Unsure = 16 · Mostly = 5 · Yes = 0",
+      points: safetyPoints,
+      maxPoints: 25,
+    },
+    {
+      key: "stress",
+      label: "Reported stress level",
+      response: `${checkIn.stress}/5`,
+      expression: `((${checkIn.stress} − 1) ÷ 4) × 20`,
+      formula: "((stress − 1) ÷ 4) × 20",
+      points: ((checkIn.stress - 1) / 4) * 20,
+      maxPoints: 20,
+    },
+    {
+      key: "wellbeing",
+      label: "Emotional wellbeing",
+      response: `${checkIn.wellbeing}/5`,
+      // Reversed: 5 is a good day, so a high rating must contribute 0 points.
+      expression: `((5 − ${checkIn.wellbeing}) ÷ 4) × 20`,
+      formula: "((5 − wellbeing) ÷ 4) × 20",
+      points: ((5 - checkIn.wellbeing) / 4) * 20,
+      maxPoints: 20,
+    },
+    {
+      key: "sleep",
+      label: "Sleep & rest quality",
+      response: `${checkIn.sleep}/5`,
+      expression: `((5 − ${checkIn.sleep}) ÷ 4) × 15`,
+      formula: "((5 − sleep) ÷ 4) × 15",
+      points: ((5 - checkIn.sleep) / 4) * 15,
+      maxPoints: 15,
+    },
+    {
+      key: "connection",
+      label: "Social connection",
+      response: `${checkIn.connection}/5`,
+      expression: `((5 − ${checkIn.connection}) ÷ 4) × 10`,
+      formula: "((5 − connection) ÷ 4) × 10",
+      points: ((5 - checkIn.connection) / 4) * 10,
+      maxPoints: 10,
+    },
+    {
+      key: "support",
+      label: "Support requested",
+      response: checkIn.supportRequested ? "Yes" : "No",
+      expression: checkIn.supportRequested ? "Yes → 10" : "No → 0",
+      formula: "Yes = 10 · No = 0",
+      points: checkIn.supportRequested ? 10 : 0,
+      maxPoints: 10,
+    },
+  ];
 
-  // 3. Emotional Wellbeing: 20% (scale 1-5 reversed -> 1 is hardest = 20 pts, 5 is good = 0 pts)
-  const wellbeingScore = ((5 - checkIn.wellbeing) / 4) * 20;
+  const subtotal = terms.reduce((sum, term) => sum + term.points, 0);
 
-  // 4. Sleep Disruption: 15% (scale 1-5 reversed -> 1 is worst = 15 pts, 5 is good = 0 pts)
-  const sleepScore = ((5 - checkIn.sleep) / 4) * 15;
-
-  // 5. Social Connection: 10% (scale 1-5 reversed -> 1 is isolated = 10 pts, 5 is connected = 0 pts)
-  const connectionScore = ((5 - checkIn.connection) / 4) * 10;
-
-  // 6. Explicit Request for Support: 10% (Yes = 10 pts, No = 0 pts)
-  const supportScore = checkIn.supportRequested ? 10 : 0;
-
-  const total = safetyScore + stressScore + wellbeingScore + sleepScore + connectionScore + supportScore;
-  return Math.min(100, Math.max(0, Math.round(total)));
+  return {
+    terms,
+    subtotal,
+    score: Math.min(100, Math.max(0, Math.round(subtotal))),
+    overridden: false,
+  };
 };
+
+export const calculateRawScore = (checkIn: CheckIn): number => explainRawScore(checkIn).score;
 
 export const analyzeDistress = (
   current: CheckIn,
