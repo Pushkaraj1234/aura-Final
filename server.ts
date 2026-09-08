@@ -6,7 +6,7 @@ import apiRouter from './server/apiRouter';
 import adminRouter from './server/adminRouter';
 
 const app = express();
-const PORT = Number(process.env.BACKEND_PORT) || 3000;
+const PORT = 3000;
 const allowedOrigins = (process.env.CORS_ORIGINS || '')
   .split(',')
   .map((o) => o.trim())
