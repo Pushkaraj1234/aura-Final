@@ -347,8 +347,21 @@ Transcript: "${transcript}"
   }
 
   const result = JSON.parse(response.text);
+
+  // The model is asked for 0-100 but nothing made it return one, and this
+  // number was being used directly as the participant's distress score. A
+  // sampled value outside the range (or a non-number) would silently become
+  // someone's headline reading, so it is coerced here and dropped entirely
+  // when it is not a usable number — the caller falls back to the
+  // deterministic score rather than displaying a value nobody can explain.
+  const rawScore = Number(result.distressScore);
+  const distressScore = Number.isFinite(rawScore)
+    ? Math.min(100, Math.max(0, Math.round(rawScore)))
+    : undefined;
+
   return {
     ...result,
+    distressScore,
     isExplicitSafetyConcern: result.isExplicitSafetyConcern || isUrgent,
   };
 }

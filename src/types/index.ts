@@ -282,6 +282,10 @@ export interface CheckInAnalysis {
   checkInId: string;
   participantId: string;
   distressScore: number;
+  /** The transparent rule-based score, before any AI adjustment. */
+  ruleScore?: number;
+  /** Points the AI moved the score by, bounded by AI_SCORE_ADJUSTMENT_LIMIT. */
+  aiAdjustment?: number;
   level: DistressLevel;
   levelLabel: string;
   previousScore?: number;
