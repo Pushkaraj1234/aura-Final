@@ -44,6 +44,12 @@ export interface User {
   languages?: string;
   availability?: string;
   maxCaseload?: number;
+  /**
+   * Participant-authored coping kit. Lives on the person's own auth record
+   * rather than the participants table staff read, so it is not visible to a
+   * counsellor unless shareWithWorker is set.
+   */
+  firstAidKit?: FirstAidKit;
 }
 
 /**
@@ -116,6 +122,41 @@ export interface ConcordanceResult {
   caveats: string[];
   summary: string;
   assessedAt: string;
+}
+
+/**
+ * A person's own first-aid kit: the specific things that help *them* when
+ * distress spikes — their song, their place, the person they'd message.
+ *
+ * The point is that it is written calm and read overwhelmed. When distress is
+ * high the ability to generate options collapses; what still works is
+ * following a list you already made. This is the same mechanism as the
+ * coping-strategies section of a safety plan, except entirely in the person's
+ * own words about their own life, which is what makes it usable.
+ */
+export type FirstAidCategory =
+  | "sounds"
+  | "places"
+  | "people"
+  | "grounding"
+  | "hands"
+  | "words"
+  | "signs";
+
+export interface FirstAidItem {
+  id: string;
+  category: FirstAidCategory;
+  text: string;
+}
+
+export interface FirstAidKit {
+  items: FirstAidItem[];
+  /**
+   * Off by default. This is the most personal thing in the app, and a kit is
+   * only honest if nobody else is reading it unless its author decided so.
+   */
+  shareWithWorker: boolean;
+  updatedAt: string;
 }
 
 export interface CheckIn {

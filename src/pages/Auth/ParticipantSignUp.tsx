@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import { FirstAidKitEditor } from "../../components/FirstAidKitEditor";
+import { FirstAidKit } from "../../types";
+import { kitItemCount } from "../../services/firstAidKit";
 import {
   Shield,
   Eye,
@@ -10,7 +13,7 @@ import {
   HeartHandshake,
   Lock,
   ExternalLink
-} from "lucide-react";
+, HeartPulse } from "lucide-react";
 import { authService } from "../../services/authService";
 
 interface Props {
@@ -27,6 +30,19 @@ export const ParticipantSignUp: React.FC<Props> = ({
   onOpenPrivacy
 }) => {
   const [isSuccess, setIsSuccess] = useState(false);
+  // Offered once the account exists rather than inside the sign-up form:
+  // authoring a personal coping kit is a different kind of task from filling
+  // in a registration field, and it must not be able to fail validation or
+  // stand between someone and their account.
+  const [buildingKit, setBuildingKit] = useState(false);
+  const [kitDraft, setKitDraft] = useState<FirstAidKit | undefined>(undefined);
+
+  const finishKit = () => {
+    if (kitDraft && kitItemCount(kitDraft) > 0) {
+      void authService.updateFirstAidKit(kitDraft);
+    }
+    onComplete();
+  };
   const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
@@ -120,13 +136,57 @@ export const ParticipantSignUp: React.FC<Props> = ({
             <p>• You can skip any question or stop at any time.</p>
           </div>
 
-          <button
-            onClick={onComplete}
-            className="w-full py-4 rounded-2xl bg-[#5A5049] text-white font-bold text-base hover:bg-[#3C3530] transition-all shadow-xs flex items-center justify-center space-x-2 group cursor-pointer"
-          >
-            <span>Continue to Privacy & Consent</span>
-            <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
+          {buildingKit ? (
+            <div className="text-left space-y-5">
+              <FirstAidKitEditor kit={kitDraft} onChange={setKitDraft} showSharing={false} compact />
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                <button
+                  onClick={finishKit}
+                  className="flex-1 py-3.5 rounded-2xl bg-[#5A5049] text-white font-bold text-sm hover:bg-[#3C3530] transition-all cursor-pointer"
+                >
+                  {kitItemCount(kitDraft) > 0 ? "Save and continue" : "Continue"}
+                </button>
+                <button
+                  onClick={() => setBuildingKit(false)}
+                  className="sm:w-auto py-3.5 px-5 rounded-2xl border border-[#EFE8E2] text-[#5A5049] font-bold text-sm hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+                >
+                  Back
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Offered, never required. Someone who has just registered may
+                  have no capacity for this today, and the account works
+                  perfectly well without it — the same offer waits on the
+                  wellbeing board for as long as they want. */}
+              <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-left space-y-2">
+                <div className="flex items-center gap-2 font-bold text-[#3C3530] text-sm">
+                  <HeartPulse size={16} className="text-[#A55D25]" />
+                  <span>Make your own first aid kit</span>
+                </div>
+                <p className="text-xs text-[#7A726C] leading-relaxed">
+                  A short, private list of what helps <em>you</em> — a song, a place you go, someone you could
+                  message. Written now, while it is easier to think, so a harder day does not have to.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setBuildingKit(true)}
+                className="w-full py-4 rounded-2xl bg-[#5A5049] text-white font-bold text-base hover:bg-[#3C3530] transition-all shadow-xs flex items-center justify-center space-x-2 group cursor-pointer"
+              >
+                <span>Make my first aid kit</span>
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+
+              <button
+                onClick={onComplete}
+                className="w-full py-3 rounded-2xl border border-[#EFE8E2] text-[#5A5049] font-bold text-sm hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+              >
+                Skip for now — I can do this later
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
