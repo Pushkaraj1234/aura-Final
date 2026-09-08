@@ -169,6 +169,7 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
 
           <p className="text-[11px] text-[#7F8C8D] text-center pt-2 border-t border-[#EFE8E2]">
             Repeated failed attempts will temporarily lock this device out.
+            <span className="block mt-1 text-[10px] text-[#B9B0A6] font-mono">build {__BUILD_ID__}</span>
           </p>
         </div>
       </div>
