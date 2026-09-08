@@ -34,7 +34,7 @@ export const calculateTrajectory = (
   }
 
   // Calculate scores for all historical check-ins in chronological order
-  const scores = checkIns.map(c => (c.calculatedScore !== undefined ? c.calculatedScore : calculateRawScore(c)));
+  const scores = checkIns.map(c => calculateRawScore(c));
   const n = scores.length;
   const currentScore = scores[n - 1];
   const previousScore = n > 1 ? scores[n - 2] : null;
@@ -233,7 +233,7 @@ export const generateEarlyWarningForecast = (
     max?: number;
   }[] = checkIns.slice(Math.max(0, checkIns.length - 6)).map((c, idx) => ({
     label: `Check-in ${idx + 1}`,
-    score: c.calculatedScore !== undefined ? c.calculatedScore : calculateRawScore(c),
+    score: calculateRawScore(c),
     isProjected: false
   }));
 

@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient";
+import { calculateRawScore } from "./riskEngine";
 import {
   CheckIn,
   Participant,
@@ -207,7 +208,11 @@ export const checkInsTable = {
       connection: checkIn.connection ?? 3,
       support_requested: checkIn.supportRequested ?? false,
       immediate_safety_concern: checkIn.immediateSafetyConcern ?? false,
-      calculated_score: checkIn.calculatedScore ?? 50,
+      // Recomputed rather than defaulted. A missing score used to be stored as
+      // 50 — a number nobody's answers produced, sitting in the middle of the
+      // scale and reading as "moderate distress" for someone who might be
+      // calm or in crisis.
+      calculated_score: calculateRawScore(checkIn as CheckIn),
       notes: checkIn.notes || checkIn.optionalNote || "",
       optional_note: checkIn.optionalNote || "",
       share_note_with_worker: checkIn.shareNoteWithWorker ?? true,

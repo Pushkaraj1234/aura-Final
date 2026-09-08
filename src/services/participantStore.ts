@@ -620,7 +620,10 @@ export const participantStore = {
     // Persist Risk Prediction to FastAPI backend
     apiService.risk.createPrediction({
       participantId: checkIn.participantId,
-      distressScore: enrichedCheckIn.calculatedScore || analysis.distressScore || 50,
+      // `||` treated a legitimate score of 0 — a genuinely calm check-in — as
+      // missing and replaced it with 50. Use the analysis score, which is the
+      // number actually shown to the participant and their counsellor.
+      distressScore: analysis.distressScore,
       riskLevel: analysis.level || "MODERATE",
       trajectory: analysis.trend || "STABLE",
       confidence: 0.88,

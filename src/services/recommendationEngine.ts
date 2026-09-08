@@ -433,7 +433,7 @@ export function calculateCheckInAnalysis(
     const ai = current.aiComprehensiveAnalysis;
     const factorPercentages = calculateFactorPercentages(current);
 
-    const ruleScore = current.calculatedScore ?? calculateRawScore(current);
+    const ruleScore = calculateRawScore(current);
     const aiScore = Number(ai.distressScore);
     const aiAdjustment = Number.isFinite(aiScore)
       ? Math.max(-AI_SCORE_ADJUSTMENT_LIMIT, Math.min(AI_SCORE_ADJUSTMENT_LIMIT, Math.round(aiScore) - ruleScore))
@@ -443,7 +443,7 @@ export function calculateCheckInAnalysis(
     // Recompute the band from the score actually shown, so the label can never
     // describe a different number than the one beside it.
     const { level, label: levelLabel } = getDistressLevel(score);
-    const prevScore = previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined;
+    const prevScore = previous ? calculateRawScore(previous) : undefined;
 
     return {
       checkInId: current.id,
@@ -477,9 +477,13 @@ export function calculateCheckInAnalysis(
     };
   }
 
-  // Score is calculated from actual responses
-  const score = current.calculatedScore ?? calculateRawScore(current);
-  const prevScore = previous ? (previous.calculatedScore ?? calculateRawScore(previous)) : undefined;
+  // Score is recomputed from the answers, never read back from
+  // `calculatedScore`. That field is a record of what a past build decided —
+  // it has held an unvalidated model number, and it predates the current
+  // weights — so trusting it would let a stored value the formula cannot
+  // produce outlive every correction to the formula.
+  const score = calculateRawScore(current);
+  const prevScore = previous ? calculateRawScore(previous) : undefined;
   const change = prevScore !== undefined ? score - prevScore : undefined;
 
   const { level, label: levelLabel } = getDistressLevel(score);

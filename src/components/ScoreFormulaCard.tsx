@@ -24,6 +24,15 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiA
   const [open, setOpen] = useState(false);
   const breakdown = explainRawScore(checkIn);
 
+  // The headline score must equal what this card derives. If it ever does not,
+  // something upstream produced a number these answers cannot account for —
+  // a stored score from an older weighting, or a model value that escaped its
+  // bounds. Rather than print one figure as the rounding of another, say so.
+  // This box exists to be checkable; a silent mismatch is the one failure it
+  // must never have.
+  const derived = breakdown.score + aiAdjustment;
+  const reconciles = derived === displayedScore;
+
   // An immediate-safety answer bypasses the weighted model, so there is no
   // arithmetic to show — only the reason the score is what it is.
   if (breakdown.overridden) {
@@ -57,7 +66,8 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiA
             <span className="block text-[11px] text-[#7F8C8D] font-mono truncate">
               {breakdown.terms.map((t) => fmt(t.points)).join(" + ")} = {fmt(breakdown.subtotal)} →{" "}
               {breakdown.score}
-              {aiAdjustment !== 0 && ` ${aiAdjustment > 0 ? "+" : "−"} ${Math.abs(aiAdjustment)} = ${displayedScore}`}
+              {aiAdjustment !== 0 && ` ${aiAdjustment > 0 ? "+" : "−"} ${Math.abs(aiAdjustment)} = ${derived}`}
+              {!reconciles && ` — but ${displayedScore} is shown above`}
             </span>
           </span>
         </span>
@@ -132,10 +142,24 @@ export const ScoreFormulaCard: React.FC<Props> = ({ checkIn, displayedScore, aiA
                 <div className="flex items-baseline justify-between gap-3 pt-1.5 border-t border-[#DBC3B2]">
                   <span className="text-[11px] font-bold text-[#3C3530]">Final score</span>
                   <span className="text-[13px] font-mono font-black text-[#3C3530] whitespace-nowrap">
-                    {displayedScore} / 100
+                    {derived} / 100
                   </span>
                 </div>
               </>
+            )}
+
+            {!reconciles && (
+              <div className="mt-2 rounded-xl border border-[#A55D25]/30 bg-[#A55D25]/8 p-3 space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#A55D25]">
+                  These two numbers do not agree
+                </p>
+                <p className="text-[11px] text-[#5A5049] leading-relaxed">
+                  Your answers work out to <strong>{derived}</strong>, but <strong>{displayedScore}</strong> is
+                  shown above. That means the score displayed was not produced by the calculation on this page —
+                  most often a result saved under an older version of the scoring. Please mention it to your
+                  support worker; the working shown here is the one you can check.
+                </p>
+              </div>
             )}
           </div>
 
