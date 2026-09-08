@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { ShieldCheck, KeyRound, ArrowRight, ArrowLeft } from "lucide-react";
-import { adminApiService } from "../services/adminApiService";
+import { ShieldCheck, KeyRound, ArrowRight, ArrowLeft, ServerCog } from "lucide-react";
+import { adminApiService, AdminConfigStatus } from "../services/adminApiService";
 
 interface Props {
   onSuccess: () => void;
@@ -10,6 +10,10 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
   const [passcode, setPasscode] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  // Populated only after a failure. A hosted admin panel gives whoever is
+  // locked out no access to server logs, so the login screen itself has to
+  // say whether the server is even configured to accept a passcode.
+  const [diagnostics, setDiagnostics] = useState<AdminConfigStatus | null | "unreachable">(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,14 +23,86 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
     }
     setSubmitting(true);
     setError("");
+    setDiagnostics(null);
     try {
       await adminApiService.login(passcode.trim());
       onSuccess();
     } catch (err: any) {
       setError(err.message || "Incorrect passcode.");
+      // A plain wrong passcode needs no explaining. Anything else means the
+      // deployment may be at fault, so go and find out which part.
+      if (!/incorrect passcode/i.test(err?.message || "")) {
+        const status = await adminApiService.getConfigStatus();
+        setDiagnostics(status ?? "unreachable");
+      }
     } finally {
       setSubmitting(false);
     }
+  };
+
+  const renderDiagnostics = () => {
+    if (!diagnostics) return null;
+
+    const rows: { label: string; ok: boolean; hint: string }[] =
+      diagnostics === "unreachable"
+        ? [
+            {
+              label: "API reachable at /api",
+              ok: false,
+              hint: "Nothing answered at /api/config-status. The deployment has not rebuilt since the API was added, or /api is not routed to the server function.",
+            },
+          ]
+        : [
+            {
+              label: "API reachable at /api",
+              ok: true,
+              hint: "",
+            },
+            {
+              label: "Request path preserved",
+              ok: diagnostics.routingOk !== false,
+              hint: `The server saw "${diagnostics.receivedPath ?? "unknown"}". If that is not the full path, nested routes such as /api/admin/login cannot match.`,
+            },
+            {
+              label: "ADMIN_PASSCODE set",
+              ok: !!diagnostics.configured?.ADMIN_PASSCODE,
+              hint: "Add it to your hosting environment variables, then redeploy — environment changes only apply to a new build.",
+            },
+            {
+              label: "ADMIN_JWT_SECRET set",
+              ok: !!diagnostics.configured?.ADMIN_JWT_SECRET,
+              hint: "Add it to your hosting environment variables, then redeploy.",
+            },
+            {
+              label: "SUPABASE_SERVICE_ROLE_KEY set",
+              ok: !!diagnostics.configured?.SUPABASE_SERVICE_ROLE_KEY,
+              hint: "Not needed to sign in, but every action inside the panel will fail without it.",
+            },
+          ];
+
+    return (
+      <div className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] p-4 space-y-2 text-left">
+        <div className="flex items-center gap-1.5">
+          <ServerCog size={13} className="text-[#5A5049]" />
+          <span className="text-[10px] font-black uppercase tracking-wider text-[#5A5049]">
+            Server check
+          </span>
+        </div>
+        <ul className="space-y-1.5">
+          {rows.map((row) => (
+            <li key={row.label} className="text-[11px] leading-snug">
+              <span className={row.ok ? "text-[#5A7052]" : "text-[#A55D25]"}>
+                {row.ok ? "✓" : "✗"}
+              </span>{" "}
+              <span className="text-[#3C3530] font-semibold">{row.label}</span>
+              {!row.ok && row.hint && (
+                <span className="block text-[10px] text-[#7F8C8D] pl-3.5">{row.hint}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+    );
   };
 
   return (
@@ -78,6 +154,8 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
             </div>
 
             {error && <p className="text-xs text-[#A55D25] font-medium text-center">{error}</p>}
+
+            {renderDiagnostics()}
 
             <button
               type="submit"

@@ -19,6 +19,15 @@ export class AdminSessionExpiredError extends Error {}
  */
 export const ADMIN_SESSION_EXPIRED_EVENT = "aura_admin_session_expired";
 
+/** Shape of the deployment self-check served by api/index.ts. */
+export interface AdminConfigStatus {
+  status?: string;
+  receivedPath?: string;
+  routingOk?: boolean;
+  adminLoginReady?: boolean;
+  configured?: Record<string, boolean>;
+}
+
 class AdminApiService {
   getToken(): string | null {
     try {
@@ -77,10 +86,26 @@ class AdminApiService {
     }
 
     let body: any = null;
+    let rawBody: string | null = null;
     try {
-      body = await res.json();
+      rawBody = await res.text();
+      body = rawBody ? JSON.parse(rawBody) : null;
     } catch {
-      // no JSON body
+      // Not JSON. On a hosted deployment that almost always means the request
+      // never reached the API at all and something else answered — the host's
+      // own 404 page, or index.html served by the SPA fallback. Keep the raw
+      // text so the branch below can say that plainly instead of surfacing
+      // "Unexpected token '<'" to whoever is trying to log in.
+      body = null;
+    }
+
+    const gotHtmlInsteadOfApi =
+      body === null && !!rawBody && /^\s*<(!doctype|html)/i.test(rawBody);
+
+    if (gotHtmlInsteadOfApi) {
+      throw new Error(
+        `The admin API did not respond at ${ADMIN_API_BASE}${endpoint} — the server returned a web page instead of data (HTTP ${res.status}). The deployment may not have rebuilt since the API was added. Open /api/config-status to check.`
+      );
     }
 
     if (!res.ok) {
@@ -93,10 +118,39 @@ class AdminApiService {
         err.body = body;
         throw err;
       }
-      throw new Error(body?.detail || body?.message || `HTTP ${res.status}: ${res.statusText}`);
+      if (res.status === 404) {
+        throw new Error(
+          `The admin API route ${ADMIN_API_BASE}${endpoint} was not found (HTTP 404). Open /api/config-status to check whether the API is reachable at all.`
+        );
+      }
+      if (body?.detail || body?.message) {
+        throw new Error(body.detail || body.message);
+      }
+      // No message came back at all. On Vercel this is what a crashed
+      // serverless invocation looks like, and res.statusText is always empty
+      // over HTTP/2, so the old fallback rendered the useless "HTTP 500:".
+      throw new Error(
+        `The server returned HTTP ${res.status} with no error message — the API most likely crashed while starting up. Open /api/config-status to see whether the API is running.`
+      );
     }
 
     return body as T;
+  }
+
+  /**
+   * Reads the deployment self-check at /api/config-status. Returns null if the
+   * endpoint cannot be reached or does not answer with JSON — which is itself
+   * the diagnosis: the API is not deployed or not routed.
+   */
+  async getConfigStatus(): Promise<AdminConfigStatus | null> {
+    try {
+      const res = await fetch("/api/config-status", { headers: { Accept: "application/json" } });
+      const text = await res.text();
+      const parsed = JSON.parse(text);
+      return parsed && typeof parsed === "object" ? (parsed as AdminConfigStatus) : null;
+    } catch {
+      return null;
+    }
   }
 
   async login(passcode: string): Promise<void> {

@@ -237,6 +237,38 @@ export interface CheckInAnalysis {
   createdAt: string;
 }
 
+/**
+ * One weighted question's contribution to the distress score, carrying both
+ * the general rule and the same rule with this participant's own answer
+ * substituted, so the results screen can show the working rather than just
+ * asserting a number.
+ */
+export interface ScoreTerm {
+  key: string;
+  label: string;
+  /** What the participant answered, e.g. "3/5" or "Unsure". */
+  response: string;
+  /** The rule with their answer substituted, e.g. "((3 - 1) / 4) x 20". */
+  expression: string;
+  /** The general rule, e.g. "((stress - 1) / 4) x 20". */
+  formula: string;
+  /** Points contributed, before the total is rounded. */
+  points: number;
+  /** Most this question can contribute. */
+  maxPoints: number;
+}
+
+export interface ScoreBreakdown {
+  terms: ScoreTerm[];
+  /** Sum of every term, before rounding and clamping. */
+  subtotal: number;
+  /** The published score: subtotal rounded, then clamped to 0-100. */
+  score: number;
+  /** True when an immediate-safety answer pinned the score to 100 outright. */
+  overridden: boolean;
+  overrideReason?: string;
+}
+
 export interface RiskAnalysis {
   score: number;
   previousScore: number | null;

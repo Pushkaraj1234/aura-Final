@@ -45,13 +45,38 @@ Victims of armed conflict, humanitarian crises, and atrocities face acute psycho
 ## 3. Mathematical Methodology & Distress Scoring
 
 ### A. Raw Distress Score Formula
-$$\text{Distress Score} = w_{\text{stress}} \cdot S + w_{\text{sleep}} \cdot (6 - L) + w_{\text{safety}} \cdot \text{SafePenalty} + w_{\text{connection}} \cdot (6 - C) + \text{Bonus}_{\text{support}}$$
 
-- $\text{Stress } (S \in [1, 5])$: Linear contribution ($0 - 25$ pts)
-- $\text{Sleep } (L \in [1, 5])$: Inverted scale, $1 = \text{Severe Disruption}$ ($0 - 25$ pts)
-- $\text{Environmental Safety}$: Yes ($0$), Mostly ($8$), Unsure ($18$), No ($25$)
-- $\text{Social Connection } (C \in [1, 5])$: Inverted scale ($0 - 15$ pts)
-- $\text{Support Request Flag}$: $+10$ pts
+Six weighted questions, summed and rounded to a $0-100$ signal. This is the
+formula implemented in `calculateRawScore` (`src/services/riskEngine.ts`) and
+the one the app shows participants on their results screen — the
+"How this number was calculated" box renders these exact terms from
+`explainRawScore`, so screen and source cannot drift apart.
+
+$$\text{Distress Score} = \text{round}\Big(\text{Safety} + \tfrac{S - 1}{4}\cdot 20 + \tfrac{5 - W}{4}\cdot 20 + \tfrac{5 - L}{4}\cdot 15 + \tfrac{5 - C}{4}\cdot 10 + \text{Support}\Big)$$
+
+| Factor | Scale | Contribution | Max |
+| --- | --- | --- | --- |
+| Environmental Safety | Yes / Mostly / Unsure / No | $0$ / $5$ / $16$ / $25$ | 25 |
+| Reported Stress $(S)$ | $1$ calm → $5$ very stressed | $\frac{S-1}{4} \times 20$ | 20 |
+| Emotional Wellbeing $(W)$ | $1$ very difficult → $5$ good | $\frac{5-W}{4} \times 20$ | 20 |
+| Sleep & Rest $(L)$ | $1$ very difficult → $5$ good | $\frac{5-L}{4} \times 15$ | 15 |
+| Social Connection $(C)$ | $1$ isolated → $5$ connected | $\frac{5-C}{4} \times 10$ | 10 |
+| Support Requested | Yes / No | $10$ / $0$ | 10 |
+
+The three reversed scales ($W$, $L$, $C$) contribute $0$ points at a rating of
+$5$, because a higher answer there means things are going better. The weights
+total exactly $100$, so the sum needs no normalisation — only rounding, then a
+clamp to $[0, 100]$.
+
+**Override.** An affirmative answer to the immediate-safety question bypasses
+the weighted model entirely and pins the score to $100$. No arithmetic runs,
+and the results screen says so rather than showing a calculation that did not
+happen.
+
+> The percentage bars shown beside each factor on the results screen come from
+> `calculateFactorPercentages` and are a *separate* readability scale (each
+> factor mapped into its own $10-95\%$ band for at-a-glance comparison). They
+> are deliberately not the point values above and do not sum to the score.
 
 ### B. Dynamic Delta & Trajectory Slope
 $$\Delta_{\text{distress}} = \text{Score}_t - \text{Score}_{t-1}$$
