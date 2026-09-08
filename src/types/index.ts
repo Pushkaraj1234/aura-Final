@@ -286,6 +286,12 @@ export interface CheckInAnalysis {
   ruleScore?: number;
   /** Points the AI moved the score by, bounded by AI_SCORE_ADJUSTMENT_LIMIT. */
   aiAdjustment?: number;
+  /** Whether the AI was consulted at all — it only runs on a reflection. */
+  aiConsulted?: boolean;
+  /** The model's own 0-100 reading, before bounding. */
+  aiRawScore?: number;
+  /** True when the model wanted to move the score further than it was allowed. */
+  aiClamped?: boolean;
   level: DistressLevel;
   levelLabel: string;
   previousScore?: number;

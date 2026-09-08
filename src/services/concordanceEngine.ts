@@ -1,4 +1,6 @@
 import { CheckIn, ConcordanceResult, ConcordanceSignal, SomaticSymptom } from "../types";
+import { calculateRawScore } from "./riskEngine";
+import { AI_SCORE_ADJUSTMENT_LIMIT } from "./recommendationEngine";
 
 /**
  * Concordance — how much of the rest of the check-in agrees with what the
@@ -180,6 +182,34 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
     const heavy = sentiment === "stressed" || sentiment === "overwhelmed" || sentiment === "safety_concern";
     add("reflection", "Reflection language", sentiment.replace(/_/g, " "),
       heavy && claim === "fine" ? "contradicts" : heavy ? "supports" : "neutral");
+  }
+
+  // --- The AI's own reading vs. the questionnaire ------------------------
+  // The model is allowed to move the score by a bounded amount. When it wants
+  // more room than that, the score is held at the limit — and the size of the
+  // disagreement, which is the clinically interesting part, used to be
+  // discarded. A model reading the reflection as much worse than the ratings
+  // admit is the same phenomenon this whole engine is for, so it is recorded
+  // as a signal instead of being clamped away in silence.
+  const aiReading = Number(checkIn.aiComprehensiveAnalysis?.distressScore);
+  if (Number.isFinite(aiReading)) {
+    const gap = Math.round(aiReading) - calculateRawScore(checkIn);
+    if (gap > AI_SCORE_ADJUSTMENT_LIMIT) {
+      // Stands alone past twice the limit. A disagreement that wide is either
+      // the model catching something in the text the ratings do not admit, or
+      // the model misfiring — both are worth a human glance, and someone who
+      // only wrote a reflection produces no behavioural answers to corroborate
+      // it with, so requiring corroboration would mean it never fires.
+      const standsAlone = gap > AI_SCORE_ADJUSTMENT_LIMIT * 2;
+      add("aiGap", "AI reading of the reflection", `${gap} points above the questionnaire`,
+        claim === "struggling" ? "supports" : "contradicts",
+        "What was written or spoken reads as considerably more distressing than the ratings given.",
+        standsAlone && claim !== "struggling");
+    } else if (gap < -AI_SCORE_ADJUSTMENT_LIMIT) {
+      // The mirror case. Not treated as hidden distress — someone whose words
+      // read calmer than their ratings is not the person this queue is for.
+      add("aiGap", "AI reading of the reflection", `${Math.abs(gap)} points below the questionnaire`, "neutral");
+    }
   }
 
   // --- Cadence: withdrawal from the check-in itself ----------------------
