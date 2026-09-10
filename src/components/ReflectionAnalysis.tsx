@@ -142,7 +142,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
       {hasLanguageSignal && (
         <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#7A726C] space-y-1">
           <span className="font-bold text-[#3C3530] block text-[11px]">Why this signal?</span>
-          <p className="leading-relaxed">{analysis.explanation}</p>
+          <p data-no-translate className="leading-relaxed">{analysis.explanation}</p>
         </div>
       )}
 

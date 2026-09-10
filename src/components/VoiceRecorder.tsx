@@ -357,7 +357,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {/* Live Partial Transcript */}
             {(transcript || interimText) && (
               <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-left text-xs text-[#3C3530] max-h-24 overflow-y-auto">
-                <span className="font-semibold">{transcript}</span>{" "}
+                <span data-no-translate className="font-semibold">{transcript}</span>{" "}
                 <span className="text-[#7F8C8D] italic">{interimText}</span>
               </div>
             )}
@@ -457,6 +457,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               <textarea
                 rows={3}
                 value={transcript}
+                data-no-translate
                 onChange={(e) => {
                   setTranscript(e.target.value);
                   if (isDemoSample) setIsDemoSample(false);

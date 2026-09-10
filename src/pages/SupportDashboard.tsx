@@ -501,7 +501,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
-                      {participant.name || participant.id}
+                      <span data-no-translate>{participant.name || participant.id}</span>
                     </p>
                     <p className="text-[13px] text-[#8A7A6B] leading-snug">{concordance!.summary}</p>
                   </div>

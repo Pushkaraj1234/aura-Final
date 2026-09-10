@@ -350,7 +350,7 @@ ${
           </div>
           
           <h1 className="text-4xl sm:text-5xl font-serif font-bold tracking-tight text-white mt-2">
-            Welcome, {user.name}
+            Welcome, <span data-no-translate>{user.name}</span>
           </h1>
           
           <p className="text-[#EFE8E2]/90 text-sm max-w-xl leading-relaxed font-sans">

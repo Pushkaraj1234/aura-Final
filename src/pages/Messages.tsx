@@ -69,7 +69,7 @@ const MessageBubble: React.FC<{ message: Message; isOwn: boolean }> = ({ message
           : "bg-white text-[#3C3530] border border-[#EFE8E2] rounded-tl-none shadow-xs"
       }`}
     >
-      <p className="whitespace-pre-wrap leading-relaxed">{message.body}</p>
+      <p data-no-translate className="whitespace-pre-wrap leading-relaxed">{message.body}</p>
       <p className={`text-[10px] mt-1 ${isOwn ? "text-white/60" : "text-[#B9B0A6]"}`}>{formatTimestamp(message.createdAt)}</p>
     </div>
   </div>
@@ -257,7 +257,14 @@ const WorkerMessages: React.FC<{ currentUser: User; participants: Participant[];
                     {last && <span className="text-[10px] text-[#B9B0A6] shrink-0">{formatTimestamp(last.createdAt)}</span>}
                   </div>
                   <p className="text-[11px] text-[#7F8C8D] truncate mt-0.5">
-                    {last ? (last.senderRole === "support_worker" ? "You: " : "") + last.body : "No messages yet"}
+                    {last ? (
+                      <>
+                        {last.senderRole === "support_worker" ? "You: " : ""}
+                        <span data-no-translate>{last.body}</span>
+                      </>
+                    ) : (
+                      "No messages yet"
+                    )}
                   </p>
                 </div>
                 {unread > 0 && (

@@ -2,6 +2,7 @@ import {StrictMode} from 'react';
 import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import {AdminApp} from './admin/AdminApp.tsx';
+import {LanguageProvider} from './context/LanguageContext.tsx';
 import './index.css';
 
 // Path-based bootstrap for the isolated Admin module (/admin). This is the
@@ -16,8 +17,14 @@ window.addEventListener('unhandledrejection', (event) => {
 });
 
 
+// The language choice wraps both apps so a participant's selection survives
+// navigation and reloads. The admin console is English-only by design, but it
+// costs nothing to keep one provider at the root rather than two call sites
+// that can drift apart.
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    {isAdminRoute ? <AdminApp /> : <App />}
+    <LanguageProvider>
+      {isAdminRoute ? <AdminApp /> : <App />}
+    </LanguageProvider>
   </StrictMode>,
 );

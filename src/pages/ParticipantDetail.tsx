@@ -373,7 +373,9 @@ export const ParticipantDetail: React.FC<Props> = ({
                 anonymous case ID stays visible in the breadcrumb above and as
                 a small reference line below, since it's still the unique
                 identifier used everywhere else (notes, alerts, audit trail). */}
-            <span className="text-2xl font-black text-[#3C3530]">{participant.name || participant.id}</span>
+            <span data-no-translate className="text-2xl font-black text-[#3C3530]">
+              {participant.name || participant.id}
+            </span>
             <span className={`text-xs font-bold px-3 py-1 rounded-xl ${
               isUrgent ? "bg-[#A55D25]/15 text-[#A55D25] border border-[#A55D25]/30" :
               participant.status === "Needs follow-up" ? "bg-[#D49B6A]/15 text-[#D49B6A] border border-[#D49B6A]/30" :
@@ -722,7 +724,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                           </button>
                         )}
                       </div>
-                      <p className="text-[#3C3530] font-medium">{n.text}</p>
+                      <p data-no-translate className="text-[#3C3530] font-medium">{n.text}</p>
                       {n.actionTaken && (
                         <span className="inline-block text-[10px] font-bold text-[#5A5049] bg-[#DBC3B2]/20 px-2 py-0.5 rounded-md">
                           Action: {n.actionTaken}
