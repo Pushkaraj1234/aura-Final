@@ -53,6 +53,10 @@ export const ParticipantSignUp: React.FC<Props> = ({
     email: "",
     password: "",
     confirmPassword: "",
+    // The complaint number issued when they called the helpline. Optional:
+    // plenty of people arrive without it, or would rather not type it, and a
+    // wellbeing check-in must never be gated behind a case number.
+    caseReference: "",
     // Seeded from the language already chosen, so the stored preference
     // matches what the person is actually reading even if they never touch
     // the field.
@@ -106,6 +110,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
           ageRange: formData.ageRange,
           supportPreference: formData.supportPreference,
           emergencyContact: formData.emergencyContact.trim() || undefined,
+          caseReference: formData.caseReference.trim() || undefined,
           consentGiven: true
         });
         setIsSuccess(true);
@@ -334,6 +339,27 @@ export const ParticipantSignUp: React.FC<Props> = ({
                     <p className="text-xs text-[#A55D25] mt-1 font-medium">{errors.confirmPassword}</p>
                   )}
                 </div>
+              </div>
+
+              {/* Complaint reference. Optional by design — someone in distress
+                  must never be turned away for not having a case number to
+                  hand, and many will not. */}
+              <div>
+                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                  Complaint number (optional)
+                </label>
+                <input
+                  type="text"
+                  value={formData.caseReference}
+                  data-case-reference
+                  onChange={(e) => setFormData({ ...formData, caseReference: e.target.value })}
+                  placeholder="If you called the 14566 helpline, the number they gave you"
+                  className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] placeholder:text-[#B9B0A6] focus:outline-none focus:ring-2 focus:ring-[#5A5049] text-sm"
+                />
+                <p className="text-[11px] text-[#7F8C8D] mt-1.5 leading-relaxed">
+                  Lets your counsellor connect this wellbeing record to your complaint. You can
+                  leave it blank and still use everything here.
+                </p>
               </div>
 
               {/* Language & Age Range */}

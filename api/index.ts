@@ -77,6 +77,7 @@ app.get('/api/config-status', (req: Request, res: Response) => {
       SMTP_HOST: !!process.env.SMTP_HOST,
       BHASHINI_UDYAT_KEY: !!(process.env.BHASHINI_UDYAT_KEY || process.env.BHASHINI_API_KEY),
       BHASHINI_INFERENCE_API_KEY: !!process.env.BHASHINI_INFERENCE_API_KEY,
+      CRON_SECRET: !!process.env.CRON_SECRET,
     },
   });
 });

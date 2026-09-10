@@ -70,6 +70,12 @@ export interface User {
   // name for emergencies. Some atrocity survivors cannot safely name anyone,
   // so this is never required. Stored in Supabase Auth user_metadata only.
   emergencyContact?: string;
+  /**
+   * The complaint reference someone signed up with — in AURA's intended
+   * deployment, the number issued by the NHAA helpline on 14566. Optional
+   * everywhere: a wellbeing check-in is never gated behind a case number.
+   */
+  caseReference?: string;
   // Counsellor-only, self-edited profile fields. Stored in Supabase Auth
   // user_metadata; surfaced on the support dashboard.
   languages?: string;
@@ -726,6 +732,39 @@ export interface RegionPlanningData {
   signalNote: string;
 }
 
+/**
+ * A dated event in someone's legal case, recorded by their counsellor.
+ *
+ * The problem this exists for: a hearing is the one distress trigger that is
+ * known in advance. Everything else AURA reads is a reaction — a score after
+ * the fact, a silence after it started. A hearing date is a spike that can be
+ * seen coming, and a system asked to predict escalation that ignores the one
+ * predictable stressor is leaving the easiest prediction on the table.
+ *
+ * Threats and intimidation are the other half: discrete events between
+ * check-ins, which is exactly the interval where the original problem says
+ * crises go undetected.
+ */
+export type CaseEventType =
+  | "hearing"
+  | "threat"
+  | "intimidation"
+  | "police_contact"
+  | "other";
+
+export interface CaseEvent {
+  id: string;
+  participantId: string;
+  type: CaseEventType;
+  /** ISO date. For a hearing this may be in the future; incidents are past. */
+  date: string;
+  /** Counsellor's short description. Never shown to the participant. */
+  note?: string;
+  /** Who recorded it, for the audit trail. */
+  recordedBy: string;
+  recordedAt: string;
+}
+
 export interface Participant {
   id: string;
   // Display name only (sourced from profiles.name, set at signup). `id`
@@ -748,6 +787,17 @@ export interface Participant {
   region?: string;
   consentPreferences?: ConsentPreferences;
   followUps?: InterventionFollowUp[];
+  /** Hearings and incidents. See CaseEvent. */
+  caseEvents?: CaseEvent[];
+  /**
+   * The complaint reference the person arrived with — for AURA's intended
+   * deployment, the case number issued when they called the NHAA helpline on
+   * 14566. Stored so a counsellor can tie a wellbeing record back to the
+   * complaint it belongs to; AURA does not talk to the helpline's systems.
+   */
+  caseReference?: string;
+  /** How this person reached AURA, e.g. "NHAA helpline 14566". */
+  intakeSource?: string;
 }
 
 /**

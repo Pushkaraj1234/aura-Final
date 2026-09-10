@@ -74,3 +74,62 @@ export async function sendPasswordReset(toEmail: string, name: string, temporary
     text: `Hi ${name},\n\nAn administrator has reset your AURA password.\n\nEmail: ${toEmail}\nNew temporary password: ${temporaryPassword}\n\nPlease sign in and change your password as soon as possible.\n\n— AURA`,
   });
 }
+
+/**
+ * Tells a counsellor that one of their cases needs attention.
+ *
+ * Deliberately plain and specific: a subject line naming the window, a body
+ * listing the facts behind it. Anyone reading this on a phone between
+ * appointments needs to know whether to act before they finish the first
+ * sentence.
+ *
+ * Never contains a participant's own words — only the counsellor-visible
+ * facts the escalation was drawn from.
+ */
+export async function sendEscalationDigest(
+  toEmail: string,
+  workerName: string,
+  cases: Array<{
+    participantId: string;
+    participantName?: string;
+    headline: string;
+    withinHours: number | null;
+    evidence: string[];
+  }>
+): Promise<void> {
+  if (!cases.length) return;
+  const transporter = getTransporter();
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+
+  const soonest = cases.reduce(
+    (min, c) => (c.withinHours !== null && c.withinHours < min ? c.withinHours : min),
+    Number.POSITIVE_INFINITY
+  );
+  const window = Number.isFinite(soonest) ? `${soonest}h` : '';
+
+  const lines = cases
+    .map((c) => {
+      const who = c.participantName || c.participantId;
+      const bullets = c.evidence.map((e) => `    - ${e}`).join('\n');
+      return `${who} — ${c.headline}\n${bullets}`;
+    })
+    .join('\n\n');
+
+  const html = cases
+    .map((c) => {
+      const who = c.participantName || c.participantId;
+      const bullets = c.evidence.map((e) => `<li>${e}</li>`).join('');
+      return `<p><strong>${who}</strong> — ${c.headline}</p><ul>${bullets}</ul>`;
+    })
+    .join('');
+
+  await transporter.sendMail({
+    from,
+    to: toEmail,
+    subject: `AURA: ${cases.length} case${cases.length === 1 ? '' : 's'} need attention${
+      window ? ` (soonest within ${window})` : ''
+    }`,
+    text: `Hi ${workerName},\n\nAURA has flagged the following from your caseload:\n\n${lines}\n\nThese are prompts for you to decide, not instructions, and nobody has been contacted on your behalf.\n\n— AURA`,
+    html: `<p>Hi ${workerName},</p><p>AURA has flagged the following from your caseload:</p>${html}<p>These are prompts for you to decide, not instructions, and nobody has been contacted on your behalf.</p><p>— AURA</p>`,
+  });
+}

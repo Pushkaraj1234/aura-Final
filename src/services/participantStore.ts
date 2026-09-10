@@ -8,6 +8,7 @@ import {
   AlertStatus,
   AuditLogEntry,
   AuditEvent,
+  CaseEvent,
   InterventionFollowUp,
   ParticipantNotificationPreferences,
   WorkerNotificationPreferences
@@ -347,7 +348,9 @@ export const participantStore = {
       ageGroup: user.ageRange || "25-34",
       status: "Stable",
       notes: [],
-      checkIns: []
+      checkIns: [],
+      caseReference: user.caseReference,
+      intakeSource: user.caseReference ? "NHAA helpline 14566" : undefined,
     };
 
     const updated = [newParticipant, ...participants];
@@ -693,6 +696,62 @@ export const participantStore = {
     apiService.participants.update(participantId, { status }).catch((err) => {
       console.warn("[ParticipantStore] Participant status update notice:", err.message);
     });
+  },
+
+  /**
+   * Records a hearing or an incident against a case.
+   *
+   * Kept on the participant record alongside notes, which is where the rest
+   * of this app's counsellor-authored material already lives, so it needs no
+   * schema change and follows the pattern a reader already knows.
+   */
+  addCaseEvent: (participantId: string, event: CaseEvent) => {
+    const participants = getStoredParticipants();
+    const idx = participants.findIndex((p) => p.id === participantId);
+    if (idx < 0) return;
+
+    participants[idx] = {
+      ...participants[idx],
+      caseEvents: [event, ...(participants[idx].caseEvents || [])],
+    };
+    saveStoredParticipants(participants);
+
+    auditService.recordAuditEvent({
+      actorId: "SW-001",
+      actorRole: "SUPPORT_WORKER",
+      actorName: event.recordedBy || "Counselor",
+      participantId,
+      action: "CASE_EVENT_RECORDED",
+      category: "SUPPORT",
+      description: `${event.type} recorded for ${participantId} on ${event.date}${
+        event.note ? `: ${event.note.substring(0, 100)}` : ""
+      }`,
+      severity: "INFO",
+    });
+  },
+
+  removeCaseEvent: (participantId: string, eventId: string) => {
+    const participants = getStoredParticipants();
+    const idx = participants.findIndex((p) => p.id === participantId);
+    if (idx < 0) return;
+    participants[idx] = {
+      ...participants[idx],
+      caseEvents: (participants[idx].caseEvents || []).filter((e) => e.id !== eventId),
+    };
+    saveStoredParticipants(participants);
+  },
+
+  /** The complaint reference someone arrived with, e.g. from the 14566 helpline. */
+  setCaseReference: (participantId: string, caseReference: string, intakeSource?: string) => {
+    const participants = getStoredParticipants();
+    const idx = participants.findIndex((p) => p.id === participantId);
+    if (idx < 0) return;
+    participants[idx] = {
+      ...participants[idx],
+      caseReference: caseReference.trim() || undefined,
+      intakeSource: intakeSource?.trim() || participants[idx].intakeSource,
+    };
+    saveStoredParticipants(participants);
   },
 
   addParticipantNote: (participantId: string, note: SupportNote) => {

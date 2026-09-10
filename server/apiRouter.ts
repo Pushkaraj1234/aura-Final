@@ -9,6 +9,7 @@ import {
 } from './aiService.js';
 import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
 import { getSupabaseForRequest } from './supabaseServer.js';
+import { runEscalationSweep } from './escalationSweep.js';
 import {
   BHASHINI_LANGUAGES,
   bhashiniConfigSummary,
@@ -25,6 +26,50 @@ const router = Router();
 router.get('/health', (_req: Request, res: Response) =>
   res.json({ status: 'ok', service: 'aura-api', persistence: 'supabase-postgres' })
 );
+
+// ---------------------------------------------------------
+// Scheduled escalation sweep
+//
+// Called by Vercel Cron (see vercel.json). Until this existed, escalations
+// were only computed while a counsellor had the dashboard open — which is
+// the same periodic check-in the problem describes, wearing different
+// clothes. This evaluates every case on a schedule and emails the assigned
+// counsellor when one needs attention inside 24 or 72 hours.
+// ---------------------------------------------------------
+
+/**
+ * Authorises the sweep.
+ *
+ * Vercel Cron sends `Authorization: Bearer $CRON_SECRET`. Without a secret
+ * set the route is refused outright rather than left open: it reads every
+ * participant's record, so an unauthenticated caller must never reach it.
+ */
+function cronAuthorised(req: Request): { ok: boolean; detail?: string } {
+  const secret = process.env.CRON_SECRET;
+  if (!secret) {
+    return { ok: false, detail: 'CRON_SECRET is not configured, so the sweep is disabled.' };
+  }
+  const header = req.headers.authorization || '';
+  const provided = header.startsWith('Bearer ') ? header.slice(7) : String(req.query.key || '');
+  if (provided !== secret) return { ok: false, detail: 'Not authorised.' };
+  return { ok: true };
+}
+
+router.all('/cron/escalations', async (req: Request, res: Response) => {
+  const auth = cronAuthorised(req);
+  if (!auth.ok) return res.status(401).json({ detail: auth.detail });
+
+  try {
+    // `?dry=1` evaluates without emailing, so the schedule can be verified
+    // against real data without paging anyone.
+    const notify = req.query.dry !== '1';
+    const result = await runEscalationSweep({ notify });
+    res.json({ status: 'ok', notify, ...result });
+  } catch (err: any) {
+    console.warn('[AURA] escalation sweep failed:', err?.message || err);
+    res.status(500).json({ detail: err?.message || 'Escalation sweep failed.' });
+  }
+});
 
 // ---------------------------------------------------------
 // Translation (Bhashini / MeitY)

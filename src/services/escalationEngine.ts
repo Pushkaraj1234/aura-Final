@@ -1,6 +1,12 @@
-import { CheckIn, ConcordanceResult } from "../types";
+import { CaseEvent, CheckIn, ConcordanceResult } from "../types";
 import { EngagementAssessment, EngagementSignal } from "./engagementSignals";
 import { calculateRawScore } from "./riskEngine";
+import {
+  CASE_EVENT_LABELS,
+  describeTiming,
+  hearingImminent,
+  readCaseEvents,
+} from "./caseEvents";
 
 /**
  * Turns signals into a recommendation a counsellor can act on.
@@ -37,7 +43,7 @@ export interface Escalation {
   /** The specific facts. Never empty above "none". */
   evidence: string[];
   /** Which readings contributed, for the counsellor to know where to look. */
-  basis: Array<"safety" | "engagement" | "concordance" | "distress">;
+  basis: Array<"safety" | "engagement" | "concordance" | "distress" | "case">;
   assessedAt: string;
 }
 
@@ -61,11 +67,14 @@ export function assessEscalation(input: {
   engagement: EngagementAssessment;
   /** The concordance reading for their most recent check-in, if any. */
   concordance?: ConcordanceResult | null;
+  /** Hearings and incidents recorded by a counsellor. */
+  caseEvents?: CaseEvent[];
   now?: number;
 }): Escalation {
   const now = input.now ?? Date.now();
   const evidence: string[] = [];
   const basis = new Set<Escalation["basis"][number]>();
+  const caseReading = readCaseEvents(input.caseEvents || [], now);
   let level: EscalationLevel = "none";
 
   const ordered = [...(input.checkIns || [])].sort(
@@ -121,6 +130,48 @@ export function assessEscalation(input: {
   else if (notable.length >= 2) level = raise(level, "watch");
   else if (notable.length === 1) level = raise(level, "watch");
 
+  // --- The case itself ---------------------------------------------------
+  // A hearing is the only stressor here that can be seen coming. Raising it
+  // beforehand is the difference between preparing someone and debriefing
+  // them, and it is the whole reason a date is worth recording.
+  if (hearingImminent(caseReading) && caseReading.daysToNextHearing !== null) {
+    basis.add("case");
+    const days = caseReading.daysToNextHearing;
+    evidence.push(
+      `Court hearing ${describeTiming(days)}${
+        caseReading.hearingCount > 1
+          ? ` — their ${caseReading.hearingCount === 2 ? "second" : `${caseReading.hearingCount}th`} on record`
+          : ""
+      }.`
+    );
+    level = raise(level, days <= 2 ? "contact" : "watch");
+  }
+
+  if (caseReading.recentHearing && caseReading.daysSinceRecentHearing !== null) {
+    basis.add("case");
+    evidence.push(
+      `Court hearing ${describeTiming(-caseReading.daysSinceRecentHearing)} — the days after one are when distress tends to surface.`
+    );
+    level = raise(level, "watch");
+  }
+
+  // Threats and intimidation happen between check-ins, which is precisely the
+  // interval the questionnaire cannot see into.
+  if (caseReading.recentIncidents.length > 0) {
+    basis.add("case");
+    caseReading.recentIncidents.slice(0, 3).forEach((e) => {
+      const days = Math.round((now - new Date(e.date).getTime()) / 86_400_000);
+      evidence.push(
+        `${CASE_EVENT_LABELS[e.type]} recorded ${describeTiming(-days)}${
+          e.note ? ` — ${e.note}` : ""
+        }.`
+      );
+    });
+    // One incident warrants contact. More than one inside a fortnight is a
+    // pattern of pressure, not an isolated event.
+    level = raise(level, caseReading.recentIncidents.length >= 2 ? "urgent" : "contact");
+  }
+
   // --- Concordance: the self-report not matching everything else ---------
   if (input.concordance?.needsSecondLook) {
     basis.add("concordance");
@@ -136,7 +187,15 @@ export function assessEscalation(input: {
     (score !== null && score >= HIGH_DISTRESS) ||
     latest?.safety === "No" ||
     latest?.safety === "Unsure" ||
+    caseReading.recentIncidents.length > 0 ||
     !!input.concordance?.needsSecondLook;
+
+  if (hearingImminent(caseReading) && wasStruggling) {
+    level = raise(level, "urgent");
+    evidence.push(
+      "A hearing is imminent for someone whose last check-in already gave reason for concern."
+    );
+  }
 
   if (serious.length >= 1 && wasStruggling) {
     level = raise(level, "urgent");
