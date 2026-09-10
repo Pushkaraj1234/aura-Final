@@ -40,6 +40,7 @@ import { LanguageSelector } from "../components/LanguageSelector";
 import { VoiceRecorder } from "../components/VoiceRecorder";
 import { ReflectionAnalysis } from "../components/ReflectionAnalysis";
 import { analyzeReflection } from "../services/reflectionAnalysis";
+import { SessionSignalCollector } from "../services/sessionSignals";
 
 interface Props {
   participantId: string;
@@ -128,6 +129,42 @@ export const ParticipantCheckin: React.FC<Props> = ({
 
   // Wall-clock start, used only to spot a form cleared rather than answered.
   const startedAtRef = useRef<number>(Date.now());
+
+  /**
+   * Watches how the form is moved through — time away, hesitation, answers
+   * changed, a reflection written then deleted. Feeds concordance only; see
+   * services/sessionSignals.ts for why none of it may touch the score.
+   */
+  const signalsRef = useRef<SessionSignalCollector>(new SessionSignalCollector());
+
+  // Detach the visibility listener when this screen goes away, whether the
+  // check-in was submitted or abandoned.
+  useEffect(() => {
+    const collector = signalsRef.current;
+    return () => collector.dispose();
+  }, []);
+
+  // One place that records every step change, rather than a call beside each
+  // of the dozen setStep sites.
+  useEffect(() => {
+    signalsRef.current.enterStep(step);
+  }, [step]);
+
+  // Likewise for answers: the first value seen is the baseline, and a later
+  // different value counts that answer as revised.
+  useEffect(() => {
+    const c = signalsRef.current;
+    c.recordAnswer("wellbeing", wellbeing);
+    c.recordAnswer("sleep", sleep);
+    c.recordAnswer("connection", connection);
+    c.recordAnswer("safety", safety);
+    c.recordAnswer("supportRequested", supportRequested);
+    c.recordAnswer("immediateSafetyConcern", immediateSafetyConcern);
+  }, [wellbeing, sleep, connection, safety, supportRequested, immediateSafetyConcern]);
+
+  useEffect(() => {
+    signalsRef.current.recordReflection(copingReflection);
+  }, [copingReflection]);
 
   const toggleSomatic = (symptom: SomaticSymptom) => {
     setSomaticSymptoms((prev) => {
@@ -234,6 +271,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           responseMeta: {
             completionSeconds: Math.round((Date.now() - startedAtRef.current) / 1000),
             privateSpace,
+            ...signalsRef.current.finish(),
           }
         };
 
@@ -329,6 +367,20 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <strong className="text-[#3C3530]">Data Dignity & Privacy:</strong> All data in this demonstration is securely managed and strictly confidential.
               </span>
             </div>
+            {/* Said plainly, before anything is collected. This app already
+                recorded how long a check-in took; it never told anyone. If
+                something is being noticed, the person it is noticed about is
+                entitled to know first. */}
+            <div className="flex items-start space-x-3">
+              <CheckCircle2 size={16} className="text-[#5A5049] shrink-0 mt-0.5" />
+              <span>
+                <strong className="text-[#3C3530]">How you answer, not only what:</strong> This
+                form notes how long you spend on a question, whether you go back and change an
+                answer, and whether you leave the app partway through. It is used only to tell a
+                counsellor a check-in may be worth a second look — it never changes your score,
+                and no keystrokes, camera or microphone are involved.
+              </span>
+            </div>
           </div>
 
           {/* Consent Checkboxes */}
@@ -396,7 +448,11 @@ export const ParticipantCheckin: React.FC<Props> = ({
             </button>
             <button
               disabled={!consentVoluntary || !consentNoDiag}
-              onClick={() => { startedAtRef.current = Date.now(); setStep(1); }}
+              onClick={() => {
+                startedAtRef.current = Date.now();
+                signalsRef.current.start();
+                setStep(1);
+              }}
               className="w-full sm:w-2/3 py-3.5 rounded-xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#3F4E4E] transition-all shadow-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
             >
               <span>{t.beginReflection}</span>
