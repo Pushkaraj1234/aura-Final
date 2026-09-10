@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Shield,
   Clock,
-  Sparkles,
   Activity,
   UserCheck,
   ChevronRight,
@@ -501,7 +500,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
-                      {participant.name || participant.id}
+                      <span data-no-translate>{participant.name || participant.id}</span>
                     </p>
                     <p className="text-[13px] text-[#8A7A6B] leading-snug">{concordance!.summary}</p>
                   </div>
@@ -671,7 +670,6 @@ export const SupportDashboard: React.FC<Props> = ({
       <section className="rounded-3xl p-6 sm:p-8 bg-[#F6ECE0] border border-[#ECE1D3] space-y-5">
         <div className="space-y-2">
           <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9A5B33]">
-            <Sparkles size={13} />
             How AURA supports your work
           </span>
           <h3 className="font-serif text-xl sm:text-2xl text-[#3A2A1E]">From a gentle signal to real support</h3>

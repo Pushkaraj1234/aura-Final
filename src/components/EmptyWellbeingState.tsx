@@ -1,5 +1,5 @@
 import React from "react";
-import { Plus, Activity, HeartHandshake, Shield, Sparkles } from "lucide-react";
+import { Plus, Activity, HeartHandshake, Shield } from "lucide-react";
 
 interface Props {
   onStartCheckin: () => void;

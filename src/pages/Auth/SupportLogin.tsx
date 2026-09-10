@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Users, Shield, ArrowRight, ArrowLeft, Lock, Sparkles, KeyRound } from "lucide-react";
+import { Users, Shield, ArrowRight, ArrowLeft, Lock, KeyRound } from "lucide-react";
 import { authService, DEMO_CREDENTIALS } from "../../services/authService";
 
 interface Props {
@@ -67,7 +67,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
           <div className="bg-[#FDF9F5] border border-[#EFE8E2] rounded-2xl p-4 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-wider text-[#3C3530] flex items-center">
-                <Sparkles size={13} className="mr-1 text-[#5A5049]" /> Demo Counselor Account
+                Demo Counselor Account
               </span>
               <button
                 type="button"

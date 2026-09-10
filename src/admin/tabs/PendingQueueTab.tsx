@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { FileText, Check, X, Mail, Phone, Calendar, Copy, ShieldCheck, ShieldAlert, ShieldQuestion, Sparkles, ChevronDown, ChevronUp } from "lucide-react";
+import { FileText, Check, X, Mail, Phone, Calendar, Copy, ShieldCheck, ShieldAlert, ShieldQuestion, ChevronDown, ChevronUp } from "lucide-react";
 import { adminApiService } from "../../services/adminApiService";
 import { Card, PageHeader, Spinner, ErrorBanner, EmptyState, PrimaryButton, DangerButton, Badge } from "../ui";
 
@@ -37,7 +37,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
   if (!analysis) {
     return (
       <p className="text-[11px] text-[#7F8C8D] mt-2 flex items-center gap-1.5">
-        <Sparkles size={12} /> Document screening not run for this application.
+        Document screening not run for this application.
       </p>
     );
   }

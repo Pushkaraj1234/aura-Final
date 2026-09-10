@@ -8,7 +8,6 @@ import {
   ArrowRight,
   TrendingUp,
   MessageSquare,
-  Sparkles,
   X,
   HeartHandshake,
   Check,

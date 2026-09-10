@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Mic, Square, Play, Pause, RotateCcw, Trash2, Edit3, Check, ChevronDown, ChevronUp, Shield, Cpu, Info, Volume2, Sparkles, FileText, Loader2 } from "lucide-react";
+import { Mic, Square, Play, Pause, RotateCcw, Trash2, Edit3, Check, ChevronDown, ChevronUp, Shield, Cpu, Info, Volume2, FileText, Loader2 } from "lucide-react";
 import { voiceRecordingService, AcousticDeliveryFeatures } from "../services/voiceRecording";
 import { analyzeReflection } from "../services/reflectionAnalysis";
 import { ReflectionAnalysis } from "./ReflectionAnalysis";
@@ -328,7 +328,6 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 onClick={handleLoadDemoSample}
                 className="text-[11px] font-bold text-[#5A5049] hover:text-[#3C3530] bg-white border border-[#EFE8E2] px-3 py-1 rounded-lg transition-colors flex items-center space-x-1 cursor-pointer"
               >
-                <Sparkles size={12} className="text-amber-500" />
                 <span>Load Demo Sample Reflection</span>
               </button>
             </div>
@@ -357,7 +356,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {/* Live Partial Transcript */}
             {(transcript || interimText) && (
               <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-left text-xs text-[#3C3530] max-h-24 overflow-y-auto">
-                <span className="font-semibold">{transcript}</span>{" "}
+                <span data-no-translate className="font-semibold">{transcript}</span>{" "}
                 <span className="text-[#7F8C8D] italic">{interimText}</span>
               </div>
             )}
@@ -379,7 +378,6 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {isDemoSample && (
               <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200 text-[11px] text-amber-900 flex items-center justify-between">
                 <span className="font-bold flex items-center">
-                  <Sparkles size={13} className="mr-1.5 text-amber-600" />
                   DEMO / SYNTHETIC DATA LOADED
                 </span>
                 <span className="text-[10px] uppercase font-bold text-amber-700">Presentation Mode</span>
@@ -457,6 +455,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               <textarea
                 rows={3}
                 value={transcript}
+                data-no-translate
                 onChange={(e) => {
                   setTranscript(e.target.value);
                   if (isDemoSample) setIsDemoSample(false);

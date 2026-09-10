@@ -141,7 +141,11 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
               <p className="text-[10px] font-black uppercase tracking-wider text-[#A99A8A]">{prompt.label}</p>
               <ul className="space-y-1">
                 {items.map((item) => (
-                  <li key={item.id} className="text-sm text-[#3C3530] leading-snug break-words">
+                  <li
+                    key={item.id}
+                    data-no-translate
+                    className="text-sm text-[#3C3530] leading-snug break-words"
+                  >
                     {item.text}
                   </li>
                 ))}

@@ -10,7 +10,6 @@ import {
   ChevronDown,
   ChevronUp,
   Award,
-  Sparkles,
   Zap,
   Globe2,
   Users,
@@ -311,7 +310,6 @@ export const WhyAuraPanel: React.FC = () => {
         {/* AURA Paradigm */}
         <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-[#DBC3B2]/40 space-y-3">
           <div className="flex items-center space-x-2 text-[#DBC3B2]">
-            <Sparkles size={18} />
             <h4 className="font-black text-base text-white">AURA Dynamic Paradigm</h4>
           </div>
           <div className="p-3 rounded-xl bg-[#3C3530]/60 font-mono text-[11px] text-[#DBC3B2] flex flex-wrap items-center gap-1.5 leading-snug">

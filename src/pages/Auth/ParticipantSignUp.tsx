@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { FirstAidKitEditor } from "../../components/FirstAidKitEditor";
-import { FirstAidKit } from "../../types";
+import { FirstAidKit, LanguageCode } from "../../types";
 import { kitItemCount } from "../../services/firstAidKit";
+import { useLanguage } from "../../context/LanguageContext";
+import { LANGUAGE_BY_CODE, loadSavedLanguage } from "../../services/translation";
 import {
   Shield,
   Eye,
@@ -44,13 +46,17 @@ export const ParticipantSignUp: React.FC<Props> = ({
     onComplete();
   };
   const [showPassword, setShowPassword] = useState(false);
+  const { lang, setLang, languages } = useLanguage();
 
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
-    language: "English",
+    // Seeded from the language already chosen, so the stored preference
+    // matches what the person is actually reading even if they never touch
+    // the field.
+    language: LANGUAGE_BY_CODE[loadSavedLanguage()]?.english || "English",
     ageRange: "25-34",
     supportPreference: "In-app support information",
     emergencyContact: "",
@@ -336,16 +342,24 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
                     Preferred Language
                   </label>
+                  {/* Choosing here switches the app immediately, so the rest
+                      of sign-up and every screen after it is already in the
+                      person's language rather than waiting for a setting they
+                      have to find later. */}
                   <select
-                    value={formData.language}
-                    onChange={(e) => setFormData({ ...formData, language: e.target.value })}
+                    value={lang}
+                    onChange={(e) => {
+                      const code = e.target.value as LanguageCode;
+                      setLang(code);
+                      setFormData({ ...formData, language: LANGUAGE_BY_CODE[code]?.english || "English" });
+                    }}
                     className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049] text-sm cursor-pointer"
                   >
-                    <option value="English">English</option>
-                    <option value="Español">Español</option>
-                    <option value="العربية">العربية (Arabic)</option>
-                    <option value="Français">Français</option>
-                    <option value="Українська">Українська (Ukrainian)</option>
+                    {languages.map((l) => (
+                      <option key={l.code} value={l.code}>
+                        {l.code === "en" ? l.native : `${l.native} · ${l.english}`}
+                      </option>
+                    ))}
                   </select>
                 </div>
 

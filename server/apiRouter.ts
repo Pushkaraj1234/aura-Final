@@ -9,6 +9,13 @@ import {
 } from './aiService.js';
 import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
 import { getSupabaseForRequest } from './supabaseServer.js';
+import {
+  BHASHINI_LANGUAGES,
+  bhashiniConfigSummary,
+  isBhashiniConfigured,
+  resetBhashiniCache,
+  translateBatch,
+} from './bhashiniService.js';
 
 const router = Router();
 
@@ -18,6 +25,87 @@ const router = Router();
 router.get('/health', (_req: Request, res: Response) =>
   res.json({ status: 'ok', service: 'aura-api', persistence: 'supabase-postgres' })
 );
+
+// ---------------------------------------------------------
+// Translation (Bhashini / MeitY)
+//
+// The credentials stay here for the same reason GEMINI_API_KEY does: nothing
+// that authorises a paid or rate-limited service belongs in a bundle anyone
+// can read. The client sends phrases and gets phrases back.
+// ---------------------------------------------------------
+
+/** The languages the picker offers. Static, so it costs nothing to serve. */
+router.get('/translate/languages', (_req: Request, res: Response) =>
+  res.json({ languages: BHASHINI_LANGUAGES, configured: isBhashiniConfigured() })
+);
+
+/**
+ * Reports whether translation is wired up, without revealing any key.
+ *
+ * This exists because the deployed environment is the only place the
+ * credentials are real: a translation that silently falls back to English
+ * looks identical to one that was never configured, and this is how you tell
+ * the two apart from outside the server.
+ */
+router.get('/translate/status', async (req: Request, res: Response) => {
+  const summary = bhashiniConfigSummary();
+  if (req.query.probe !== '1' || !summary.configured) {
+    return res.json({ ...summary, probed: false });
+  }
+
+  // A single short round trip through the real pipeline, so the answer
+  // reflects the credentials rather than just their presence.
+  if (req.query.fresh === '1') resetBhashiniCache();
+  const probe = await translateBatch(['Hello'], String(req.query.lang || 'hi'));
+  res.json({
+    ...summary,
+    probed: true,
+    reachable: !probe.degraded,
+    via: probe.via,
+    sample: probe.degraded ? null : probe.translations[0],
+    reason: probe.reason,
+  });
+});
+
+/**
+ * Translates a batch of interface strings.
+ *
+ * Never fails the request on an upstream problem — it answers with the
+ * original English and `degraded: true`, because a person mid-check-in needs
+ * a screen they can read far more than they need an accurate error.
+ */
+router.post('/translate', async (req: Request, res: Response) => {
+  const { texts, target, source } = req.body || {};
+
+  if (!Array.isArray(texts)) {
+    return res.status(400).json({ detail: '"texts" must be an array of strings.' });
+  }
+  if (texts.length > 500) {
+    return res.status(400).json({ detail: 'Send at most 500 strings per request.' });
+  }
+  if (typeof target !== 'string' || !target) {
+    return res.status(400).json({ detail: '"target" language code is required.' });
+  }
+
+  try {
+    const result = await translateBatch(
+      texts.map((t: unknown) => (typeof t === 'string' ? t : '')),
+      target,
+      typeof source === 'string' && source ? source : 'en'
+    );
+    if (result.degraded) {
+      console.warn('[AURA] translation degraded:', result.reason);
+    }
+    res.json(result);
+  } catch (err: any) {
+    console.warn('[AURA] translation failed:', err?.message || err);
+    res.json({
+      translations: texts.map((t: unknown) => (typeof t === 'string' ? t : '')),
+      degraded: true,
+      reason: err?.message || 'Translation service unavailable.',
+    });
+  }
+});
 
 // ---------------------------------------------------------
 // AI Endpoints (Gemini)

@@ -23,7 +23,38 @@ export type TrajectoryCategory =
   | "Fluctuating"
   | "Recovering After Support";
 
-export type LanguageCode = "en" | "hi" | "mr";
+/**
+ * Every language AURA can present itself in: the 22 languages of the Eighth
+ * Schedule plus English, matching what Bhashini's translation models cover.
+ *
+ * English, Hindi and Marathi ship as hand-written dictionaries. The rest are
+ * produced at runtime through Bhashini, so this union is the set of codes the
+ * language picker may hold — not the set that has a bundled translation.
+ */
+export type LanguageCode =
+  | "en"
+  | "as"
+  | "bn"
+  | "brx"
+  | "doi"
+  | "gom"
+  | "gu"
+  | "hi"
+  | "kn"
+  | "ks"
+  | "mai"
+  | "ml"
+  | "mni"
+  | "mr"
+  | "ne"
+  | "or"
+  | "pa"
+  | "sa"
+  | "sat"
+  | "sd"
+  | "ta"
+  | "te"
+  | "ur";
 
 export interface User {
   id: string;

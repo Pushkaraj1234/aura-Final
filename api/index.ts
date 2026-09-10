@@ -75,6 +75,8 @@ app.get('/api/config-status', (req: Request, res: Response) => {
       SUPABASE_SERVICE_ROLE_KEY: !!process.env.SUPABASE_SERVICE_ROLE_KEY,
       GEMINI_API_KEY: !!(process.env.GEMINI_API_KEY || process.env.API_KEY),
       SMTP_HOST: !!process.env.SMTP_HOST,
+      BHASHINI_UDYAT_KEY: !!(process.env.BHASHINI_UDYAT_KEY || process.env.BHASHINI_API_KEY),
+      BHASHINI_INFERENCE_API_KEY: !!process.env.BHASHINI_INFERENCE_API_KEY,
     },
   });
 });

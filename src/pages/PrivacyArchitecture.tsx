@@ -15,7 +15,6 @@ import {
   Cpu,
   RefreshCw,
   Scale,
-  Sparkles,
   Layers,
   FileDown
 } from "lucide-react";

@@ -6,7 +6,6 @@ import {
   User as UserIcon,
   LogOut,
   Bell,
-  Sparkles,
   Menu,
   X,
   LayoutDashboard,
@@ -25,6 +24,7 @@ import {
 } from "lucide-react";
 import { User, Alert, Participant } from "../../types";
 import { notificationService } from "../../services/notificationService";
+import { LanguageSelector } from "../LanguageSelector";
 
 interface Props {
   user: User | null;
@@ -316,6 +316,15 @@ export const Navbar: React.FC<Props> = ({
               </button>
             )}
 
+            {/* Language. Sitting in the nav rather than on one screen is the
+                point: a participant who cannot read English needs it reachable
+                from wherever they are, not only inside the check-in. */}
+            {!isWorker && (
+              <div className="hidden sm:flex items-center pr-1 border-r border-[#EFE8E2] mr-1">
+                <LanguageSelector />
+              </div>
+            )}
+
             {/* Emergency Hotline Button */}
             <button
               onClick={onOpenEmergency}
@@ -338,7 +347,7 @@ export const Navbar: React.FC<Props> = ({
                   </div>
                   <div className="text-left hidden lg:flex flex-col justify-center">
                     <p className="text-[12px] font-bold text-[#3C3530] leading-tight truncate max-w-[120px]">
-                      {user.name}
+                      <span data-no-translate>{user.name}</span>
                     </p>
                     <p className="text-[10px] text-[#7A726C] font-semibold">
                       {isWorker ? 'Counselor' : 'Participant'}
@@ -350,7 +359,9 @@ export const Navbar: React.FC<Props> = ({
                 {userDropdownOpen && (
                   <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-[#EFE8E2] py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
                     <div className="px-4 py-2 border-b border-[#EFE8E2]">
-                      <p className="text-xs font-bold text-[#3C3530] truncate">{user.name}</p>
+                      <p data-no-translate className="text-xs font-bold text-[#3C3530] truncate">
+                        {user.name}
+                      </p>
                       <p className="text-[11px] text-[#7F8C8D] truncate">{user.email}</p>
                       <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EFE8E2] text-[#5A5049] uppercase">
                         {user.role.replace("_", " ")}
@@ -582,6 +593,11 @@ export const Navbar: React.FC<Props> = ({
       {/* Mobile Dropdown Navigation */}
       {mobileMenuOpen && (
         <div className="xl:hidden bg-white border-t border-[#EFE8E2] px-4 py-4 space-y-2">
+          {!isWorker && (
+            <div className="pb-3 mb-1 border-b border-[#EFE8E2]">
+              <LanguageSelector />
+            </div>
+          )}
           {user ? (
             <>
               <button
@@ -769,7 +785,9 @@ export const Navbar: React.FC<Props> = ({
                   className="w-full text-left p-2.5 rounded-xl text-sm font-semibold text-[#9A5B33] hover:bg-[#C48A55]/10 flex items-center space-x-2"
                 >
                   <LogOut size={16} />
-                  <span>Log Out ({user.name})</span>
+                  <span>
+                    Log Out (<span data-no-translate>{user.name}</span>)
+                  </span>
                 </button>
               </div>
             </>

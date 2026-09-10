@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
   HelpCircle,
   Phone,
   Lock,
@@ -22,7 +21,6 @@ import {
   MicOff,
   Wifi,
   WifiOff,
-  Globe2,
   FileText,
   Check,
   Cpu,
@@ -37,7 +35,8 @@ import {
 } from "lucide-react";
 import { CheckIn, SafetyResponse, WellbeingScore, RiskAnalysis, ParticipantReflection, SomaticSymptom } from "../types";
 import { analyzeDistress } from "../services/riskEngine";
-import { getTranslation, Language } from "../services/i18n";
+import { useLanguage } from "../context/LanguageContext";
+import { LanguageSelector } from "../components/LanguageSelector";
 import { VoiceRecorder } from "../components/VoiceRecorder";
 import { ReflectionAnalysis } from "../components/ReflectionAnalysis";
 import { analyzeReflection } from "../services/reflectionAnalysis";
@@ -57,8 +56,10 @@ export const ParticipantCheckin: React.FC<Props> = ({
   onOpenEmergency,
   onGoToProfile
 }) => {
-  const [lang, setLang] = useState<Language>("en");
-  const t = getTranslation(lang);
+  // The language now comes from the app-wide provider, so choosing one here
+  // holds for every other screen and for the next visit. It used to be local
+  // state that reset the moment this page unmounted.
+  const { t } = useLanguage();
 
   // Step 0: Consent Gate
   // Steps 1 to 12: Questions for Victims of Atrocities (MCQ and Reflections)
@@ -278,18 +279,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
       <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 space-y-6">
         {/* Language & Offline Simulation Header Bar */}
         <div className="flex items-center justify-between bg-white px-4 py-2.5 rounded-2xl border border-[#EFE8E2]">
-          <div className="flex items-center space-x-2">
-            <Globe2 size={16} className="text-[#5A5049]" />
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as Language)}
-              className="text-xs font-bold text-[#3C3530] bg-transparent focus:outline-none cursor-pointer"
-            >
-              <option value="en">English (US)</option>
-              <option value="hi">हिन्दी (Hindi)</option>
-              <option value="mr">मराठी (Marathi)</option>
-            </select>
-          </div>
+          <LanguageSelector />
 
           <button
             onClick={() => setIsOffline(!isOffline)}
@@ -470,7 +460,6 @@ export const ParticipantCheckin: React.FC<Props> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EFE8E2]">
             <div>
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#DBC3B2]/20 text-[#5A5049] text-xs font-bold mb-2">
-                <Sparkles size={13} className="text-[#5A5049]" />
                 <span>Check-in Reflection Complete</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
@@ -592,16 +581,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
         <div className="flex items-center justify-between text-xs text-[#7F8C8D] font-bold">
           <span>Question {currentQuestionNumber} of {totalQuestions}</span>
           <div className="flex items-center space-x-3">
-            {/* Language Selector */}
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as Language)}
-              className="text-xs font-bold text-[#3C3530] bg-[#FDF9F5] border border-[#EFE8E2] rounded-lg px-2 py-1 focus:outline-none cursor-pointer"
-            >
-              <option value="en">EN</option>
-              <option value="hi">HI</option>
-              <option value="mr">MR</option>
-            </select>
+            <LanguageSelector variant="compact" />
             <button
               onClick={onGoToProfile}
               className="text-[#7F8C8D] hover:text-[#3C3530] transition-colors cursor-pointer"
@@ -1090,7 +1070,6 @@ export const ParticipantCheckin: React.FC<Props> = ({
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
-                <Sparkles size={14} />
                 <span>Step 7 • Strengths, Coping & Resilience</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">

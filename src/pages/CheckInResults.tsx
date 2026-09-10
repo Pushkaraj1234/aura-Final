@@ -4,7 +4,6 @@ import {
   TrendingUp,
   TrendingDown,
   Minus,
-  Sparkles,
   Shield,
   Heart,
   Moon,
@@ -126,7 +125,6 @@ export const CheckInResults: React.FC<Props> = ({
       <div className="max-w-3xl mx-auto py-20 px-4 text-center space-y-8 animate-in fade-in duration-300">
         <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
           <div className="absolute inset-0 rounded-full border-4 border-[#EFE8E2] border-t-[#5A5049] animate-spin" />
-          <Sparkles className="text-[#5A5049] animate-pulse" size={32} />
         </div>
 
         <div className="space-y-3">
@@ -404,7 +402,6 @@ export const CheckInResults: React.FC<Props> = ({
       {/* Explainable AI (Why did AURA generate this result?) */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE8E2] shadow-xs space-y-4">
         <div className="flex items-center space-x-2">
-          <Sparkles className="text-[#5A5049]" size={20} />
           <h3 className="text-xl font-bold text-[#3C3530]">
             Why did AURA generate this result?
           </h3>

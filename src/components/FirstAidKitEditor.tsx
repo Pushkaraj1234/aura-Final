@@ -91,7 +91,9 @@ export const FirstAidKitEditor: React.FC<Props> = ({
                       key={item.id}
                       className="group inline-flex items-start gap-1.5 max-w-full bg-white border border-[#EFE8E2] rounded-xl pl-3 pr-2 py-1.5"
                     >
-                      <span className="text-xs text-[#3C3530] break-words min-w-0">{item.text}</span>
+                      <span data-no-translate className="text-xs text-[#3C3530] break-words min-w-0">
+                        {item.text}
+                      </span>
                       <button
                         type="button"
                         onClick={() => onChange(removeItem(kit, item.id))}

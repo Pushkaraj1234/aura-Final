@@ -145,7 +145,12 @@ export interface Translations {
   disclaimer: string;
 }
 
-export const TRANSLATIONS: Record<LanguageCode, Translations> = {
+/**
+ * Hand-written dictionaries. Only the three languages the project shipped with
+ * are here; every other supported language is filled in at runtime from these
+ * English strings via Bhashini, which is why this is a Partial.
+ */
+export const TRANSLATIONS: Partial<Record<LanguageCode, Translations>> = {
   en: {
     appName: "AURA",
     prototypeNotice: "Demonstration Prototype",
@@ -585,5 +590,11 @@ export const TRANSLATIONS: Record<LanguageCode, Translations> = {
 export type Language = LanguageCode;
 
 export const getTranslation = (lang: LanguageCode): Translations => {
-  return TRANSLATIONS[lang] || TRANSLATIONS.en;
+  return TRANSLATIONS[lang] || (TRANSLATIONS.en as Translations);
 };
+
+/** Languages with a hand-written dictionary — instant, and never a network call. */
+export const BUILT_IN_LANGUAGES: LanguageCode[] = ["en", "hi", "mr"];
+
+export const hasBuiltInTranslation = (lang: LanguageCode): boolean =>
+  BUILT_IN_LANGUAGES.includes(lang);

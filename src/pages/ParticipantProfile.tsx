@@ -18,7 +18,6 @@ import {
   AlertTriangle,
   Lock,
   LogOut,
-  Sparkles,
   RotateCcw,
   Download,
   Phone,
@@ -345,12 +344,11 @@ ${
         
         <div className="space-y-4 z-10">
           <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/5 text-[#EFE8E2] text-[10px] font-medium tracking-wide">
-            <Sparkles size={12} className="text-[#DBC3B2]" />
             <span>Participant Personal Space • Anonymous ID: {user.id}</span>
           </div>
           
           <h1 className="text-4xl sm:text-5xl font-serif font-bold tracking-tight text-white mt-2">
-            Welcome, {user.name}
+            Welcome, <span data-no-translate>{user.name}</span>
           </h1>
           
           <p className="text-[#EFE8E2]/90 text-sm max-w-xl leading-relaxed font-sans">
@@ -567,7 +565,6 @@ ${
                     onClick={onViewResults}
                     className="w-full py-2.5 px-3 rounded-xl bg-[#5A5049]/15 hover:bg-[#5A5049]/25 text-[#5A5049] font-bold text-xs flex items-center justify-center space-x-1.5 transition-colors cursor-pointer"
                   >
-                    <Sparkles size={13} />
                     <span>View AI Analysis & Breakdown</span>
                   </button>
                 )}
@@ -692,7 +689,6 @@ ${
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EFE8E2]">
             <div>
               <div className="flex items-center space-x-2">
-                <Sparkles size={18} className="text-[#5A5049]" />
                 <h3 className="text-xl font-bold text-[#3C3530]">Your Current Tailored Recommendations</h3>
               </div>
               <p className="text-xs text-[#7F8C8D] mt-1">

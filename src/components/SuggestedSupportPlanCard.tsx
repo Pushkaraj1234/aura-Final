@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   BookOpen,
   Users,
-  Sparkles,
   ShieldCheck,
   Check,
   UserCheck,

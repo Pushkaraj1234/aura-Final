@@ -6,7 +6,6 @@ import {
   Activity,
   AlertTriangle,
   MapPin,
-  Sparkles,
   BarChart3,
   ShieldCheck,
   Building,
@@ -101,7 +100,6 @@ export const CommunityInsights: React.FC = () => {
         </div>
 
         <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#7A726C]">
-          <Sparkles size={14} className="text-[#5A5049]" />
           <span>Synthetic Demonstration Aggregates</span>
         </div>
       </div>
