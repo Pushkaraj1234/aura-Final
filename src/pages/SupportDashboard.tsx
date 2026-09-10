@@ -407,6 +407,7 @@ export const SupportDashboard: React.FC<Props> = ({
             checkIns,
             engagement,
             concordance: assessLatest(checkIns),
+            caseEvents: p.caseEvents || [],
           }),
         };
       })

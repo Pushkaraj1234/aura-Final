@@ -16,6 +16,7 @@ export interface SignUpPayload {
   supportPreference: string;
   consentGiven: boolean;
   emergencyContact?: string;
+  caseReference?: string;
 }
 
 export const DEMO_CREDENTIALS = {
@@ -61,6 +62,7 @@ if (typeof window !== "undefined") {
         consentGiven: meta.consentGiven ?? true,
         createdAt: session.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
+        caseReference: meta.caseReference || undefined,
         firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
@@ -120,6 +122,7 @@ export const authService = {
         consentGiven: meta.consentGiven ?? true,
         createdAt: supaAuth.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
+        caseReference: meta.caseReference || undefined,
         firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
@@ -245,6 +248,7 @@ export const authService = {
           supportPreference: data.supportPreference,
           consentGiven: data.consentGiven,
           emergencyContact: data.emergencyContact || null,
+          caseReference: data.caseReference || null,
           role: "participant",
         },
       },
@@ -276,6 +280,7 @@ export const authService = {
       consentGiven: data.consentGiven,
       createdAt: supaUser?.created_at || new Date().toISOString(),
       emergencyContact: data.emergencyContact || undefined,
+      caseReference: data.caseReference || undefined,
       firstAidKit: normalizeKit((data as any).firstAidKit),
     };
 

@@ -60,6 +60,7 @@ const BASIS_LABEL: Record<string, string> = {
   engagement: "how they have been using the app",
   concordance: "self-report vs. other signals",
   distress: "questionnaire score",
+  case: "hearings and incidents on their case",
 };
 
 export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {

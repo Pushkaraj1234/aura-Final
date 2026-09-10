@@ -36,6 +36,9 @@ import { assessEngagement } from "../services/engagementSignals";
 import { assessEscalation } from "../services/escalationEngine";
 import { assessLatest } from "../services/concordanceEngine";
 import { EscalationCard } from "../components/EscalationCard";
+import { CaseEventsCard } from "../components/CaseEventsCard";
+import { participantStore } from "../services/participantStore";
+import { CaseEvent } from "../types";
 import { generateSupportRecommendation } from "../services/supportRecommendationEngine";
 import { ExplainableAISignal } from "../components/ExplainableAISignal";
 import { EarlyWarningForecastCard } from "../components/EarlyWarningForecastCard";
@@ -199,6 +202,25 @@ export const ParticipantDetail: React.FC<Props> = ({
     };
   }, [participant.id]);
 
+  // Held locally as well as in the store so recording a hearing updates the
+  // escalation above it immediately, rather than on the next navigation.
+  const [caseEvents, setCaseEvents] = React.useState<CaseEvent[]>(
+    () => participant.caseEvents || []
+  );
+  React.useEffect(() => {
+    setCaseEvents(participant.caseEvents || []);
+  }, [participant.id, participant.caseEvents]);
+
+  const handleAddCaseEvent = (event: CaseEvent) => {
+    participantStore.addCaseEvent(participant.id, event);
+    setCaseEvents((prev) => [event, ...prev]);
+  };
+
+  const handleRemoveCaseEvent = (eventId: string) => {
+    participantStore.removeCaseEvent(participant.id, eventId);
+    setCaseEvents((prev) => prev.filter((e) => e.id !== eventId));
+  };
+
   const engagement = React.useMemo(
     () => assessEngagement({ checkIns, messages: threadMessages }),
     [checkIns, threadMessages]
@@ -210,8 +232,9 @@ export const ParticipantDetail: React.FC<Props> = ({
         checkIns,
         engagement,
         concordance: assessLatest(checkIns),
+        caseEvents,
       }),
-    [checkIns, engagement]
+    [checkIns, engagement, caseEvents]
   );
   const latestCheckIn = checkIns.length > 0 ? checkIns[checkIns.length - 1] : null;
   const previousCheckIn = checkIns.length > 1 ? checkIns[checkIns.length - 2] : null;
@@ -327,6 +350,9 @@ export const ParticipantDetail: React.FC<Props> = ({
       <div class="grid">
         <div><strong>Name</strong>: ${esc(participant.name || "—")}</div>
         <div><strong>Case ID</strong>: ${esc(participant.id)}</div>
+        <div><strong>Complaint reference</strong>: ${esc(participant.caseReference || "—")}${
+          participant.intakeSource ? ` (${esc(participant.intakeSource)})` : ""
+        }</div>
         <div><strong>Language</strong>: ${esc(participant.language || "—")}</div>
         <div><strong>Age group</strong>: ${esc(participant.ageGroup || "—")}</div>
         <div><strong>Region</strong>: ${esc(participant.region || "—")}</div>
@@ -413,6 +439,14 @@ export const ParticipantDetail: React.FC<Props> = ({
         <EscalationCard escalation={escalation} engagement={engagement} />
       )}
 
+      <CaseEventsCard
+        participantId={participant.id}
+        events={caseEvents}
+        recordedBy={currentUser?.name || "Counselor"}
+        onAdd={handleAddCaseEvent}
+        onRemove={handleRemoveCaseEvent}
+      />
+
       {/* Participant Header Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE8E2] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
@@ -449,6 +483,17 @@ export const ParticipantDetail: React.FC<Props> = ({
             <span>Language: <strong className="text-[#3C3530]">{participant.language}</strong></span>
             <span>Age Group: <strong className="text-[#3C3530]">{participant.ageGroup}</strong></span>
             <span>Support Preference: <strong className="text-[#3C3530]">{participant.preferredSupport}</strong></span>
+            {participant.caseReference && (
+              <span>
+                Complaint:{" "}
+                <strong className="text-[#3C3530]" data-no-translate>
+                  {participant.caseReference}
+                </strong>
+                {participant.intakeSource && (
+                  <span className="text-[#A99A8A]"> · {participant.intakeSource}</span>
+                )}
+              </span>
+            )}
             <span>Assigned: <strong className="text-[#3C3530]">{participant.assignedWorker || "Unassigned"}</strong></span>
           </div>
         </div>
