@@ -2,7 +2,6 @@ import React from "react";
 import { Globe2, Loader2, WifiOff } from "lucide-react";
 import { LanguageCode } from "../types";
 import { useLanguage } from "../context/LanguageContext";
-import { hasBuiltInTranslation } from "../services/i18n";
 
 interface Props {
   /** `full` names the language in its own script; `compact` shows the code. */
@@ -55,7 +54,11 @@ export const LanguageSelector: React.FC<Props> = ({ variant = "full", className 
         </span>
       )}
 
-      {status === "degraded" && !hasBuiltInTranslation(lang) && (
+      {/* Shown for every language but English. Hindi and Marathi have a built-in
+          questionnaire dictionary, but the rest of their screens still go
+          through Bhashini, so they can degrade too — hiding the notice for
+          them left a half-translated page with nothing to explain it. */}
+      {status === "degraded" && lang !== "en" && (
         <span
           className="flex items-center gap-1 text-[10px] text-[#A55D25] shrink-0"
           title={degradedReason || "The translation service could not be reached."}

@@ -23,8 +23,15 @@ const LANGUAGE_KEY = "aura_language";
 /** Bounded so a long-running install cannot fill a device's storage quota. */
 const MAX_CACHED_ENTRIES_PER_LANGUAGE = 1200;
 
-/** Bhashini is asked for at most this many strings in one request. */
-const MAX_BATCH = 200;
+/**
+ * Strings per request.
+ *
+ * Deliberately small. A single 200-string request means nothing on screen
+ * changes until the whole thing lands, which on a real Bhashini call is many
+ * seconds of a page that looks broken. Smaller batches land sooner and are
+ * applied as they arrive, so the text starts changing almost immediately.
+ */
+const MAX_BATCH = 60;
 
 export interface LanguageOption {
   code: LanguageCode;
@@ -206,8 +213,34 @@ async function postBatch(texts: string[], target: LanguageCode): Promise<string[
   }
 }
 
-/** Requests in flight, so the same phrase is never fetched twice at once. */
-const pending = new Map<string, Promise<void>>();
+/**
+ * How many batches may be in the air at once.
+ *
+ * Batches used to run one after another, which made small batches actively
+ * worse than one large one: five sequential round trips is five times the
+ * latency. Run them together and the first text appears after roughly a single
+ * round trip no matter how much there is to translate.
+ */
+const MAX_CONCURRENT_BATCHES = 4;
+
+/**
+ * Strings currently being fetched, per language.
+ *
+ * Screens re-render while a translation is in flight, so a second sweep can
+ * ask for phrases the first sweep has already requested but not yet received.
+ * Without this they were fetched twice — on one measured page that turned 87
+ * strings into 202.
+ */
+const inFlightByLang = new Map<LanguageCode, Set<string>>();
+
+function inFlightFor(lang: LanguageCode): Set<string> {
+  let set = inFlightByLang.get(lang);
+  if (!set) {
+    set = new Set<string>();
+    inFlightByLang.set(lang, set);
+  }
+  return set;
+}
 
 /**
  * Ensures every one of `texts` has a translation cached for `lang`, fetching
@@ -216,25 +249,41 @@ const pending = new Map<string, Promise<void>>();
  */
 export async function ensureTranslations(
   texts: string[],
-  lang: LanguageCode
+  lang: LanguageCode,
+  /** Called after each batch is cached, so callers can paint progressively. */
+  onProgress?: () => void
 ): Promise<void> {
   if (lang === "en") return;
 
   const cache = cacheFor(lang);
-  const missing = Array.from(
-    new Set(texts.filter((t) => typeof t === "string" && t.trim() && !(t in cache)))
-  );
+  const claimed = inFlightFor(lang);
+
+  // Skip what is cached, and what another sweep is already fetching. The order
+  // of `texts` is preserved, so the caller's viewport-first priority survives
+  // into the batching below.
+  const seen = new Set<string>();
+  const missing: string[] = [];
+  texts.forEach((t) => {
+    if (typeof t !== "string") return;
+    const text = t.trim();
+    if (!text || seen.has(text)) return;
+    seen.add(text);
+    if (text in cache || claimed.has(text)) return;
+    missing.push(text);
+  });
   if (!missing.length) return;
 
-  // Join any batch already fetching these exact strings rather than issuing a
-  // second identical request — screens mount together and ask together.
-  const key = `${lang}:${missing.length}:${missing[0]}:${missing[missing.length - 1]}`;
-  const inFlight = pending.get(key);
-  if (inFlight) return inFlight;
+  missing.forEach((t) => claimed.add(t));
 
-  const work = (async () => {
-    for (let i = 0; i < missing.length; i += MAX_BATCH) {
-      const slice = missing.slice(i, i + MAX_BATCH);
+  const batches: string[][] = [];
+  for (let i = 0; i < missing.length; i += MAX_BATCH) {
+    batches.push(missing.slice(i, i + MAX_BATCH));
+  }
+
+  let next = 0;
+  const runBatches = async (): Promise<void> => {
+    while (next < batches.length) {
+      const slice = batches[next++];
       const translated = await postBatch(slice, lang);
       slice.forEach((source, idx) => {
         const value = translated[idx];
@@ -242,14 +291,27 @@ export async function ensureTranslations(
         // permanently, so only real translations are kept.
         if (typeof value === "string" && value && value !== source) cache[source] = value;
       });
+      // Hand this batch over as soon as it lands rather than at the end.
+      // Waiting for all of them is what made a language change look like it
+      // had done nothing at all.
+      try {
+        onProgress?.();
+      } catch {
+        // A caller that throws must not abandon the remaining batches.
+      }
     }
-    persist(lang);
-  })().finally(() => {
-    pending.delete(key);
-  });
+  };
 
-  pending.set(key, work);
-  return work;
+  try {
+    await Promise.all(
+      Array.from({ length: Math.min(MAX_CONCURRENT_BATCHES, batches.length) }, runBatches)
+    );
+  } finally {
+    // Release every claim, so anything a failed batch left untranslated can be
+    // retried by the next sweep instead of being stuck as "in flight" forever.
+    missing.forEach((t) => claimed.delete(t));
+    persist(lang);
+  }
 }
 
 /** Translates one string, returning English until the translation arrives. */

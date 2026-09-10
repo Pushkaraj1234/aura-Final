@@ -12,7 +12,12 @@ import {
   saveLanguage,
   translateDictionary,
 } from "../services/translation";
-import { startDomTranslation, stopDomTranslation } from "../services/domTranslator";
+import {
+  DomTranslationStatus,
+  onDomTranslationStatus,
+  startDomTranslation,
+  stopDomTranslation,
+} from "../services/domTranslator";
 
 /**
  * One language for the whole app.
@@ -140,6 +145,26 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     startDomTranslation(lang);
     return () => stopDomTranslation();
   }, [lang]);
+
+  // Surface what that pass is doing. The page translates a few hundred strings
+  // the first time a language is chosen, and on a real connection that takes
+  // long enough that silence reads as failure — someone reloads, sees the now
+  // cached translation appear instantly, and concludes the control only works
+  // after a refresh.
+  useEffect(
+    () =>
+      onDomTranslationStatus((domStatus: DomTranslationStatus) => {
+        if (domStatus === "loading") {
+          setStatus("loading");
+          return;
+        }
+        setStatus(domStatus);
+        setDegradedReason(
+          domStatus === "degraded" ? lastTranslationOutcome().reason : undefined
+        );
+      }),
+    []
+  );
 
   const setLang = useCallback((next: LanguageCode) => {
     setLangState(next);

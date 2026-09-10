@@ -1,5 +1,5 @@
 import { LanguageCode } from "../types";
-import { cachedTranslation, ensureTranslations } from "./translation";
+import { cachedTranslation, ensureTranslations, lastTranslationOutcome } from "./translation";
 
 /**
  * Translates the rendered interface in place.
@@ -83,11 +83,42 @@ function shouldSkip(node: Node): boolean {
   return false;
 }
 
-/** Every text node and text-bearing attribute currently on screen. */
-function collect(root: Node): { texts: Set<string>; nodes: Text[]; attrs: [Element, string][] } {
-  const texts = new Set<string>();
+/**
+ * Every text node and text-bearing attribute currently on screen.
+ *
+ * `ordered` lists the distinct source strings with anything currently in the
+ * viewport first. Since batches are fetched and applied in order, that means
+ * the part of the page the person is actually looking at changes first,
+ * instead of the translation arriving top-to-bottom through content they have
+ * already scrolled past.
+ */
+function collect(root: Node): {
+  ordered: string[];
+  nodes: Text[];
+  attrs: [Element, string][];
+} {
+  const onScreen: string[] = [];
+  const offScreen: string[] = [];
+  const seen = new Set<string>();
   const nodes: Text[] = [];
   const attrs: [Element, string][] = [];
+
+  const viewportHeight =
+    typeof window !== "undefined" ? window.innerHeight || 0 : 0;
+
+  const record = (text: string, el: Element | null) => {
+    const key = text.trim();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    let visible = false;
+    try {
+      const rect = el?.getBoundingClientRect();
+      visible = !!rect && rect.bottom >= 0 && rect.top <= viewportHeight;
+    } catch {
+      // getBoundingClientRect can throw on a detached node; treat as off-screen.
+    }
+    (visible ? onScreen : offScreen).push(key);
+  };
 
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT, {
     acceptNode: (node) => {
@@ -115,7 +146,7 @@ function collect(root: Node): { texts: Set<string>; nodes: Text[]; attrs: [Eleme
       if (!isTranslatable(source)) return;
       nodeState.set(textNode, { source, applied: recorded?.applied });
       nodes.push(textNode);
-      texts.add(source.trim());
+      record(source, textNode.parentElement);
       return;
     }
 
@@ -133,14 +164,14 @@ function collect(root: Node): { texts: Set<string>; nodes: Text[]; attrs: [Eleme
       const source = recorded && recorded.applied === value ? recorded.source : value;
       map.set(name, { source, applied: recorded?.applied });
       attrs.push([el, name]);
-      texts.add(source.trim());
+      record(source, el);
     });
   };
 
   if (current) consider(current);
   while (walker.nextNode()) consider(walker.currentNode);
 
-  return { texts, nodes, attrs };
+  return { ordered: [...onScreen, ...offScreen], nodes, attrs };
 }
 
 let observer: MutationObserver | null = null;
@@ -187,14 +218,54 @@ function apply(nodes: Text[], attrs: [Element, string][], lang: LanguageCode): v
   }
 }
 
+/**
+ * What the language control is currently doing, so it can say so.
+ *
+ * Without this the picker was silent for Hindi and Marathi — their
+ * questionnaire dictionary is built in, so the old status never left "ready"
+ * even while every other string on the page was still being fetched. The
+ * screen stayed English with nothing to explain why, which reads as broken.
+ */
+export type DomTranslationStatus = "ready" | "loading" | "degraded";
+
+type StatusListener = (status: DomTranslationStatus) => void;
+
+const statusListeners = new Set<StatusListener>();
+let status: DomTranslationStatus = "ready";
+
+export function onDomTranslationStatus(listener: StatusListener): () => void {
+  statusListeners.add(listener);
+  listener(status);
+  return () => statusListeners.delete(listener);
+}
+
+function setStatus(next: DomTranslationStatus): void {
+  if (status === next) return;
+  status = next;
+  statusListeners.forEach((l) => {
+    try {
+      l(next);
+    } catch {
+      // A failing listener must not stop translation.
+    }
+  });
+}
+
+/** Re-reads the page and writes in whatever is cached for `lang`. */
+function paint(lang: LanguageCode): void {
+  const fresh = collect(document.body);
+  apply(fresh.nodes, fresh.attrs, lang);
+}
+
 /** One sweep: gather, fetch what is missing, then write. */
 function sweep(): void {
   if (typeof document === "undefined") return;
   const lang = currentLang;
-  const { texts, nodes, attrs } = collect(document.body);
+  const { ordered, nodes, attrs } = collect(document.body);
 
   if (lang === "en") {
     apply(nodes, attrs, lang);
+    setStatus("ready");
     return;
   }
 
@@ -202,19 +273,28 @@ function sweep(): void {
   // seen before never flashes English.
   apply(nodes, attrs, lang);
 
-  const missing = Array.from(texts).filter((t) => cachedTranslation(t, lang) === undefined);
-  if (!missing.length) return;
+  const missing = ordered.filter((t) => cachedTranslation(t, lang) === undefined);
+  if (!missing.length) {
+    setStatus("ready");
+    return;
+  }
 
-  ensureTranslations(missing, lang).then(() => {
+  setStatus("loading");
+  ensureTranslations(missing, lang, () => {
+    // Paint each batch the moment it lands rather than waiting for the whole
+    // page. This is the difference between text visibly filling in and a
+    // language change that appears to do nothing at all.
     if (currentLang !== lang) return;
-    // Re-collect rather than reusing the nodes gathered above: React may have
-    // re-rendered while the request was in flight, and writing into text nodes
-    // it has since detached puts the translation nowhere. The second pass
-    // cannot loop — everything it needs is cached by now, so `missing` is
-    // empty and it stops here.
-    const fresh = collect(document.body);
-    apply(fresh.nodes, fresh.attrs, lang);
-  });
+    paint(lang);
+  })
+    .then(() => {
+      if (currentLang !== lang) return;
+      paint(lang);
+      setStatus(lastTranslationOutcome().degraded ? "degraded" : "ready");
+    })
+    .catch(() => {
+      if (currentLang === lang) setStatus("degraded");
+    });
 }
 
 function schedule(): void {
@@ -236,11 +316,18 @@ export function startDomTranslation(lang: LanguageCode): void {
 
   if (!observer) {
     observer = new MutationObserver((records) => {
-      if (applying) return;
-      const meaningful = records.some(
-        (r) => r.type === "childList" ? r.addedNodes.length > 0 : true
+      const meaningful = records.some((r) =>
+        r.type === "childList" ? r.addedNodes.length > 0 : true
       );
-      if (meaningful) schedule();
+      if (!meaningful) return;
+      // Mutations that arrive while a batch is being written used to be
+      // discarded. If React re-rendered in that window — which it does on a
+      // language change, because the questionnaire dictionary swaps at the
+      // same moment — the new English was never picked up, and the page only
+      // came right on the next reload. Re-scheduling instead is safe: apply
+      // writes nothing when the text already matches, so the follow-up sweep
+      // produces no mutations of its own and the chain stops.
+      schedule();
     });
     observer.observe(document.body, {
       childList: true,
