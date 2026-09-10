@@ -125,6 +125,27 @@ export interface ResponseMetadata {
   completionSeconds?: number;
   /** Whether the person said they were somewhere they could answer freely. */
   privateSpace?: boolean;
+
+  // --- How the form was moved through. See services/sessionSignals.ts. -----
+  // Every field below is optional and every one is absent on an older
+  // check-in, so nothing that reads them may assume they exist.
+
+  /** Times the app lost focus mid-check-in. */
+  awayCount?: number;
+  /** Longest single absence, in seconds. */
+  longestAwaySeconds?: number;
+  /** Times they went back to a question already answered. */
+  backNavigations?: number;
+  /** Answers changed after first being set. */
+  answerRevisions?: number;
+  /** Longest uninterrupted time on one question, in seconds. */
+  longestQuestionSeconds?: number;
+  /** Median seconds per question. */
+  medianQuestionSeconds?: number;
+  /** Wrote a reflection, deleted it, and submitted nothing. */
+  reflectionAbandoned?: boolean;
+  /** Most characters the reflection held before being cut back. */
+  reflectionPeakChars?: number;
 }
 
 /** One signal weighed against what the participant reported about themselves. */

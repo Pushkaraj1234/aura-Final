@@ -232,8 +232,51 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
     }
   }
 
+  // --- How the form was answered ----------------------------------------
+  // Behaviour inside the form itself: hesitation, interruption, a reflection
+  // written and then taken back. These are weak individually and none is
+  // marked strong — a person who pauses is not thereby distressed, and the
+  // whole point of concordance is that several weak readings agreeing is
+  // what earns a second look. None of this touches the distress score.
+  const meta = checkIn.responseMeta;
+
+  if (meta?.reflectionAbandoned) {
+    add("reflectionAbandoned", "Reflection written then deleted",
+      `${meta.reflectionPeakChars ?? 0} characters, none submitted`,
+      claim === "struggling" ? "supports" : "contradicts",
+      "They had something to say about how they are coping and took it back.");
+  }
+
+  if (meta?.longestQuestionSeconds !== undefined && meta.longestQuestionSeconds >= 45) {
+    add("questionPause", "Longest pause on one question",
+      `${meta.longestQuestionSeconds}s`,
+      claim === "fine" ? "contradicts" : "supports",
+      "Time away from the app is excluded, so this is time spent on the question itself.");
+  }
+
+  if (meta?.answerRevisions !== undefined && meta.answerRevisions >= 3) {
+    add("answerRevisions", "Answers changed",
+      `${meta.answerRevisions} of them`,
+      claim === "fine" ? "contradicts" : "supports",
+      "Repeatedly revised answers, which more often reads as difficulty settling on one than as carelessness.");
+  }
+
+  if (meta?.awayCount !== undefined && meta.awayCount >= 3) {
+    add("interrupted", "Left the app mid-check-in",
+      `${meta.awayCount} times`,
+      "neutral",
+      "Could be interruption rather than avoidance; recorded, not counted against them.");
+  }
+
   // --- Confidence caveats: reasons to trust the whole submission less ----
   const caveats: string[] = [];
+
+  // A very long absence means the answers span a stretch of time rather than
+  // describing one moment — worth knowing before reading them closely.
+  if (meta?.longestAwaySeconds !== undefined && meta.longestAwaySeconds >= 600) {
+    const mins = Math.round(meta.longestAwaySeconds / 60);
+    caveats.push(`Check-in was left open for ${mins} minutes partway through.`);
+  }
 
   if (checkIn.responseMeta?.privateSpace === false) {
     caveats.push("Answered somewhere they could not speak freely.");
