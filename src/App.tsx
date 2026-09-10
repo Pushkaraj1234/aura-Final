@@ -319,15 +319,18 @@ export const App: React.FC = () => {
               setAlerts(participantStore.getAlerts());
             }}
             onViewResults={() => {
-              const an = participantStore.getLatestAnalysisForParticipant(currentUser.id);
-              if (an) {
-                setLastCheckInAnalysis(an);
-                const p = participantStore.getParticipantForUser(currentUser);
-                const checkIns = p?.checkIns || [];
-                const l = checkIns.length > 0 ? checkIns[checkIns.length - 1] : null;
-                if (l) setLastSubmittedCheckIn(l);
-                setCurrentView("checkin_results");
-              }
+              // Resolve the check-in and its analysis together, through the
+              // same record lookup the rest of this screen uses. Reading the
+              // analysis by user id and the check-in by user record meant the
+              // two could disagree about which participant they belonged to —
+              // and for anyone whose record is not keyed by their auth id
+              // (the demo participant, anything rehydrated from Supabase) the
+              // analysis came back null and this button did nothing at all.
+              const latest = participantStore.getLatestResultForUser(currentUser);
+              if (!latest) return;
+              setLastCheckInAnalysis(latest.analysis);
+              setLastSubmittedCheckIn(latest.checkIn);
+              setCurrentView("checkin_results");
             }}
           />
         )}

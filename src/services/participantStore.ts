@@ -1097,6 +1097,37 @@ export const participantStore = {
     return calculateCheckInAnalysis(latest, prev, p.checkIns);
   },
 
+  /**
+   * The latest check-in and its analysis for a signed-in person, resolved the
+   * same way every participant screen resolves their record.
+   *
+   * getLatestAnalysisForParticipant looks a participant up by id alone, which
+   * only finds a record whose id happens to equal the auth user id. The demo
+   * participant is stored as P-1042 under a different user id, and any record
+   * rehydrated from Supabase can be keyed differently too, so that lookup
+   * returned null for them and the results screen — including the score
+   * breakdown — silently refused to open for anyone but the accounts where
+   * the two ids coincided.
+   *
+   * Returning the pair together also keeps them consistent: the breakdown is
+   * always derived from the very check-in handed back beside it, never from
+   * whichever one happened to be left in state by an earlier session.
+   */
+  getLatestResultForUser: (
+    user: User
+  ): { checkIn: CheckIn; analysis: CheckInAnalysis } | null => {
+    const p = participantStore.getParticipantForUser(user);
+    const checkIns = p?.checkIns || [];
+    if (checkIns.length === 0) return null;
+
+    const latest = checkIns[checkIns.length - 1];
+    const prev = checkIns.length > 1 ? checkIns[checkIns.length - 2] : null;
+    const analysis = latest.analysis || calculateCheckInAnalysis(latest, prev, checkIns);
+    if (!analysis) return null;
+
+    return { checkIn: latest, analysis };
+  },
+
   // User management for persistent cross-login lookup
   getRegisteredUsers: (): User[] => {
     try {
