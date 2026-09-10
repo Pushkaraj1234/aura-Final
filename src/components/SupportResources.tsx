@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { apiService } from "../services/apiService";
 import { Search, MapPin, Globe, Phone, Clock, Plus, ShieldCheck, ShieldAlert, Trash2, Edit2 } from "lucide-react";
 import { ConfirmDialog } from "./ConfirmDialog";
@@ -60,11 +60,8 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
   const fetchResources = async () => {
     try {
       setLoading(true);
-      const res = await apiService.supportResources.getAll({ 
-        region: filterRegion, 
-        type: filterType 
-      });
-      setResources(res);
+      const res = await apiService.supportResources.getAll();
+      setResources(Array.isArray(res) ? res : []);
     } catch (e) {
       console.error(e);
     } finally {
@@ -72,9 +69,48 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
     }
   };
 
+  // Fetched once, not on every filter change. The directory is a short list,
+  // and the old effect re-queried the database on each keystroke in the region
+  // box — for a result that was then filtered by nobody.
   useEffect(() => {
     fetchResources();
-  }, [filterRegion, filterType]);
+  }, []);
+
+  /**
+   * The types actually present, rather than a hard-coded list.
+   *
+   * The dropdown used to offer three fixed options that had drifted from the
+   * data: "Peer Connection" matched nothing, while "Emotional Support
+   * Helpline" and "Psychosocial Support" existed in the directory but could
+   * not be chosen. Deriving the list means every option matches something and
+   * nothing in the directory is unreachable.
+   */
+  const availableTypes = useMemo(() => {
+    const seen = new Set<string>();
+    resources.forEach((r) => {
+      const t = (r?.resource_type || "").trim();
+      if (t) seen.add(t);
+    });
+    return Array.from(seen).sort((a, b) => a.localeCompare(b));
+  }, [resources]);
+
+  /**
+   * The filtering itself, which previously did not happen at all: the API
+   * helper accepted a filter object and discarded it, so choosing "Crisis
+   * Support" re-fetched the whole directory and displayed all of it.
+   *
+   * Region is a substring match because the field holds free text like
+   * "Europe / International" — an exact match would make it useless. Type is
+   * exact, since the options now come from the data itself.
+   */
+  const visibleResources = useMemo(() => {
+    const region = filterRegion.trim().toLowerCase();
+    return resources.filter((r) => {
+      if (filterType && (r?.resource_type || "") !== filterType) return false;
+      if (region && !(r?.region || "").toLowerCase().includes(region)) return false;
+      return true;
+    });
+  }, [resources, filterType, filterRegion]);
 
   const handleSave = async () => {
     try {
@@ -170,14 +206,18 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
           onChange={(e) => setFilterRegion(e.target.value)}
         />
         <select 
+          aria-label="Filter by resource type"
+          data-resource-type-filter
           className="px-4 py-2 bg-white border border-[#EFE8E2] rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-[#5A5049]"
           value={filterType}
           onChange={(e) => setFilterType(e.target.value)}
         >
           <option value="">All Types</option>
-          <option value="Crisis Support">Crisis Support</option>
-          <option value="Legal & Psychological">Legal & Psychological</option>
-          <option value="Peer Connection">Peer Connection</option>
+          {availableTypes.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -214,8 +254,29 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
           <div className="h-32 bg-white rounded-3xl border border-[#EFE8E2]"></div>
         </div>
       ) : (
+        visibleResources.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center space-y-2">
+            <p className="text-sm font-bold text-[#3C3530]">
+              {resources.length === 0
+                ? "No support resources have been added yet."
+                : "No resources match these filters."}
+            </p>
+            {resources.length > 0 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFilterType("");
+                  setFilterRegion("");
+                }}
+                className="text-xs font-bold text-[#5A5049] underline hover:text-[#3C3530] cursor-pointer"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {resources.map(res => (
+          {visibleResources.map(res => (
             <div key={res.id} className="bg-white rounded-3xl border border-[#EFE8E2] p-6 shadow-xs flex flex-col">
               <div className="flex justify-between items-start mb-2">
                 <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${res.emergency_flag ? 'bg-rose-100 text-rose-700' : 'bg-[#EFE8E2] text-[#5A5049]'}`}>
@@ -285,6 +346,7 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
             </div>
           ))}
         </div>
+        )
       )}
 
       <ConfirmDialog
