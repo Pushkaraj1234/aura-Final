@@ -179,6 +179,27 @@ let currentLang: LanguageCode = "en";
 let applying = false;
 let scheduled: ReturnType<typeof setTimeout> | null = null;
 
+/**
+ * Consecutive sweeps that fetched and cached nothing.
+ *
+ * A failed translation is deliberately not cached — storing the English would
+ * poison the cache permanently. But that leaves the strings looking
+ * uncached, so the next sweep asks for them again, and because applying
+ * results mutates the DOM the observer schedules another sweep after that.
+ * With the service down that is an endless loop against someone's API quota.
+ *
+ * Counting fruitless sweeps and backing off is what stops it. A language
+ * change, or the service recovering, clears it.
+ */
+let fruitlessSweeps = 0;
+let fetchingSuspendedUntil = 0;
+
+/** How many sweeps may fetch nothing before the next attempt waits. */
+const MAX_FRUITLESS_SWEEPS = 3;
+
+/** How long to stop asking after that. Long enough to matter, short enough to recover. */
+const BACKOFF_MS = 60_000;
+
 /** Writes translations into the nodes gathered by the last sweep. */
 function apply(nodes: Text[], attrs: [Element, string][], lang: LanguageCode): void {
   applying = true;
@@ -275,7 +296,15 @@ function sweep(): void {
 
   const missing = ordered.filter((t) => cachedTranslation(t, lang) === undefined);
   if (!missing.length) {
+    fruitlessSweeps = 0;
     setStatus("ready");
+    return;
+  }
+
+  // Backing off after repeated failures. The page still shows whatever is
+  // cached; it just stops asking for a while.
+  if (Date.now() < fetchingSuspendedUntil) {
+    setStatus("degraded");
     return;
   }
 
@@ -290,10 +319,28 @@ function sweep(): void {
     .then(() => {
       if (currentLang !== lang) return;
       paint(lang);
+
+      // Did anything actually land? If a whole sweep's worth of strings came
+      // back untranslated, asking again immediately will not help.
+      const stillMissing = missing.filter((t) => cachedTranslation(t, lang) === undefined);
+      if (stillMissing.length === missing.length) {
+        fruitlessSweeps++;
+        if (fruitlessSweeps >= MAX_FRUITLESS_SWEEPS) {
+          fetchingSuspendedUntil = Date.now() + BACKOFF_MS;
+        }
+      } else {
+        fruitlessSweeps = 0;
+      }
+
       setStatus(lastTranslationOutcome().degraded ? "degraded" : "ready");
     })
     .catch(() => {
-      if (currentLang === lang) setStatus("degraded");
+      if (currentLang !== lang) return;
+      fruitlessSweeps++;
+      if (fruitlessSweeps >= MAX_FRUITLESS_SWEEPS) {
+        fetchingSuspendedUntil = Date.now() + BACKOFF_MS;
+      }
+      setStatus("degraded");
     });
 }
 
@@ -312,6 +359,10 @@ function schedule(): void {
  */
 export function startDomTranslation(lang: LanguageCode): void {
   if (typeof document === "undefined") return;
+  if (lang !== currentLang) {
+    fruitlessSweeps = 0;
+    fetchingSuspendedUntil = 0;
+  }
   currentLang = lang;
 
   if (!observer) {
