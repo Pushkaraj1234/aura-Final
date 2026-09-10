@@ -8,6 +8,38 @@ interface Props {
   onOpenEmergency: () => void;
 }
 
+/**
+ * A stored address turned into something a browser will actually follow.
+ *
+ * Entries are typed in by counsellors, so plenty arrive as "befrienders.org"
+ * with no scheme. Handed straight to href that becomes a relative link and
+ * navigates to /befrienders.org inside the app — a dead end on a screen whose
+ * whole purpose is getting someone to help.
+ */
+export function resourceHref(raw: string): string {
+  const url = (raw || "").trim();
+  if (!url) return "";
+  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+}
+
+/**
+ * The address as it is shown: scheme, "www." and any trailing slash removed.
+ *
+ * Showing the real destination rather than the word "Website" lets someone
+ * see who they are about to contact before they tap — which matters when the
+ * list mixes helplines, legal services and shelters, and when tapping the
+ * wrong one is not a neutral mistake. The full address stays on the link's
+ * title and in the href.
+ */
+export function resourceLinkText(raw: string): string {
+  const url = (raw || "").trim();
+  if (!url) return "";
+  return url
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/+$/, "");
+}
+
 export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency }) => {
   const [resources, setResources] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -215,9 +247,18 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
                   </div>
                 )}
                 {res.website && (
-                  <div className="flex items-start">
+                  <div className="flex items-start min-w-0">
                     <Globe size={16} className="mr-2 shrink-0 mt-0.5 text-slate-400" />
-                    <a href={res.website} target="_blank" rel="noreferrer" className="text-violet-600 hover:underline">Website</a>
+                    <a
+                      href={resourceHref(res.website)}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                      title={res.website}
+                      data-no-translate
+                      className="text-violet-600 hover:underline break-all min-w-0"
+                    >
+                      {resourceLinkText(res.website)}
+                    </a>
                   </div>
                 )}
                 {res.hours && (
