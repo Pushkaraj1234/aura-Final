@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { assessLatest } from "../services/concordanceEngine";
+import { assessEngagement } from "../services/engagementSignals";
+import { assessEscalation } from "../services/escalationEngine";
 import {
   Users,
   AlertTriangle,
@@ -376,6 +378,43 @@ export const SupportDashboard: React.FC<Props> = ({
       .slice(0, 6);
   }, [participants, currentWorker]);
 
+  /**
+   * People whose *pattern of use* has changed, whether or not they have said
+   * anything. This is the queue that still contains someone who stopped
+   * opening the app three weeks ago — every other list on this page is built
+   * from answers, so a person who gives none disappears from all of them.
+   *
+   * Messages are not loaded here: the dashboard holds dozens of participants
+   * and fetching every thread would cost more than it adds. Check-in rhythm
+   * alone is enough to surface the silence; the full reading, including the
+   * message thread, is on the person's own page.
+   */
+  const escalationQueue = useMemo(() => {
+    const assigned = currentWorker
+      ? participants.filter((p) => p.assignedWorker === currentWorker.id)
+      : [];
+    const mine = assigned.length > 0 ? assigned : participants;
+    const rank = { urgent: 3, contact: 2, watch: 1, none: 0 } as const;
+
+    return mine
+      .map((p) => {
+        const checkIns = p.checkIns || [];
+        const engagement = assessEngagement({ checkIns });
+        return {
+          participant: p,
+          engagement,
+          escalation: assessEscalation({
+            checkIns,
+            engagement,
+            concordance: assessLatest(checkIns),
+          }),
+        };
+      })
+      .filter((row) => row.escalation.level === "urgent" || row.escalation.level === "contact")
+      .sort((a, b) => rank[b.escalation.level] - rank[a.escalation.level])
+      .slice(0, 6);
+  }, [participants, currentWorker]);
+
 
   return (
     <div className="max-w-7xl mx-auto py-10 sm:py-14 px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 font-sans">
@@ -472,6 +511,62 @@ export const SupportDashboard: React.FC<Props> = ({
       </section>
 
       {/* Second-look queue: divergence between the self-report and everything else */}
+      {escalationQueue.length > 0 && (
+        <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
+          <div className="space-y-1.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+              <ScanSearch size={13} />
+              Escalation detected
+            </span>
+            <h2 className="font-serif text-2xl text-[#3A2A1E]">
+              Changes in how people are using the app
+            </h2>
+            <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
+              Read from check-in rhythm rather than from anything anyone reported — so someone who
+              has stopped answering altogether still appears here, which is the one case every
+              other list on this page will miss. Each carries the facts behind it; open the person
+              to see them.
+            </p>
+          </div>
+
+          <div className="flex flex-col gap-3">
+            {escalationQueue.map(({ participant, escalation }) => (
+              <button
+                key={participant.id}
+                onClick={() => onSelectParticipant(participant.id)}
+                className="text-left rounded-2xl border border-[#ECE1D3] bg-[#FDFAF4] p-4 hover:border-[#DBC3B2] transition-colors cursor-pointer flex flex-col gap-2.5"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
+                      <span data-no-translate>{participant.name || participant.id}</span>
+                    </p>
+                    <p className="text-[13px] text-[#8A7A6B] leading-snug">{escalation.headline}</p>
+                  </div>
+                  <span
+                    className={`shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full ${
+                      escalation.level === "urgent"
+                        ? "bg-[#A85D2E]/12 text-[#8A4A20]"
+                        : "bg-[#8A7A6B]/12 text-[#6B5D50]"
+                    }`}
+                  >
+                    within {escalation.withinHours}h
+                  </span>
+                </div>
+
+                {escalation.evidence.length > 0 && (
+                  <p className="text-[12px] text-[#6B5D50] leading-snug">
+                    {escalation.evidence[0]}
+                    {escalation.evidence.length > 1 &&
+                      ` +${escalation.evidence.length - 1} more`}
+                  </p>
+                )}
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
+
       {secondLookQueue.length > 0 && (
         <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
           <div className="space-y-1.5">
