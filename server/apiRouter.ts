@@ -30,7 +30,10 @@ router.get('/health', (_req: Request, res: Response) =>
 // ---------------------------------------------------------
 // Scheduled escalation sweep
 //
-// Called by Vercel Cron (see vercel.json). Until this existed, escalations
+// Called by Vercel Cron (see vercel.json — daily at 03:00 UTC, because the
+// Hobby plan refuses any cron running more than once a day and fails the
+// deployment rather than degrading; every six hours is right on Pro).
+// Until this existed, escalations
 // were only computed while a counsellor had the dashboard open — which is
 // the same periodic check-in the problem describes, wearing different
 // clothes. This evaluates every case on a schedule and emails the assigned
