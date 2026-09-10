@@ -4,7 +4,6 @@ import {
   TrendingDown,
   Activity,
   AlertTriangle,
-  Sparkles,
   Calendar,
   ArrowUpRight,
   ArrowDownRight,
@@ -62,7 +61,6 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
         </div>
 
         <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#7A726C]">
-          <Sparkles size={14} className="text-[#5A5049]" />
           <span>Synthetic Trend Model</span>
         </div>
       </div>

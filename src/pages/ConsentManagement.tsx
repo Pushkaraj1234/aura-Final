@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCcw,
-  Sparkles,
   ArrowLeft,
   EyeOff,
   Mic,

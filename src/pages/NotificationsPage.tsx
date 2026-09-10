@@ -11,7 +11,6 @@ import {
   Check,
   Shield,
   ArrowRight,
-  Sparkles,
   Info,
   Filter
 } from "lucide-react";

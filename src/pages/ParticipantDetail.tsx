@@ -15,7 +15,6 @@ import {
   User,
   ExternalLink,
   LifeBuoy,
-  Sparkles,
   UserCheck,
   Trash2,
   FileDown

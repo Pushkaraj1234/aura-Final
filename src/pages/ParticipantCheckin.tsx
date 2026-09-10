@@ -6,7 +6,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   AlertTriangle,
-  Sparkles,
   HelpCircle,
   Phone,
   Lock,
@@ -461,7 +460,6 @@ export const ParticipantCheckin: React.FC<Props> = ({
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EFE8E2]">
             <div>
               <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-[#DBC3B2]/20 text-[#5A5049] text-xs font-bold mb-2">
-                <Sparkles size={13} className="text-[#5A5049]" />
                 <span>Check-in Reflection Complete</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
@@ -1072,7 +1070,6 @@ export const ParticipantCheckin: React.FC<Props> = ({
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
-                <Sparkles size={14} />
                 <span>Step 7 • Strengths, Coping & Resilience</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">

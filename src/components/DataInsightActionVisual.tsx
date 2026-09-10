@@ -5,7 +5,6 @@ import {
   HeartHandshake,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
   UserCheck,
   TrendingUp
 } from "lucide-react";

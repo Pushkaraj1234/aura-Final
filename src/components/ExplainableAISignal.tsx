@@ -6,7 +6,6 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
-  Sparkles,
   UserCheck,
   Scale
 } from "lucide-react";
@@ -97,25 +96,20 @@ export const ExplainableAISignal: React.FC<Props> = ({
       {/* Header Bar */}
       <div className="p-5 sm:p-6 bg-gradient-to-r from-[#3C3530] to-[#5A5049] text-white">
         <div className="flex items-start justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center text-[#DBC3B2] shrink-0 border border-white/10">
-              <Sparkles size={20} />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#DBC3B2]">
-                  Explainable AI (XAI)
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#DBC3B2]">
+                Explainable AI (XAI)
+              </span>
+              {participantId && (
+                <span className="text-[10px] font-mono text-[#EFE8E2]/80">
+                  {/^[0-9a-f-]{20,}$/i.test(participantId) ? `ref ${participantId.slice(0, 8)}` : participantId}
                 </span>
-                {participantId && (
-                  <span className="text-[10px] font-mono text-[#EFE8E2]/80">
-                    {/^[0-9a-f-]{20,}$/i.test(participantId) ? `ref ${participantId.slice(0, 8)}` : participantId}
-                  </span>
-                )}
-              </div>
-              <h3 className="text-lg sm:text-xl font-black text-white mt-1">
-                Why did AURA generate this signal?
-              </h3>
+              )}
             </div>
+            <h3 className="text-lg sm:text-xl font-black text-white mt-1">
+              Why did AURA generate this signal?
+            </h3>
           </div>
           <button
             onClick={() => setExpanded(!expanded)}

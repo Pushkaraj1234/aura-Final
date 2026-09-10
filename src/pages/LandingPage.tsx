@@ -4,7 +4,6 @@ import {
   Shield,
   Users,
   ArrowRight,
-  Sparkles,
   HeartHandshake,
   TrendingUp,
   Lock,
@@ -26,7 +25,6 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
           {/* Top Pill */}
           <div className="flex justify-center mb-6">
             <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#DBC3B2]/25 border border-[#DBC3B2]/50 text-[#5A5049] text-xs sm:text-sm font-semibold shadow-xs">
-              <Sparkles size={16} className="text-[#5A5049] animate-pulse" />
               <span>Humanitarian Technology</span>
             </div>
           </div>

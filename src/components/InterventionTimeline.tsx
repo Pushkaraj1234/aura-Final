@@ -1,12 +1,12 @@
 import React from "react";
 import {
   Activity,
+  Circle,
   AlertTriangle,
   UserCheck,
   HeartHandshake,
   CheckCircle2,
   Calendar,
-  Sparkles,
   ArrowDownRight
 } from "lucide-react";
 import { SupportTimelineEvent, Participant, TrajectoryAnalysis } from "../types";
@@ -110,7 +110,7 @@ export const InterventionTimeline: React.FC<Props> = ({ participant, trajectory 
       case "improvement":
         return <CheckCircle2 size={16} className="text-emerald-600" />;
       default:
-        return <Sparkles size={16} className="text-[#5A5049]" />;
+        return <Circle size={16} className="text-[#5A5049]" />;
     }
   };
 
@@ -135,18 +135,13 @@ export const InterventionTimeline: React.FC<Props> = ({ participant, trajectory 
     <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 sm:p-7 shadow-xs space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-[#EFE8E2] pb-5">
-        <div className="flex items-center space-x-3">
-          <div className="w-11 h-11 rounded-2xl bg-[#3C3530] text-[#DBC3B2] flex items-center justify-center">
-            <Sparkles size={20} />
-          </div>
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#5A5049]">
-              Lifecycle Tracking
-            </span>
-            <h3 className="text-xl font-black text-[#3C3530] mt-0.5">
-              Support & Outcome Timeline
-            </h3>
-          </div>
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#5A5049]">
+            Lifecycle Tracking
+          </span>
+          <h3 className="text-xl font-black text-[#3C3530] mt-0.5">
+            Support &amp; Outcome Timeline
+          </h3>
         </div>
 
         <span className="text-xs font-semibold text-[#7F8C8D]">

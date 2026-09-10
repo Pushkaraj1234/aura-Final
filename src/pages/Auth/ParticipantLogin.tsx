@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Lock, ArrowRight, ArrowLeft, HeartHandshake, KeyRound, Check, Sparkles } from "lucide-react";
+import { Lock, ArrowRight, ArrowLeft, HeartHandshake, KeyRound, Check } from "lucide-react";
 import { authService, DEMO_CREDENTIALS } from "../../services/authService";
 
 
@@ -64,7 +64,7 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
           <div className="bg-[#DBC3B2]/15 border border-[#DBC3B2]/40 rounded-2xl p-4 space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center">
-                <Sparkles size={13} className="mr-1 text-[#5A5049]" /> Demo Account Available
+                Demo Account Available
               </span>
               <button
                 type="button"

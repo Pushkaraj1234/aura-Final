@@ -1,6 +1,6 @@
 import React from "react";
 import { ReflectionAnalysisResult, GeminiAnalysisResult, VoiceToneAnalysisResult } from "../types";
-import { Cpu, AlertTriangle, CheckCircle2, Info, Sparkles, MessageSquare, BrainCircuit, Volume2 } from "lucide-react";
+import { Cpu, AlertTriangle, CheckCircle2, Info, MessageSquare, BrainCircuit, Volume2, Scale } from "lucide-react";
 
 interface ReflectionAnalysisProps {
   analysis: ReflectionAnalysisResult;
@@ -79,7 +79,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
       case "safety_concern":
         return <AlertTriangle size={13} className="mr-1.5 text-[#A55D25]" />;
       case "mixed":
-        return <Sparkles size={13} className="mr-1.5 text-amber-600" />;
+        return <Scale size={13} className="mr-1.5 text-amber-600" />;
       case "neutral":
       default:
         return <MessageSquare size={13} className="mr-1.5 text-[#5A5049]" />;

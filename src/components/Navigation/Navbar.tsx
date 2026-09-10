@@ -6,7 +6,6 @@ import {
   User as UserIcon,
   LogOut,
   Bell,
-  Sparkles,
   Menu,
   X,
   LayoutDashboard,
