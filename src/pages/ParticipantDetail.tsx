@@ -32,6 +32,10 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 import { Participant, SupportNote, User as AppUser } from "../types";
 import { analyzeDistress } from "../services/riskEngine";
 import { analyzeParticipantTrajectory, generateEarlyWarningForecast } from "../services/trajectoryEngine";
+import { assessEngagement } from "../services/engagementSignals";
+import { assessEscalation } from "../services/escalationEngine";
+import { assessLatest } from "../services/concordanceEngine";
+import { EscalationCard } from "../components/EscalationCard";
 import { generateSupportRecommendation } from "../services/supportRecommendationEngine";
 import { ExplainableAISignal } from "../components/ExplainableAISignal";
 import { EarlyWarningForecastCard } from "../components/EarlyWarningForecastCard";
@@ -172,6 +176,43 @@ export const ParticipantDetail: React.FC<Props> = ({
   };
 
   const checkIns = participant?.checkIns || [];
+
+  // Passive monitoring: what their pattern of use says when they are not
+  // saying anything. Messages are fetched here rather than passed in because
+  // this is the only screen that needs them, and a failure to load them must
+  // degrade the reading rather than the page.
+  const [threadMessages, setThreadMessages] = React.useState<any[]>([]);
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { apiService } = await import("../services/apiService");
+        const msgs = await apiService.messages.getForParticipant(participant.id);
+        if (!cancelled) setThreadMessages(Array.isArray(msgs) ? msgs : []);
+      } catch {
+        // No thread available — engagement is still read from check-ins alone.
+        if (!cancelled) setThreadMessages([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [participant.id]);
+
+  const engagement = React.useMemo(
+    () => assessEngagement({ checkIns, messages: threadMessages }),
+    [checkIns, threadMessages]
+  );
+
+  const escalation = React.useMemo(
+    () =>
+      assessEscalation({
+        checkIns,
+        engagement,
+        concordance: assessLatest(checkIns),
+      }),
+    [checkIns, engagement]
+  );
   const latestCheckIn = checkIns.length > 0 ? checkIns[checkIns.length - 1] : null;
   const previousCheckIn = checkIns.length > 1 ? checkIns[checkIns.length - 2] : null;
 
@@ -363,6 +404,14 @@ export const ParticipantDetail: React.FC<Props> = ({
           </span>
         </div>
       </div>
+
+      {/* Passive monitoring sits above everything else on this page. It is the
+          one reading that still works when the person has stopped answering,
+          which is the state that most needs to be seen first. Hidden when
+          there is nothing to act on, so it never becomes furniture. */}
+      {escalation.level !== "none" && (
+        <EscalationCard escalation={escalation} engagement={engagement} />
+      )}
 
       {/* Participant Header Card */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE8E2] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-6">
