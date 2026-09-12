@@ -22,13 +22,18 @@ const TEST = { id:'t-1', participant_id:UID, worker_id:'22222222-2222-2222-2222-
 
 async function session({ tests = [], responses = [], reviews = [] }) {
   const page = await b.newPage({ viewport:{width:1440,height:1100} });
+  // Playwright checks the most recently registered route first, so the
+  // catch-all goes on before the specific mocks — otherwise it swallows them
+  // and every query comes back aborted.
+  await page.route('**supabase.co/**', r=>r.abort());
   await page.route('**/rest/v1/counsellor_tests**', r =>
     r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(tests)}));
   await page.route('**/rest/v1/counsellor_test_responses**', r =>
     r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(responses)}));
   await page.route('**/rest/v1/my_test_reviews**', r =>
     r.fulfill({status:200,contentType:'application/json',body:JSON.stringify(reviews)}));
-  await page.route('**supabase.co/**', r=>r.abort());
+  await page.route('**/rest/v1/my_guardian_assessments**', r =>
+    r.fulfill({status:200,contentType:'application/json',body:'[]'}));
   await page.goto('http://127.0.0.1:3000/', { waitUntil:'domcontentloaded' });
   await page.evaluate((uid)=>{
     localStorage.clear();

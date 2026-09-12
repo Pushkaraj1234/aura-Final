@@ -53,12 +53,14 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
   const [reviewText, setReviewText] = useState("");
 
   const load = async () => {
-    const [t, r] = await Promise.all([
+    // allSettled: supabase-js rejects on an aborted request, and with
+    // Promise.all one failure blanked this whole view.
+    const [t, r] = await Promise.allSettled([
       counsellorTestService.listForParticipant(participantId),
       counsellorTestService.responsesForParticipant(participantId),
     ]);
-    setTests(t);
-    setResponses(r);
+    if (t.status === "fulfilled") setTests(t.value);
+    if (r.status === "fulfilled") setResponses(r.value);
     setLoading(false);
   };
 

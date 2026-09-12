@@ -5,6 +5,7 @@ import { createServer as createViteServer } from 'vite';
 import apiRouter from './server/apiRouter.js';
 import adminRouter from './server/adminRouter.js';
 import reviewModerationRouter from './server/reviewModerationRouter.js';
+import guardianRouter from './server/guardianRouter.js';
 
 const app = express();
 const PORT = 3000;
@@ -40,6 +41,9 @@ async function startServer() {
   // existing /api route.
   // Review moderation — a new route group, mounted ahead of the admin router
   // so its path wins. Nothing in the existing admin surface changes.
+  // Guardian questionnaire — unauthenticated, token-gated.
+  app.use('/api/guardian', guardianRouter);
+
   app.use('/api/admin/reviews', reviewModerationRouter);
 
   app.use('/api/admin', adminRouter);

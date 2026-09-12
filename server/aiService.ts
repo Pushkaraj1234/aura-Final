@@ -592,3 +592,47 @@ export async function analyzeCredentialDocument(
     return { status: "unavailable", reason: err?.message || "Credential analysis failed.", analyzedAt };
   }
 }
+
+/**
+ * Two sentences on what a guardian reported, for the counsellor's screen.
+ *
+ * The concern level is computed from the answers before this is called and is
+ * passed in rather than asked for — the model's job is to phrase what is there,
+ * not to grade it. Returns null rather than throwing so a failure downgrades
+ * the summary to the computed one instead of losing the submission.
+ */
+export async function summariseGuardianReport(
+  answers: Array<{ questionId: string; value: string }>,
+  concern: string
+): Promise<string | null> {
+  if (!process.env.GEMINI_API_KEY) return null;
+
+  const lines = answers.map((a) => `- ${a.questionId}: ${a.value}`).join("\n");
+  const prompt = `A family member answered a five-question check about someone receiving support.
+Their answers:
+${lines}
+
+The computed concern level is "${concern}".
+
+Write at most two short sentences for the counsellor, stating what the family
+member reported and where attention is needed. Do not diagnose, do not give a
+score, do not contradict the concern level, and do not add anything that is not
+in the answers above.`;
+
+  try {
+    const response = await getAI().models.generateContent({
+      model: GEMINI_FLASH_MODEL,
+      contents: prompt,
+      config: {
+        systemInstruction: SCREENING_SYSTEM_PROMPT,
+        temperature: 0.2,
+        maxOutputTokens: 160,
+      },
+    });
+    const text = (response.text || "").trim();
+    return text ? text.slice(0, 800) : null;
+  } catch (err: any) {
+    console.warn("[AURA Guardian] Gemini summary failed:", err?.message || err);
+    return null;
+  }
+}

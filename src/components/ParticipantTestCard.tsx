@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ClipboardList, CheckCircle2, MessageSquareQuote } from "lucide-react";
 import { CounsellorTest, CounsellorTestResponse, MyTestReview, TestAnswer } from "../types";
 import { counsellorTestService } from "../services/counsellorTestService";
+import { guardianService, GuardianNotice } from "../services/guardianService";
 
 interface Props {
   participantId: string;
@@ -18,6 +19,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
   const [tests, setTests] = useState<CounsellorTest[]>([]);
   const [responses, setResponses] = useState<Map<string, CounsellorTestResponse>>(new Map());
   const [reviews, setReviews] = useState<MyTestReview[]>([]);
+  const [guardianNotices, setGuardianNotices] = useState<GuardianNotice[]>([]);
   const [loading, setLoading] = useState(true);
 
   const [taking, setTaking] = useState<CounsellorTest | null>(null);
@@ -27,14 +29,21 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
   const [done, setDone] = useState<string | null>(null);
 
   const load = async () => {
-    const [t, r, rv] = await Promise.all([
+    // allSettled, not all. supabase-js rejects rather than returning an error
+    // when a request is aborted — offline, a blocked host, a dropped
+    // connection — and with Promise.all a single rejection took the whole card
+    // down with it, hiding a test the counsellor had assigned. Each source now
+    // fails on its own and the rest still render.
+    const [t, r, rv, gn] = await Promise.allSettled([
       counsellorTestService.myTests(participantId),
       counsellorTestService.myResponses(participantId),
       counsellorTestService.myReviews(participantId),
+      guardianService.noticesForParticipant(participantId),
     ]);
-    setTests(t);
-    setResponses(r);
-    setReviews(rv);
+    if (t.status === "fulfilled") setTests(t.value);
+    if (r.status === "fulfilled") setResponses(r.value);
+    if (rv.status === "fulfilled") setReviews(rv.value);
+    if (gn.status === "fulfilled") setGuardianNotices(gn.value);
     setLoading(false);
   };
 
@@ -67,7 +76,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
   };
 
   if (loading) return null;
-  if (!waiting.length && !reviews.length && !done) return null;
+  if (!waiting.length && !reviews.length && !guardianNotices.length && !done) return null;
 
   return (
     <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
@@ -127,6 +136,36 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
           </p>
         </div>
       ))}
+
+      {guardianNotices.length > 0 && (
+        <div className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] p-4">
+          <p className="text-xs font-bold text-[#3C3530]">
+            People your counsellor has asked about you
+          </p>
+          <ul className="mt-2 space-y-1.5">
+            {guardianNotices.map((g) => (
+              <li key={g.id} className="text-xs text-[#5A5049]">
+                <span className="font-semibold" data-no-translate>{g.guardianLabel}</span>
+                {" — asked "}
+                {new Date(g.createdAt).toLocaleDateString()}
+                {g.status === "submitted" && g.submittedAt
+                  ? `, replied ${new Date(g.submittedAt).toLocaleDateString()}`
+                  : g.status === "revoked"
+                    ? ", withdrawn"
+                    : ", not replied yet"}
+              </li>
+            ))}
+          </ul>
+          {/* They are told this happened and who was asked, so they can object
+              to the wrong person being asked. What was said goes to the
+              counsellor only — an answer the person it is about will read is
+              not the honest answer. */}
+          <p className="text-[11px] text-[#7A726C] mt-2 leading-relaxed">
+            What they said goes only to your counsellor. If you would rather someone was not asked,
+            tell your counsellor and they will withdraw it.
+          </p>
+        </div>
+      )}
 
       {taking && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50 overflow-y-auto">

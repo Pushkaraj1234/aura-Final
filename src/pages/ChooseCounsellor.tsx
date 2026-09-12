@@ -114,12 +114,17 @@ export const ChooseCounsellor: React.FC<Props> = ({
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const [list, tagList, prior] = await Promise.all([
+      // allSettled: supabase-js rejects on an aborted request, and with
+      // Promise.all one failure left this page loading forever.
+      const [listR, tagR, priorR] = await Promise.allSettled([
         counsellorSelectionService.listCounsellors(),
         counsellorSelectionService.listTags(),
         counsellorSelectionService.latestQuiz(participantId),
       ]);
       if (cancelled) return;
+      const list = listR.status === "fulfilled" ? listR.value : [];
+      const tagList = tagR.status === "fulfilled" ? tagR.value : [];
+      const prior = priorR.status === "fulfilled" ? priorR.value : null;
       setCounsellors(list);
       setTags(tagList);
       if (prior) {
@@ -141,12 +146,14 @@ export const ChooseCounsellor: React.FC<Props> = ({
   }, [participantId]);
 
   const loadSessions = async () => {
-    const [s, r] = await Promise.all([
+    // allSettled: supabase-js rejects on an aborted request, and with
+    // Promise.all one failure blanked this whole view.
+    const [sR, rR] = await Promise.allSettled([
       counsellorSelectionService.listSessions(participantId),
       counsellorSelectionService.listOwnReviews(participantId),
     ]);
-    setSessions(s);
-    setOwnReviews(r);
+    if (sR.status === "fulfilled") setSessions(sR.value);
+    if (rR.status === "fulfilled") setOwnReviews(rR.value);
   };
 
   useEffect(() => {

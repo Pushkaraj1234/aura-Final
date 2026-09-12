@@ -13,7 +13,8 @@
     "check:esm": "node scripts/check-esm-imports.mjs",
     "test:matching": "npx esbuild src/services/counsellorMatching.ts --format=esm --outfile=dist-test/counsellorMatching.js --log-level=error && node tests/matching.test.mjs",
     "seed:counsellors": "node scripts/seed-counsellors.mjs",
-    "test:score": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recEngine.js --log-level=error && node tests/score-integrity.test.mjs"
+    "test:score": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recEngine.js --log-level=error && node tests/score-integrity.test.mjs",
+    "test:guardian": "npx esbuild src/services/guardianQuestions.ts --bundle --format=esm --outfile=dist-test/guardianQuestions.js --log-level=error && node tests/guardian.test.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
