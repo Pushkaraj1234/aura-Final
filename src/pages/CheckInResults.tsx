@@ -456,6 +456,8 @@ export const CheckInResults: React.FC<Props> = ({
             aiAdjustment={analysis.aiAdjustment ?? 0}
             aiConsulted={analysis.aiConsulted ?? false}
             aiClamped={analysis.aiClamped ?? false}
+            aiEvidenceChars={analysis.aiEvidenceChars}
+            aiAdjustmentCap={analysis.aiAdjustmentCap}
           />
         </div>
       </div>

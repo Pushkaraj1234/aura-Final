@@ -383,6 +383,10 @@ export interface CheckInAnalysis {
   distressScore: number;
   /** The transparent rule-based score, before any AI adjustment. */
   ruleScore?: number;
+  /** Characters of written or spoken reflection the model actually had to read. */
+  aiEvidenceChars?: number;
+  /** The most it was allowed to move the score, given that much evidence. */
+  aiAdjustmentCap?: number;
   /** Points the AI moved the score by, bounded by AI_SCORE_ADJUSTMENT_LIMIT. */
   aiAdjustment?: number;
   /** Whether the AI was consulted at all — it only runs on a reflection. */
