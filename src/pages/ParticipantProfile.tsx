@@ -46,6 +46,9 @@ interface Props {
   onViewResults?: () => void;
 }
 
+/** The support preferences currently on offer. */
+const SUPPORT_PREFERENCES = ["In-app support information", "Human counselor"];
+
 export const ParticipantProfile: React.FC<Props> = ({
   user,
   participantRecord,
@@ -614,8 +617,17 @@ ${
               >
                 <option value="In-app support information">In-app support information</option>
                 <option value="Human counselor">Human counselor / therapist</option>
-                <option value="Trusted person">Trusted friend or community contact</option>
-                <option value="Not sure yet">Not sure yet</option>
+                {/* Someone who chose one of the retired options before they were
+                    removed still has it saved. Without an option to match, the
+                    browser renders the first one instead — telling that person
+                    their support preference is something they never picked, in
+                    the one place they go to control it. Shown, disabled, until
+                    they choose again. */}
+                {!SUPPORT_PREFERENCES.includes(supportPref) && (
+                  <option value={supportPref} disabled>
+                    {supportPref} (no longer offered — please choose again)
+                  </option>
+                )}
               </select>
 
               <button
