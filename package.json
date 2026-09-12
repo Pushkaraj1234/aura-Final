@@ -11,7 +11,8 @@
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "check:esm": "node scripts/check-esm-imports.mjs",
-    "test:matching": "npx esbuild src/services/counsellorMatching.ts --format=esm --outfile=dist-test/counsellorMatching.js --log-level=error && node tests/matching.test.mjs"
+    "test:matching": "npx esbuild src/services/counsellorMatching.ts --format=esm --outfile=dist-test/counsellorMatching.js --log-level=error && node tests/matching.test.mjs",
+    "seed:counsellors": "node scripts/seed-counsellors.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

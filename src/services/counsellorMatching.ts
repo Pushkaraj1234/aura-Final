@@ -28,6 +28,22 @@ const AVAILABILITY_POINTS = 1;
 export const SHORTLIST_MIN = 3;
 export const SHORTLIST_MAX = 5;
 
+/**
+ * Turns tags into something a person would say out loud.
+ *
+ * These strings are read by the person choosing, so "legal_stress,
+ * discrimination" is not good enough — the stored tag is an implementation
+ * detail and should not surface in the reason a counsellor was suggested.
+ */
+const readable = (tag: string): string => tag.replace(/_/g, " ");
+
+const listPhrase = (tags: string[]): string => {
+  const words = tags.map(readable);
+  if (words.length === 1) return words[0];
+  if (words.length === 2) return `${words[0]} and ${words[1]}`;
+  return `${words.slice(0, -1).join(", ")} and ${words[words.length - 1]}`;
+};
+
 const overlap = (a: string[] = [], b: string[] = []): string[] => {
   const set = new Set(b);
   return a.filter((x) => set.has(x));
@@ -59,10 +75,7 @@ function scoreOne(c: CounsellorDirectoryEntry, prefs: MatchingQuizAnswers): Coun
   const sharedSpecialties = overlap(prefs.lookingFor, c.specialties);
   if (sharedSpecialties.length) {
     score += sharedSpecialties.length * SPECIALTY_POINTS;
-    reasons.push({
-      kind: "specialty",
-      label: `Works with ${sharedSpecialties.length === 1 ? "" : "areas including "}${sharedSpecialties.join(", ")}`,
-    });
+    reasons.push({ kind: "specialty", label: `Works with ${listPhrase(sharedSpecialties)}` });
   }
 
   const sharedLanguages = overlap(prefs.preferredLanguages, c.languages);
