@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Shield,
@@ -47,6 +47,7 @@ import { InterventionTimeline } from "../components/InterventionTimeline";
 import { SignalStrengthVsHumanCard } from "../components/ResponsibleAIBadges";
 import { AICaseSummaryCard } from "../components/AICaseSummaryCard";
 import { PredictiveMLCard } from "../components/PredictiveMLCard";
+import { CounsellorTestPanel } from "../components/CounsellorTestPanel";
 
 interface Props {
   participant: Participant;
@@ -250,13 +251,42 @@ export const ParticipantDetail: React.FC<Props> = ({
     participant.preferredSupport
   );
 
+  // Counsellor marks, plotted beside the self-reported score rather than mixed
+  // into it. Two readings of the same week that can be compared are more use
+  // than one number that silently contains both.
+  const [testMarks, setTestMarks] = useState<Array<{ at: number; mark: number }>>([]);
+
+  const loadTestMarks = React.useCallback(async () => {
+    const { counsellorTestService } = await import("../services/counsellorTestService");
+    const responses = await counsellorTestService.responsesForParticipant(participant.id);
+    setTestMarks(
+      Array.from(responses.values())
+        .filter((r) => r.mark != null && r.reviewedAt)
+        .map((r) => ({ at: new Date(r.reviewedAt!).getTime(), mark: r.mark as number }))
+        .sort((a, b) => a.at - b.at)
+    );
+  }, [participant.id]);
+
+  useEffect(() => { loadTestMarks(); }, [loadTestMarks]);
+
   // Prepare chart data
   const trendData = checkIns.map((c, idx) => ({
     day: `Check-in ${idx + 1}`,
     score: c.calculatedScore || 0,
     stress: c.stress * 20,
     sleep: c.sleep * 20,
-    date: new Date(c.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" })
+    date: new Date(c.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" }),
+    // A mark belongs to the check-in nearest in time to when it was reviewed,
+    // so the two lines line up on the same x-axis. Points with no mark stay
+    // undefined, which recharts renders as a gap rather than a drop to zero.
+    counsellorMark: (() => {
+      if (!testMarks.length) return undefined;
+      const t = new Date(c.timestamp).getTime();
+      const nearest = testMarks.reduce((best, m) =>
+        Math.abs(m.at - t) < Math.abs(best.at - t) ? m : best, testMarks[0]);
+      // Only claim a pairing when the review is within a few days of the check-in.
+      return Math.abs(nearest.at - t) <= 5 * 24 * 3600 * 1000 ? nearest.mark : undefined;
+    })(),
   }));
 
   const handleAddNote = (e: React.FormEvent) => {
@@ -614,21 +644,51 @@ export const ParticipantDetail: React.FC<Props> = ({
                     <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#3C3530", border: "1px solid #3F4E4E", borderRadius: "1rem", color: "#fff", fontSize: "12px" }}
-                      formatter={(val: number) => [`${val}/100`, "Distress Indicator"]}
+                      formatter={(val: number, name: string) => [
+                        `${val}/100`,
+                        name === "counsellorMark" ? "Counsellor's mark" : "Self-reported",
+                      ]}
                     />
                     <Area
                       type="monotone"
                       dataKey="score"
+                      name="Self-reported"
                       stroke="#5A5049"
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#detailGradient)"
+                    />
+                    {/* The counsellor's own marks. Dashed and unfilled so it
+                        reads as a second opinion laid over the self-report,
+                        not as part of it. connectNulls joins across check-ins
+                        that were never marked, rather than dropping to zero. */}
+                    <Area
+                      type="monotone"
+                      dataKey="counsellorMark"
+                      name="Counsellor's mark"
+                      stroke="#9A5B33"
+                      strokeWidth={2}
+                      strokeDasharray="5 4"
+                      fill="none"
+                      connectNulls
+                      dot={{ r: 3, fill: "#9A5B33" }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             )}
           </div>
+
+          {/* Tests this counsellor has set for this person, and the answers
+              that came back. Sits under the trajectory because a mark saved
+              here becomes the second line on that chart. */}
+          {currentUser?.id && (
+            <CounsellorTestPanel
+              participantId={participant.id}
+              workerId={currentUser.id}
+              onReviewed={loadTestMarks}
+            />
+          )}
 
           {/* Explainable AI (XAI) Signal Component (Requirement #4) */}
           <ExplainableAISignal
