@@ -321,13 +321,22 @@ export const participantStore = {
     const existing = participants.find((p) => p.id === user.id);
 
     if (existing) {
-      // Re-assert this participant exists server-side too — harmless no-op
-      // (upsert) if it already does. This is what lets a participant record
-      // that failed to persist earlier (e.g. signing up while Supabase email
-      // confirmation was still pending, so there was no real session yet)
-      // get created once a real session exists, without ever touching local
-      // check-in history the way registerNewParticipant would.
-      apiService.participants.create({ ...existing, userId: user.id }).catch(() => {});
+      // Re-assert this participant exists server-side too. This is what lets a
+      // participant record that failed to persist earlier (e.g. signing up
+      // while Supabase email confirmation was still pending, so there was no
+      // real session yet) get created once a real session exists, without ever
+      // touching local check-in history the way registerNewParticipant would.
+      //
+      // assignedWorker is stripped deliberately. This runs on essentially
+      // every participant render and sends whatever this browser has cached,
+      // so passing the whole record wrote a stale counsellor back over the
+      // server's current value: an admin could unassign someone and the
+      // participant's next page load would silently restore the old
+      // assignment, leaving a database that contradicted its own
+      // assignment_history. Who a participant is assigned to is decided by the
+      // admin flow and by select_counsellor(), never replayed from a cache.
+      const { assignedWorker, ...withoutAssignment } = existing;
+      apiService.participants.create({ ...withoutAssignment, userId: user.id }).catch(() => {});
       return existing;
     }
 
@@ -672,7 +681,10 @@ export const participantStore = {
       preferredSupport: targetParticipant.preferredSupport,
       language: targetParticipant.language,
       ageGroup: targetParticipant.ageGroup,
-      assignedWorker: targetParticipant.assignedWorker,
+      // assignedWorker is deliberately absent: submitting a check-in must not
+      // rewrite who this person is assigned to. It used to send the cached
+      // value, so a check-in completed after an admin unassigned someone put
+      // the old counsellor straight back.
       createdAt: targetParticipant.createdAt,
     }).catch((err: any) => {
       console.warn("[ParticipantStore] Supabase participant upsert warning:", err?.message || err);
