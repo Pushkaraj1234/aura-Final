@@ -100,38 +100,53 @@ export const Navbar: React.FC<Props> = ({
                     Aura
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-[#8F867E] uppercase tracking-widest hidden sm:block mt-0.5">
+                <p className="text-[10px] font-bold text-[#8F867E] uppercase tracking-widest hidden sm:block min-[1500px]:hidden min-[1750px]:block mt-0.5">
                   {isWorker ? 'Care Operations' : 'Participant Portal'}
                 </p>
               </div>
             </button>
           </div>
 
-          {/* Desktop Center Navigation (Role-aware) */}
+          {/* Desktop Center Navigation (Role-aware).
+
+              Two width thresholds because the two roles carry different numbers
+              of tabs: a participant has six, a counsellor eight plus a longer
+              name and an alert count. Measured, not guessed — the counsellor bar
+              scrolled the page sideways on ordinary laptops. Both numbers are
+              measured rather than guessed, and set where every tab is fully
+              visible with nothing overflowing — not at the last pixel that
+              technically fits, because translated labels change width and this
+              app ships in twenty-three languages. Below its own threshold each
+              role gets the hamburger, which already lists everything including
+              the language picker. */}
           {user && (
-            <nav className="hidden lg:flex items-center space-x-1 bg-white/55 p-1.5 rounded-full border border-[#E8E4DE] backdrop-blur-sm mx-auto">
+            <nav
+              className={`hidden items-center space-x-0.5 bg-white/55 p-1 rounded-full border border-[#E8E4DE] backdrop-blur-sm mx-auto ${
+                isWorker ? "min-[1700px]:flex" : "min-[1500px]:flex"
+              }`}
+            >
               {isWorker ? (
                 <>
                   <button
                     onClick={() => onNavigate("dashboard")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "dashboard" || currentView === "detail"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <LayoutDashboard size={14} />
+                    <LayoutDashboard size={14} className="hidden min-[1750px]:block" />
                     <span>Dashboard</span>
                   </button>
                   <button
                     onClick={() => onNavigate("messages")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 relative cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "messages"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <MessageCircle size={14} />
+                    <MessageCircle size={14} className="hidden min-[1750px]:block" />
                     <span>Messages</span>
                     {unreadMessagesCount > 0 && (
                       <span className="ml-1 w-4 h-4 rounded-full bg-[#A85D2E] text-white text-[10px] font-bold flex items-center justify-center">
@@ -141,13 +156,13 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("alerts")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 relative cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "alerts"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <Bell size={14} />
+                    <Bell size={14} className="hidden min-[1750px]:block" />
                     <span>Alerts</span>
                     {pendingAlertsCount > 0 && (
                       <span className="ml-1 w-4 h-4 rounded-full bg-[#A85D2E] text-white text-[10px] font-bold flex items-center justify-center">
@@ -157,51 +172,51 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("follow_ups")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "follow_ups"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <HeartHandshake size={14} />
+                    <HeartHandshake size={14} className="hidden min-[1750px]:block" />
                     <span>Outcomes</span>
                   </button>
                   <button
                     onClick={() => onNavigate("community")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "community"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <BarChart2 size={14} />
+                    <BarChart2 size={14} className="hidden min-[1750px]:block" />
                     <span>Community</span>
                   </button>
                   <button
                     onClick={() => onNavigate("support_resources")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "support_resources"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <BookOpen size={14} />
+                    <BookOpen size={14} className="hidden min-[1750px]:block" />
                     <span>Resources</span>
                   </button>
                   <button
                     onClick={() => onNavigate("audit_log")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "audit_log"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <FileText size={14} />
+                    <FileText size={14} className="hidden min-[1750px]:block" />
                     <span>Audit Log</span>
                   </button>
                   <button
                     onClick={() => onNavigate("privacy")}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "privacy"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
@@ -215,24 +230,24 @@ export const Navbar: React.FC<Props> = ({
                 <>
                   <button
                     onClick={() => onNavigate("participant_home")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "participant_home"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <Activity size={14} />
+                    <Activity size={14} className="hidden min-[1750px]:block" />
                     <span>My Wellbeing</span>
                   </button>
                   <button
                     onClick={() => onNavigate("messages")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 relative cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "messages"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <MessageCircle size={14} />
+                    <MessageCircle size={14} className="hidden min-[1750px]:block" />
                     <span>Messages</span>
                     {unreadMessagesCount > 0 && (
                       <span className="ml-1 w-4 h-4 rounded-full bg-[#A85D2E] text-white text-[10px] font-bold flex items-center justify-center">
@@ -242,40 +257,40 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("checkin")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "checkin"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <History size={14} />
+                    <History size={14} className="hidden min-[1750px]:block" />
                     <span>Daily Check-in</span>
                   </button>
                   <button
                     onClick={() => onNavigate("support_resources")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "support_resources"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <BookOpen size={14} />
+                    <BookOpen size={14} className="hidden min-[1750px]:block" />
                     <span>Resources</span>
                   </button>
                   <button
                     onClick={() => onNavigate("consent_mgmt")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "consent_mgmt"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <Sliders size={14} />
+                    <Sliders size={14} className="hidden min-[1750px]:block" />
                     <span>Consent Settings</span>
                   </button>
                   <button
                     onClick={() => onNavigate("privacy")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "privacy"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -320,7 +335,7 @@ export const Navbar: React.FC<Props> = ({
                 point: a participant who cannot read English needs it reachable
                 from wherever they are, not only inside the check-in. */}
             {!isWorker && (
-              <div className="hidden sm:flex items-center pr-1 border-r border-[#EFE8E2] mr-1">
+              <div className="hidden md:flex items-center shrink-0">
                 <LanguageSelector />
               </div>
             )}
@@ -332,7 +347,7 @@ export const Navbar: React.FC<Props> = ({
               title="Immediate Crisis & Emergency Resources"
             >
               <LifeBuoy size={14} className="text-[#9A5B33]" />
-              <span className="hidden lg:inline">Emergency Help</span>
+              <span className="hidden lg:inline whitespace-nowrap">Emergency Help</span>
             </button>
 
             {/* User Profile / Menu */}
@@ -582,7 +597,7 @@ export const Navbar: React.FC<Props> = ({
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="xl:hidden p-2 rounded-xl text-[#3C3530] hover:bg-[#EFE8E2] transition-colors cursor-pointer"
+              className={`p-2 rounded-xl text-[#3C3530] hover:bg-[#EFE8E2] transition-colors cursor-pointer ${isWorker ? "min-[1700px]:hidden" : "min-[1500px]:hidden"}`}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -592,7 +607,7 @@ export const Navbar: React.FC<Props> = ({
 
       {/* Mobile Dropdown Navigation */}
       {mobileMenuOpen && (
-        <div className="xl:hidden bg-white border-t border-[#EFE8E2] px-4 py-4 space-y-2">
+        <div className={`bg-white border-t border-[#EFE8E2] px-4 py-4 space-y-2 ${isWorker ? "min-[1700px]:hidden" : "min-[1500px]:hidden"}`}>
           {!isWorker && (
             <div className="pb-3 mb-1 border-b border-[#EFE8E2]">
               <LanguageSelector />

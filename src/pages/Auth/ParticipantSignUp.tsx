@@ -419,8 +419,6 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 >
                   <option value="In-app support information">In-app support information & grounding</option>
                   <option value="Human counselor">Human counselor / therapist</option>
-                  <option value="Trusted person">Trusted friend or community contact</option>
-                  <option value="Not sure yet">Not sure yet</option>
                 </select>
               </div>
 
