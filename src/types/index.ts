@@ -967,3 +967,62 @@ export interface PublicReview {
 
 /** How the current assignment came about. */
 export type AssignmentSource = "admin" | "self";
+
+// ---------------------------------------------------------------------------
+// Counsellor-authored tests
+// ---------------------------------------------------------------------------
+
+export type TestQuestionType = "choice" | "scale" | "text";
+
+export interface TestQuestion {
+  id: string;
+  prompt: string;
+  type: TestQuestionType;
+  /** Only for "choice" — the counsellor writes these themselves. */
+  options?: string[];
+}
+
+export type CounsellorTestStatus = "draft" | "assigned" | "submitted" | "reviewed";
+
+export interface CounsellorTest {
+  id: string;
+  participantId: string;
+  workerId: string;
+  title: string;
+  instructions?: string | null;
+  questions: TestQuestion[];
+  status: CounsellorTestStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TestAnswer {
+  questionId: string;
+  value: string | number;
+}
+
+/** A response as the counsellor sees it — answers, and their own marking. */
+export interface CounsellorTestResponse {
+  id: string;
+  testId: string;
+  participantId: string;
+  answers: TestAnswer[];
+  submittedAt?: string | null;
+  mark?: number | null;
+  reviewText?: string | null;
+  reviewedAt?: string | null;
+  reviewedBy?: string | null;
+}
+
+/**
+ * A reviewed test as the participant sees it. There is no mark here, and that
+ * is deliberate — see the my_test_reviews view.
+ */
+export interface MyTestReview {
+  testId: string;
+  title: string;
+  answers: TestAnswer[];
+  submittedAt?: string | null;
+  reviewText?: string | null;
+  reviewedAt?: string | null;
+}

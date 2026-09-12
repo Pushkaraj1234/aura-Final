@@ -32,6 +32,7 @@ import { apiService } from "../services/apiService";
 import { notificationService } from "../services/notificationService";
 import { EmptyWellbeingState } from "../components/EmptyWellbeingState";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { ParticipantTestCard } from "../components/ParticipantTestCard";
 
 interface Props {
   user: User;
@@ -648,6 +649,10 @@ ${
               </button>
             </div>
           </div>
+
+          {/* Anything a counsellor has set for this person, and the advice
+              that came back. Renders nothing when there is neither. */}
+          {participantRecord?.id && <ParticipantTestCard participantId={participantRecord.id} />}
 
           {/* Your counsellor — choose or change, no approval and no reason needed */}
           {onOpenChooseCounsellor && (
