@@ -19,6 +19,8 @@ import { SupportWorkerSignUp } from "./pages/Auth/SupportWorkerSignUp";
 import { ParticipantCheckin } from "./pages/ParticipantCheckin";
 import { CheckInResults } from "./pages/CheckInResults";
 import { ParticipantProfile } from "./pages/ParticipantProfile";
+import { ChooseCounsellor } from "./pages/ChooseCounsellor";
+import { CounsellorProfileEditor } from "./pages/CounsellorProfileEditor";
 import { SupportDashboard } from "./pages/SupportDashboard";
 import { ParticipantDetail } from "./pages/ParticipantDetail";
 import { AlertsPage } from "./pages/AlertsPage";
@@ -304,6 +306,23 @@ export const App: React.FC = () => {
           <SupportWorkerSignUp onBack={() => setCurrentView("support_login")} />
         )}
 
+        {currentView === "counsellor_profile" && currentUser && currentUser.role === "support_worker" && (
+          <CounsellorProfileEditor
+            user={currentUser}
+            participants={participants}
+            onBack={() => setCurrentView("dashboard")}
+          />
+        )}
+
+        {currentView === "choose_counsellor" && currentUser && participantRecordForUser && (
+          <ChooseCounsellor
+            user={currentUser}
+            participantId={participantRecordForUser.id}
+            currentWorkerId={participantRecordForUser.assignedWorker}
+            onBack={() => setCurrentView("participant_home")}
+          />
+        )}
+
         {currentView === "participant_home" && currentUser && (
           <ParticipantProfile
             user={currentUser}
@@ -312,6 +331,7 @@ export const App: React.FC = () => {
             onOpenMessages={() => setCurrentView("messages")}
             onOpenEmergency={() => setEmergencyModalOpen(true)}
             onOpenPrivacy={() => setCurrentView("privacy")}
+            onOpenChooseCounsellor={() => setCurrentView("choose_counsellor")}
             onLogout={handleLogout}
             onUpdateConsent={handleUpdateConsent}
             onDataReset={() => {

@@ -4,6 +4,7 @@ import cors from 'cors';
 import { createServer as createViteServer } from 'vite';
 import apiRouter from './server/apiRouter.js';
 import adminRouter from './server/adminRouter.js';
+import reviewModerationRouter from './server/reviewModerationRouter.js';
 
 const app = express();
 const PORT = 3000;
@@ -37,6 +38,10 @@ async function startServer() {
   // server/adminAuth.ts), never touches the participant/support-worker auth
   // flows above. Mounted on its own path so it can't collide with any
   // existing /api route.
+  // Review moderation — a new route group, mounted ahead of the admin router
+  // so its path wins. Nothing in the existing admin surface changes.
+  app.use('/api/admin/reviews', reviewModerationRouter);
+
   app.use('/api/admin', adminRouter);
 
   // Interactive API documentation endpoint
