@@ -1,0 +1,11 @@
+-- A definer view resolves TABLE access as its owner, but EXECUTE on a function
+-- named in the view body is still checked against the calling user. With the
+-- grant revoked, every signed-in user got "permission denied for function
+-- worker_account_active" the moment they opened the directory — a failure that
+-- never showed up while testing as the service role, because the service role
+-- has execute on everything.
+--
+-- Granting EXECUTE is safe: the function takes a counsellor id the caller
+-- already holds and returns one boolean — whether that account is banned. It
+-- returns no auth.users row and says nothing about any other account.
+grant execute on function public.worker_account_active(uuid) to authenticated;

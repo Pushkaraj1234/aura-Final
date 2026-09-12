@@ -40,6 +40,7 @@ interface Props {
   onOpenMessages?: () => void;
   onOpenEmergency: () => void;
   onOpenPrivacy: () => void;
+  onOpenChooseCounsellor?: () => void;
   onLogout: () => void;
   onUpdateConsent: (status: boolean) => void;
   onDataReset?: () => void;
@@ -56,6 +57,7 @@ export const ParticipantProfile: React.FC<Props> = ({
   onOpenMessages,
   onOpenEmergency,
   onOpenPrivacy,
+  onOpenChooseCounsellor,
   onLogout,
   onUpdateConsent,
   onDataReset,
@@ -638,6 +640,26 @@ ${
               </button>
             </div>
           </div>
+
+          {/* Your counsellor — choose or change, no approval and no reason needed */}
+          {onOpenChooseCounsellor && (
+            <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+                Your Counsellor
+              </h3>
+              <p className="text-xs text-[#7A726C] leading-relaxed">
+                {participantRecord?.assignedWorker
+                  ? "You can change to a different counsellor whenever you want. You do not need to give a reason, and nobody is told why."
+                  : "You can pick a counsellor yourself, or leave it and your support team will assign someone."}
+              </p>
+              <button
+                onClick={onOpenChooseCounsellor}
+                className="w-full py-2.5 rounded-xl bg-white border border-[#EFE8E2] text-[#3C3530] font-bold text-xs hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+              >
+                {participantRecord?.assignedWorker ? "Change my counsellor" : "Choose a counsellor"}
+              </button>
+            </div>
+          )}
 
           {/* Request a session — only when a counsellor is assigned */}
           {participantRecord?.assignedWorker && (

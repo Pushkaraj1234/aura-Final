@@ -396,6 +396,20 @@ export const Navbar: React.FC<Props> = ({
                             <LayoutDashboard size={14} className="text-[#7F8C8D]" />
                             <span>Support Dashboard</span>
                           </button>
+                          {/* Public profile lives in this menu rather than as a
+                              nav tab: the counsellor bar already collapses to a
+                              hamburger at 1700px, and a fifteenth tab would push
+                              it further. */}
+                          <button
+                            onClick={() => {
+                              onNavigate("counsellor_profile");
+                              setUserDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
+                          >
+                            <UserIcon size={14} className="text-[#7F8C8D]" />
+                            <span>My public profile</span>
+                          </button>
                           <button
                             onClick={() => {
                               onNavigate("messages");

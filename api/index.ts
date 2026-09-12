@@ -143,6 +143,12 @@ function lazyRouter(name: string, load: () => Promise<{ default: Router }>): Req
 // '/api' first every admin request was dragged through the AI/ML router
 // before reaching this one. Admin login has no business loading the Gemini
 // client to check a passcode.
+// Review moderation. Mounted before the admin router so its own path wins,
+// and kept in a separate module so nothing in the existing admin surface moves.
+app.use(
+  '/api/admin/reviews',
+  lazyRouter('review moderation', () => import('../server/reviewModerationRouter.js'))
+);
 app.use('/api/admin', lazyRouter('admin', () => import('../server/adminRouter.js')));
 app.use('/api', lazyRouter('core', () => import('../server/apiRouter.js')));
 

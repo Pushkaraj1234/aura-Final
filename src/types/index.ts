@@ -825,3 +825,141 @@ export interface DemoScenario {
   accent: string;
   simulatedTrend: number[];
 }
+
+// ---------------------------------------------------------------------------
+// Counsellor self-selection
+//
+// Everything below is additive. Admin assignment still writes
+// participants.assigned_worker and still logs to assignment_history; the only
+// change there is that assignment_history.assigned_by now also carries "self".
+// ---------------------------------------------------------------------------
+
+/** A tag from the closed support_tags vocabulary. */
+export interface SupportTag {
+  tag: string;
+  label: string;
+  sortOrder: number;
+}
+
+export type SessionFormat = "video" | "audio" | "chat";
+export type CounsellorGender = "woman" | "man" | "non_binary" | "prefer_not_to_say";
+export type GenderPreference = "no_preference" | "woman" | "man" | "non_binary";
+export type StartUrgency = "asap" | "this_week" | "no_rush";
+
+/**
+ * A counsellor as a participant sees them.
+ *
+ * This mirrors the counsellor_directory view rather than the counsellor_profiles
+ * table, which is the point: the view is a fixed projection, so there is no
+ * field here that could accidentally carry an email address or a caseload
+ * detail the participant should not see.
+ */
+export interface CounsellorDirectoryEntry {
+  workerId: string;
+  displayName: string;
+  photoUrl?: string | null;
+  bio?: string | null;
+  specialties: string[];
+  languages: string[];
+  sessionFormats: SessionFormat[];
+  yearsExperience?: number | null;
+  gender?: CounsellorGender | null;
+  acceptingNewClients: boolean;
+  /** Null until the counsellor has at least five published reviews. */
+  ratingAvg?: number | null;
+  ratingCount?: number | null;
+}
+
+/** A counsellor's own editable profile. */
+export interface CounsellorProfile {
+  workerId: string;
+  displayName?: string | null;
+  photoPath?: string | null;
+  photoUrl?: string | null;
+  bio?: string | null;
+  specialties: string[];
+  languages: string[];
+  sessionFormats: SessionFormat[];
+  yearsExperience?: number | null;
+  gender?: CounsellorGender | null;
+  acceptingNewClients: boolean;
+  maxCaseload?: number | null;
+  published: boolean;
+}
+
+/**
+ * Stated preferences, never clinical data. There is no free-text field here by
+ * design — see the migration for why that is the guarantee rather than the
+ * table name.
+ */
+export interface MatchingQuizAnswers {
+  lookingFor: string[];
+  preferredLanguages: string[];
+  genderPreference: GenderPreference;
+  preferredFormats: SessionFormat[];
+  startUrgency: StartUrgency;
+}
+
+export interface MatchingQuizResponse extends MatchingQuizAnswers {
+  id: string;
+  participantId: string;
+  createdAt: string;
+}
+
+/** Why a counsellor appeared in a shortlist, in words a person can check. */
+export interface MatchReason {
+  kind: "specialty" | "language" | "format" | "availability" | "gender";
+  label: string;
+}
+
+export interface CounsellorMatch {
+  counsellor: CounsellorDirectoryEntry;
+  score: number;
+  reasons: MatchReason[];
+}
+
+export type CounsellingSessionStatus = "scheduled" | "completed" | "no_show" | "cancelled";
+
+/**
+ * Scheduling and attendance only — deliberately holds no notes and no clinical
+ * content, so verifying that a session happened never becomes permission to
+ * read what was said in it.
+ */
+export interface CounsellingSession {
+  id: string;
+  participantId: string;
+  workerId: string;
+  scheduledAt?: string | null;
+  heldAt?: string | null;
+  status: CounsellingSessionStatus;
+  format?: SessionFormat | null;
+  createdAt: string;
+}
+
+export type ReviewStatus = "pending" | "published" | "rejected";
+
+/** A review as its own author sees it. */
+export interface OwnReview {
+  id: string;
+  sessionId: string;
+  workerId: string;
+  rating: number;
+  body?: string | null;
+  status: ReviewStatus;
+  createdAt: string;
+}
+
+/**
+ * A review as everyone else sees it. There is no reviewer field, and the date
+ * is a month rather than a timestamp — an exact date would hand the reviewer's
+ * identity back to a counsellor who knows who they saw that day.
+ */
+export interface PublicReview {
+  workerId: string;
+  rating: number;
+  body?: string | null;
+  reviewedMonth: string;
+}
+
+/** How the current assignment came about. */
+export type AssignmentSource = "admin" | "self";
