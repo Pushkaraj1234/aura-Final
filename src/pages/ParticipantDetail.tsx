@@ -48,6 +48,7 @@ import { SignalStrengthVsHumanCard } from "../components/ResponsibleAIBadges";
 import { AICaseSummaryCard } from "../components/AICaseSummaryCard";
 import { PredictiveMLCard } from "../components/PredictiveMLCard";
 import { CounsellorTestPanel } from "../components/CounsellorTestPanel";
+import { GuardianAssessmentPanel } from "../components/GuardianAssessmentPanel";
 
 interface Props {
   participant: Participant;
@@ -688,6 +689,14 @@ export const ParticipantDetail: React.FC<Props> = ({
               workerId={currentUser.id}
               onReviewed={loadTestMarks}
             />
+          )}
+
+          {/* Family / guardian assessment — its own section, separate from the
+              participant's own tests. A different instrument answered by a
+              different person; reading it as the participant's own account
+              would be a serious misreading. */}
+          {currentUser?.id && (
+            <GuardianAssessmentPanel participantId={participant.id} workerId={currentUser.id} />
           )}
 
           {/* Explainable AI (XAI) Signal Component (Requirement #4) */}

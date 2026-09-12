@@ -87,14 +87,16 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
 
   useEffect(() => {
     (async () => {
-      const [existing, tagList, s] = await Promise.all([
+      // allSettled: supabase-js rejects on an aborted request, and with
+      // Promise.all one failure left this editor stuck on "Loading…".
+      const [existingR, tagR, sR] = await Promise.allSettled([
         counsellorSelectionService.getOwnProfile(user.id),
         counsellorSelectionService.listTags(),
         counsellorSelectionService.listWorkerSessions(user.id),
       ]);
-      if (existing) setProfile(existing);
-      setTags(tagList);
-      setSessions(s);
+      if (existingR.status === "fulfilled" && existingR.value) setProfile(existingR.value);
+      if (tagR.status === "fulfilled") setTags(tagR.value);
+      if (sR.status === "fulfilled") setSessions(sR.value);
       setLoading(false);
     })();
   }, [user.id]);

@@ -143,6 +143,10 @@ function lazyRouter(name: string, load: () => Promise<{ default: Router }>): Req
 // '/api' first every admin request was dragged through the AI/ML router
 // before reaching this one. Admin login has no business loading the Gemini
 // client to check a passcode.
+// The guardian questionnaire. Deliberately outside /api/admin: it is reached
+// without a session, and its only credential is the one-time token in the link.
+app.use('/api/guardian', lazyRouter('guardian', () => import('../server/guardianRouter.js')));
+
 // Review moderation. Mounted before the admin router so its own path wins,
 // and kept in a separate module so nothing in the existing admin surface moves.
 app.use(
