@@ -1,4 +1,4 @@
-import { CaseEvent, CaseEventType } from "../types";
+import { CaseEvent, CaseEventType } from "../types/index.js";
 
 /**
  * Hearings and incidents — the parts of someone's case that happen between

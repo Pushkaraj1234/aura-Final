@@ -1,4 +1,4 @@
-import { CheckIn, Message } from "../types";
+import { CheckIn, Message } from "../types/index.js";
 
 /**
  * Passive engagement signals — what someone's pattern of use says when they
