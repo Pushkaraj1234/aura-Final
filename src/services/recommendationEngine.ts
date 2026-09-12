@@ -7,6 +7,7 @@ import {
 } from "../types";
 import { ALERT_CONFIG } from "./alertConfig";
 import { calculateRawScore } from "./riskEngine";
+import { getActionGuide } from "./actionGuides";
 
 /**
  * AURA Recommendation and Supportive Reflection Engine
@@ -28,6 +29,33 @@ import { calculateRawScore } from "./riskEngine";
  * deliberately not routed through this and is not capped.
  */
 export const AI_SCORE_ADJUSTMENT_LIMIT = 15;
+
+/**
+ * How much someone has to have actually written or said before the model is
+ * allowed to move their score at all, and how much it has to be before it can
+ * use the full limit.
+ *
+ * The model only ever reads the questionnaire answers plus whatever free text
+ * the person wrote. The questionnaire is already scored, in full, by the
+ * transparent formula — so anything the model adds on top has to come from the
+ * free text, and it cannot be worth more than that text can support. A
+ * sentence moving the score by a sixth of the whole scale is not a reading of
+ * that sentence, it is the cap being spent on almost nothing.
+ *
+ * Below the floor the adjustment is zero: there is nothing to review. Between
+ * the floor and the full-weight length the cap grows with what was actually
+ * said, and the breakdown shows the person both numbers so the limit on their
+ * own score is something they can check rather than take on trust.
+ */
+export const AI_EVIDENCE_FLOOR_CHARS = 40;
+export const AI_EVIDENCE_FULL_WEIGHT_CHARS = 400;
+
+/** The most the model may move a score, given the text it had to go on. */
+export function aiAdjustmentCapFor(evidenceChars: number): number {
+  if (!Number.isFinite(evidenceChars) || evidenceChars < AI_EVIDENCE_FLOOR_CHARS) return 0;
+  const share = Math.min(1, evidenceChars / AI_EVIDENCE_FULL_WEIGHT_CHARS);
+  return Math.round(AI_SCORE_ADJUSTMENT_LIMIT * share);
+}
 
 export function getDistressLevel(score: number): { level: DistressLevel; label: string } {
   if (score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
@@ -237,6 +265,38 @@ export function generateSupportiveReflection(
 /**
  * Generates ranked, personalized recommendations based on actual answers
  */
+/**
+ * Collapses suggestions that would open the same thing.
+ *
+ * Two cards with different headings that lead to an identical panel read as
+ * padding — and on this screen that matters more than usual, because the whole
+ * point of the page is that the person can see the reasoning. The model
+ * regularly produces near-duplicates ("Connect with Caseworker" and "Ensure a
+ * Validating Space" both resolve to the caseworker guide), so the first of
+ * each distinct action is kept and the rest dropped. Priority order decides
+ * which one that is, not the order the model happened to emit them in.
+ */
+const PRIORITY_RANK: Record<string, number> = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+
+export function dedupeRecommendations(recs: Recommendation[]): Recommendation[] {
+  const ordered = [...recs].sort(
+    (a, b) => (PRIORITY_RANK[a.priority] ?? 3) - (PRIORITY_RANK[b.priority] ?? 3)
+  );
+  const seenAction = new Set<string>();
+  const seenTitle = new Set<string>();
+  const kept: Recommendation[] = [];
+
+  for (const rec of ordered) {
+    const actionKey = getActionGuide(rec).title.toLowerCase();
+    const titleKey = (rec.title || "").toLowerCase().replace(/[^a-z]/g, "");
+    if (seenAction.has(actionKey) || seenTitle.has(titleKey)) continue;
+    seenAction.add(actionKey);
+    seenTitle.add(titleKey);
+    kept.push(rec);
+  }
+  return kept;
+}
+
 export function generateRecommendations(
   analysis: CheckInAnalysis,
   checkIn: CheckIn,
@@ -437,11 +497,18 @@ export function calculateCheckInAnalysis(
     const aiScore = Number(ai.distressScore);
     const aiUsable = Number.isFinite(aiScore);
     const wanted = aiUsable ? Math.round(aiScore) - ruleScore : 0;
-    const aiAdjustment = Math.max(-AI_SCORE_ADJUSTMENT_LIMIT, Math.min(AI_SCORE_ADJUSTMENT_LIMIT, wanted));
+
+    // What the model actually had to read, beyond the answers the formula has
+    // already scored. With nothing written and nothing recorded there is no
+    // evidence for an adjustment, and the score is the questionnaire alone.
+    const aiEvidenceChars = (current.reflection?.transcript || "").trim().length;
+    const aiAdjustmentCap = aiAdjustmentCapFor(aiEvidenceChars);
+
+    const aiAdjustment = Math.max(-aiAdjustmentCap, Math.min(aiAdjustmentCap, wanted));
     // Whether the model asked for more room than it was given. A clamped
     // adjustment is not the model's judgement, it is the ceiling — worth
     // recording so the difference is not passed off as a considered figure.
-    const aiClamped = aiUsable && Math.abs(wanted) > AI_SCORE_ADJUSTMENT_LIMIT;
+    const aiClamped = aiUsable && aiAdjustmentCap > 0 && Math.abs(wanted) > aiAdjustmentCap;
     const score = Math.min(100, Math.max(0, ruleScore + aiAdjustment));
 
     // Recompute the band from the score actually shown, so the label can never
@@ -449,15 +516,33 @@ export function calculateCheckInAnalysis(
     const { level, label: levelLabel } = getDistressLevel(score);
     const prevScore = previous ? calculateRawScore(previous) : undefined;
 
+    // The answer-derived suggestions, built from the same figures the formula
+    // scored. generateRecommendations only reads the score, the change and the
+    // check-in itself, so a minimal analysis is enough to produce them.
+    const { recommendations: ruleRecommendations } = generateRecommendations(
+      {
+        distressScore: score,
+        change: prevScore !== undefined ? score - prevScore : undefined,
+        isExplicitSafetyConcern: Boolean(ai.isExplicitSafetyConcern),
+      } as CheckInAnalysis,
+      current,
+      previous || null
+    );
+
     return {
       checkInId: current.id,
       participantId: current.participantId,
       distressScore: score,
       ruleScore,
       aiAdjustment,
-      aiConsulted: true,
+      // Consulted only counts when it was allowed to matter. With no usable
+      // reflection the model's number is not part of this score, and the
+      // breakdown must not imply a review contributed something it did not.
+      aiConsulted: aiAdjustmentCap > 0,
       aiRawScore: aiUsable ? Math.round(aiScore) : undefined,
       aiClamped,
+      aiEvidenceChars,
+      aiAdjustmentCap,
       level,
       levelLabel,
       previousScore: prevScore,
@@ -475,7 +560,16 @@ export function calculateCheckInAnalysis(
       contributingFactors: ai.factors || [],
       explanation: ai.supportiveMessage,
       explanationPoints: ai.factors || [],
-      recommendations: ai.recommendations || [],
+      // The rule-based suggestions are derived from the answers this person
+      // actually gave — "your sleep score was 2/5" — while the model's are
+      // written from the free text. Taking only the model's threw away every
+      // suggestion tied to a specific answer and left generic advice in its
+      // place. Both are kept, the model's first (it read more), deduplicated
+      // so nothing appears twice under two headings.
+      recommendations: dedupeRecommendations([
+        ...(ai.recommendations || []),
+        ...ruleRecommendations,
+      ]),
       primaryAction: ai.primaryAction,
       supportiveMessage: ai.supportiveMessage,
       requiresHumanReview: score >= 75 || ai.isExplicitSafetyConcern || current.supportRequested,

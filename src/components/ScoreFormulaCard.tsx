@@ -13,6 +13,10 @@ interface Props {
   aiConsulted?: boolean;
   /** True when the AI wanted to move the score further than it was allowed to. */
   aiClamped?: boolean;
+  /** Characters of reflection the model actually read, if any. */
+  aiEvidenceChars?: number;
+  /** The most it could move the score, given that much to go on. */
+  aiAdjustmentCap?: number;
 }
 
 /** Trims trailing zeros so 7.5 stays 7.5 but 10.0 reads as 10. */
@@ -30,6 +34,8 @@ export const ScoreFormulaCard: React.FC<Props> = ({
   aiAdjustment = 0,
   aiConsulted = false,
   aiClamped = false,
+  aiEvidenceChars,
+  aiAdjustmentCap,
 }) => {
   const [open, setOpen] = useState(false);
   const breakdown = explainRawScore(checkIn);
@@ -142,8 +148,18 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               <>
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-[10px] text-[#7F8C8D]">
-                    AI review of your written or spoken reflection
-                    {aiClamped && " (limited to 15)"}
+                    AI review of what you wrote or said
+                    {/* The cap is stated because it is derived from how much
+                        the person actually wrote. Without it, a small number
+                        here looks arbitrary and a large one looks unearned —
+                        and neither is something they could check. */}
+                    {typeof aiEvidenceChars === "number" && aiEvidenceChars > 0 && (
+                      <>
+                        {" "}({aiEvidenceChars} characters
+                        {typeof aiAdjustmentCap === "number" && `, up to ${aiAdjustmentCap} point${aiAdjustmentCap === 1 ? "" : "s"}`})
+                      </>
+                    )}
+                    {aiClamped && " — held at that limit"}
                   </span>
                   <span
                     className={`text-[12px] font-mono font-bold whitespace-nowrap ${
