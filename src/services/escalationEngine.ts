@@ -1,12 +1,12 @@
-import { CaseEvent, CheckIn, ConcordanceResult } from "../types";
-import { EngagementAssessment, EngagementSignal } from "./engagementSignals";
-import { calculateRawScore } from "./riskEngine";
+import { CaseEvent, CheckIn, ConcordanceResult } from "../types/index.js";
+import { EngagementAssessment, EngagementSignal } from "./engagementSignals.js";
+import { calculateRawScore } from "./riskEngine.js";
 import {
   CASE_EVENT_LABELS,
   describeTiming,
   hearingImminent,
   readCaseEvents,
-} from "./caseEvents";
+} from "./caseEvents.js";
 
 /**
  * Turns signals into a recommendation a counsellor can act on.

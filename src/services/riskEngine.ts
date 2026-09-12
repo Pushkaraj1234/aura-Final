@@ -1,4 +1,4 @@
-import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakdown, ScoreTerm } from "../types";
+import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakdown, ScoreTerm } from "../types/index.js";
 
 /**
  * Transparent Simulated AI Distress Risk Engine
