@@ -20,7 +20,8 @@ import {
   Play,
   ShieldCheck,
   MessageCircle,
-  BookOpen
+  BookOpen,
+  UserPlus
 } from "lucide-react";
 import { User, Alert, Participant } from "../../types";
 import { notificationService } from "../../services/notificationService";
@@ -490,6 +491,20 @@ export const Navbar: React.FC<Props> = ({
                             <UserIcon size={14} className="text-[#7F8C8D]" />
                             <span>My Profile & Stats</span>
                           </button>
+                          {/* Choosing or changing a counsellor lives here as
+                              well as in the profile page: this menu is where
+                              people look for it, and the nav bar itself has no
+                              room left for another tab. */}
+                          <button
+                            onClick={() => {
+                              onNavigate("choose_counsellor");
+                              setUserDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
+                          >
+                            <UserPlus size={14} className="text-[#7F8C8D]" />
+                            <span>My Counsellor</span>
+                          </button>
                           <button
                             onClick={() => {
                               onNavigate("messages");
@@ -745,6 +760,16 @@ export const Navbar: React.FC<Props> = ({
                   >
                     <UserIcon size={16} />
                     <span>My Profile & Insights</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onNavigate("choose_counsellor");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left p-2.5 rounded-xl text-sm font-medium hover:bg-[#F3F1EA] text-[#302C29] flex items-center space-x-2"
+                  >
+                    <UserPlus size={16} />
+                    <span>My Counsellor</span>
                   </button>
                   <button
                     onClick={() => {
