@@ -125,11 +125,23 @@ export const participantsTable = {
       preferred_support: participant.preferredSupport,
       language: participant.language,
       age_group: participant.ageGroup,
-      assigned_worker: participant.assignedWorker,
       last_review_date: participant.lastReviewDate,
       region: participant.region,
       updated_at: new Date().toISOString(),
     };
+    // Assignment is deliberately NOT part of the default payload.
+    //
+    // This upsert is called on almost every participant render to re-assert
+    // that the record exists. It sends whatever the browser has cached, so
+    // including assigned_worker here meant a stale cache silently wrote its
+    // old counsellor back over the server's current value — an admin could
+    // unassign someone and the participant's next page load would undo it,
+    // with no assignment_history row to show what happened. Assignment is
+    // owned by the admin flow and by select_counsellor(); a caller that wants
+    // to change it must say so explicitly.
+    if ("assignedWorker" in participant) {
+      payload.assigned_worker = participant.assignedWorker;
+    }
     if (participant.userId) payload.user_id = participant.userId;
     if (participant.createdAt) payload.created_at = participant.createdAt;
 
