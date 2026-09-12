@@ -374,6 +374,7 @@ export const App: React.FC = () => {
             analysis={lastCheckInAnalysis}
             user={currentUser}
             checkIn={lastSubmittedCheckIn}
+            participantRecord={participantRecordForUser}
             onNavigate={setCurrentView}
             onOpenEmergency={() => setEmergencyModalOpen(true)}
           />
@@ -469,6 +470,9 @@ export const App: React.FC = () => {
             participants={participants}
             participantRecord={participantRecordForUser}
             onOpenEmergency={() => setEmergencyModalOpen(true)}
+            onChooseCounsellor={
+              participantRecordForUser ? () => setCurrentView("choose_counsellor") : undefined
+            }
           />
         )}
 

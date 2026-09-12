@@ -285,7 +285,11 @@ ${
     setSessionError("");
     try {
       const note = sessionNote.trim();
-      await apiService.messages.send({
+      // send() returns null on failure instead of throwing, so the catch below
+      // never fires for a message that was rejected. Without this check the
+      // participant is told their counsellor was notified when nothing was
+      // delivered.
+      const sent = await apiService.messages.send({
         participantId: participantRecord.id,
         senderId: user.id,
         senderRole: "participant",
@@ -293,6 +297,10 @@ ${
           "Session request — I'd like to schedule a time to talk." +
           (note ? `\n\nNote: ${note}` : ""),
       });
+      if (!sent) {
+        setSessionError("Could not send the request. Please check your connection and try again.");
+        return;
+      }
       notificationService.createNotification({
         userId: participantRecord.assignedWorker,
         participantId: participantRecord.id,

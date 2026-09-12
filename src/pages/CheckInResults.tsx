@@ -19,16 +19,24 @@ import {
   AlertTriangle,
   RefreshCw
 } from "lucide-react";
-import { CheckInAnalysis, CheckIn, User, Recommendation } from "../types";
+import { CheckInAnalysis, CheckIn, User, Recommendation, Participant } from "../types";
 import { ALERT_CONFIG } from "../services/alertConfig";
 import { ScoreFormulaCard } from "../components/ScoreFormulaCard";
 import { explainFactorPercentages } from "../services/recommendationEngine";
 import { RecommendationActionModal } from "../components/RecommendationActionModal";
+import { apiService } from "../services/apiService";
+import { notificationService } from "../services/notificationService";
 
 interface Props {
   analysis: CheckInAnalysis;
   user: User;
   checkIn: CheckIn;
+  /**
+   * The participant's record, which is what says whether anyone is actually
+   * assigned to them. This screen used to not receive it, which is precisely
+   * how it ended up confirming a request to a counsellor who did not exist.
+   */
+  participantRecord: Participant | null;
   onNavigate: (view: string) => void;
   onOpenEmergency: () => void;
 }
@@ -37,14 +45,67 @@ export const CheckInResults: React.FC<Props> = ({
   analysis,
   user,
   checkIn,
+  participantRecord,
   onNavigate,
   onOpenEmergency
 }) => {
   // 1-2 second loading animation sequence for demo and authentic UX
   const [loadingStage, setLoadingStage] = useState<number>(0);
   const [supportRequestedConfirmed, setSupportRequestedConfirmed] = useState(false);
+  const [requestingSupport, setRequestingSupport] = useState(false);
+  const [supportError, setSupportError] = useState("");
+  const assignedWorker = participantRecord?.assignedWorker || null;
   // Which recommendation's action panel is open, if any.
   const [openAction, setOpenAction] = useState<Recommendation | null>(null);
+
+  /**
+   * Actually asks for a counsellor, rather than only looking as though it did.
+   *
+   * This button previously set a piece of local state and nothing else: no
+   * message, no notification, nothing persisted. It reported "Request Received"
+   * to every participant, including those with nobody assigned to receive it,
+   * and the claim vanished on refresh. It now sends the same message and raises
+   * the same notification as the request flow in the profile page, and is only
+   * offered when there is a counsellor to send it to.
+   */
+  const handleRequestSupport = async () => {
+    if (!participantRecord?.id || !assignedWorker) return;
+    setRequestingSupport(true);
+    setSupportError("");
+    try {
+      // send() resolves to null on failure rather than throwing, so a bare
+      // await would "succeed" for a message that never left the browser —
+      // which is the same false confirmation this screen is being fixed for.
+      const sent = await apiService.messages.send({
+        participantId: participantRecord.id,
+        senderId: user.id,
+        senderRole: "participant",
+        body: "I'd like to talk to a counsellor — sent from my check-in results.",
+      });
+      if (!sent) {
+        setSupportError(
+          "We could not send that just now. Please check your connection and try again, or use Messages."
+        );
+        return;
+      }
+      notificationService.createNotification({
+        userId: assignedWorker,
+        participantId: participantRecord.id,
+        category: "SUPPORT_REQUEST",
+        severity: "YELLOW",
+        title: "Support requested",
+        message: `${user.name || "A participant"} asked to talk after completing a check-in.`,
+      });
+      setSupportRequestedConfirmed(true);
+    } catch (err: any) {
+      // Say so, rather than showing a confirmation for something that failed.
+      setSupportError(
+        err?.message || "We could not send that just now. Please try again, or use Messages."
+      );
+    } finally {
+      setRequestingSupport(false);
+    }
+  };
 
   useEffect(() => {
     const timer1 = setTimeout(() => setLoadingStage(1), 500);
@@ -449,15 +510,32 @@ export const CheckInResults: React.FC<Props> = ({
         </p>
 
         <div className="flex flex-wrap items-center gap-3 pt-2">
-          <button
-            onClick={() => {
-              setSupportRequestedConfirmed(true);
-            }}
-            className="px-5 py-3 rounded-xl bg-[#3C3530] text-white font-bold text-xs hover:bg-[#3F4E4E] transition-all flex items-center space-x-2 shadow-xs cursor-pointer"
-          >
-            <UserCheck size={15} />
-            <span>{supportRequestedConfirmed ? "✓ Request Received" : "Talk to a Counselor"}</span>
-          </button>
+          {assignedWorker ? (
+            <button
+              onClick={handleRequestSupport}
+              disabled={requestingSupport || supportRequestedConfirmed}
+              className="px-5 py-3 rounded-xl bg-[#3C3530] text-white font-bold text-xs hover:bg-[#3F4E4E] transition-all flex items-center space-x-2 shadow-xs cursor-pointer disabled:opacity-60 disabled:cursor-default"
+            >
+              <UserCheck size={15} />
+              <span>
+                {supportRequestedConfirmed
+                  ? "✓ Request Sent"
+                  : requestingSupport
+                    ? "Sending…"
+                    : "Talk to a Counselor"}
+              </span>
+            </button>
+          ) : (
+            /* Nobody is assigned, so there is no one to receive a request.
+               Offer the thing that actually helps instead of a confirmation. */
+            <button
+              onClick={() => onNavigate("choose_counsellor")}
+              className="px-5 py-3 rounded-xl bg-[#3C3530] text-white font-bold text-xs hover:bg-[#3F4E4E] transition-all flex items-center space-x-2 shadow-xs cursor-pointer"
+            >
+              <UserCheck size={15} />
+              <span>Choose a Counselor</span>
+            </button>
+          )}
 
           <button
             onClick={() => onNavigate("participant_home")}
@@ -478,9 +556,23 @@ export const CheckInResults: React.FC<Props> = ({
           )}
         </div>
 
-        {supportRequestedConfirmed && (
+        {supportError && (
+          <div className="p-3 rounded-xl bg-[#A65D52]/10 border border-[#A65D52]/30 text-xs text-[#8A463C] font-medium">
+            {supportError}
+          </div>
+        )}
+
+        {supportRequestedConfirmed && assignedWorker && (
           <div className="p-3 rounded-xl bg-[#5A5049]/15 border border-[#5A5049]/30 text-xs text-[#3C3530] font-medium animate-in fade-in">
-            ✓ Your support preference ({user.supportPreference || "a human counselor"}) has been noted. A counselor will schedule a voluntary check-in.
+            ✓ Your counsellor has been told you'd like to talk. They'll reply in Messages to
+            arrange a time.
+          </div>
+        )}
+
+        {!assignedWorker && (
+          <div className="p-3 rounded-xl bg-[#DBC3B2]/30 border border-[#DBC3B2]/60 text-xs text-[#3C3530] font-medium">
+            You don't have a counsellor yet, so there's nobody to arrange a conversation. You can
+            pick one yourself — it takes a minute and you can change your mind later.
           </div>
         )}
       </div>

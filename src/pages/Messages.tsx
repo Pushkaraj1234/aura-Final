@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { MessageCircle, Send, Search, LifeBuoy, Loader2, ShieldAlert } from "lucide-react";
+import { MessageCircle, Send, Search, LifeBuoy, Loader2, ShieldAlert, UserPlus } from "lucide-react";
 import { User, Participant, Message } from "../types";
 import { apiService } from "../services/apiService";
 
@@ -8,6 +8,8 @@ interface Props {
   participants: Participant[];
   participantRecord: Participant | null;
   onOpenEmergency: () => void;
+  /** Offered from the empty state, which is where an unassigned user lands. */
+  onChooseCounsellor?: () => void;
 }
 
 const POLL_INTERVAL_MS = 8000;
@@ -325,10 +327,16 @@ const WorkerMessages: React.FC<{ currentUser: User; participants: Participant[];
 // ---------------------------------------------------------------------------
 // Participant view: a single thread with their currently assigned worker.
 // ---------------------------------------------------------------------------
-const ParticipantMessages: React.FC<{ currentUser: User; participantRecord: Participant | null; onOpenEmergency: () => void }> = ({
+const ParticipantMessages: React.FC<{
+  currentUser: User;
+  participantRecord: Participant | null;
+  onOpenEmergency: () => void;
+  onChooseCounsellor?: () => void;
+}> = ({
   currentUser,
   participantRecord,
   onOpenEmergency,
+  onChooseCounsellor,
 }) => {
   const workerId = participantRecord?.assignedWorker;
   const hasAssignedWorker = isUuid(workerId);
@@ -394,15 +402,33 @@ const ParticipantMessages: React.FC<{ currentUser: User; participantRecord: Part
         </div>
         <h2 className="text-lg font-black text-[#3C3530]">No counselor assigned yet</h2>
         <p className="text-sm text-[#7F8C8D] max-w-md mx-auto">
-          Once a counselor is assigned to you, you'll be able to message them directly here.
+          {onChooseCounsellor
+            ? "You can pick a counsellor yourself and start messaging straight away, or wait for your support team to assign one."
+            : "Once a counselor is assigned to you, you'll be able to message them directly here."}
         </p>
-        <button
-          onClick={onOpenEmergency}
-          className="inline-flex items-center gap-1.5 mt-2 px-4 py-2 rounded-xl bg-[#A55D25]/15 text-[#A55D25] text-xs font-bold hover:bg-[#A55D25]/25 transition-colors cursor-pointer"
-        >
-          <LifeBuoy size={14} />
-          Need help right now? View Emergency Resources
-        </button>
+
+        {/* The way out of this screen. Without it, someone with no counsellor
+            lands here and the only thing on offer is the emergency line — which
+            is the wrong scale of response for most of the people who arrive. */}
+        {onChooseCounsellor && (
+          <button
+            onClick={onChooseCounsellor}
+            className="inline-flex items-center gap-1.5 mt-2 px-5 py-2.5 rounded-xl bg-[#3C3530] text-white text-xs font-bold hover:bg-[#5A5049] transition-colors cursor-pointer"
+          >
+            <UserPlus size={14} />
+            Choose my counsellor
+          </button>
+        )}
+
+        <div>
+          <button
+            onClick={onOpenEmergency}
+            className="inline-flex items-center gap-1.5 mt-2 px-4 py-2 rounded-xl bg-[#A55D25]/15 text-[#A55D25] text-xs font-bold hover:bg-[#A55D25]/25 transition-colors cursor-pointer"
+          >
+            <LifeBuoy size={14} />
+            Need help right now? View Emergency Resources
+          </button>
+        </div>
       </div>
     );
   }
@@ -444,11 +470,17 @@ const ParticipantMessages: React.FC<{ currentUser: User; participantRecord: Part
   );
 };
 
-export const Messages: React.FC<Props> = ({ currentUser, participants, participantRecord, onOpenEmergency }) => {
+export const Messages: React.FC<Props> = ({ currentUser, participants, participantRecord, onOpenEmergency,
+  onChooseCounsellor }) => {
   const isWorker = currentUser.role === "support_worker";
   return isWorker ? (
     <WorkerMessages currentUser={currentUser} participants={participants} onOpenEmergency={onOpenEmergency} />
   ) : (
-    <ParticipantMessages currentUser={currentUser} participantRecord={participantRecord} onOpenEmergency={onOpenEmergency} />
+    <ParticipantMessages
+      currentUser={currentUser}
+      participantRecord={participantRecord}
+      onOpenEmergency={onOpenEmergency}
+      onChooseCounsellor={onChooseCounsellor}
+    />
   );
 };

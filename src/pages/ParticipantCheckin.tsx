@@ -1592,7 +1592,8 @@ export const ParticipantCheckin: React.FC<Props> = ({
                     </div>
                   </div>
                   <p className="text-xs text-[#7A726C] leading-relaxed">
-                    A dedicated, trauma-informed counselor will arrange a voluntary, confidential conversation.
+                    Your request goes to the support team, who will arrange a voluntary,
+                    confidential conversation with a trauma-informed counsellor.
                   </p>
                 </div>
               </button>
