@@ -25,6 +25,7 @@ export interface VoiceClientLike {
 export interface MicLike {
   startMicrophone(onFrame: (pcm16: ArrayBuffer, level: number) => void): Promise<unknown>;
   stopMicrophone(): void;
+  setMuted(muted: boolean): void;
 }
 
 export interface PlayerLike {
@@ -76,6 +77,7 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
   const [error, setError] = useState<VoiceErrorCode | null>(null);
   const [safety, setSafety] = useState<SafetyInfo | null>(null);
   const [endReason, setEndReason] = useState<SessionEndReason>(null);
+  const [muted, setMuted] = useState(false);
 
   const client = useRef<VoiceClientLike | null>(null);
   const mic = useRef<MicLike | null>(null);
@@ -85,11 +87,16 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
   const reconnectAttempt = useRef(0);
   const reconnectTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const loudFrames = useRef(0);
+  // Read inside onMicFrame, which is memoised and would otherwise close over a
+  // stale value and keep streaming after the button said it had stopped.
+  const mutedRef = useRef(false);
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
   const teardown = useCallback(() => {
     active.current = false;
+    mutedRef.current = false;
+    setMuted(false);
     clearTimeout(reconnectTimer.current);
     client.current?.disconnect();
     mic.current?.stopMicrophone();
@@ -114,6 +121,15 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
     loudFrames.current = 0;
     client.current?.send({ type: "interrupt" });
     setStatus("listening");
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    mic.current?.setMuted(next);
+    setMuted(next);
+    // Nothing is sent to the server: muting is a local decision about this
+    // person's own microphone, and the session carries on either way.
   }, []);
 
   const handleMessage = useCallback(
@@ -206,6 +222,13 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
     (pcm16: ArrayBuffer, level: number) => {
       const socket = client.current;
       if (!socket?.isOpen) return;
+      // Muted: send nothing and let no barge-in fire. The track is already
+      // delivering silence; this makes sure a muted person can never
+      // accidentally interrupt the assistant either.
+      if (mutedRef.current) {
+        loudFrames.current = 0;
+        return;
+      }
       socket.sendAudio(pcm16);
 
       // Barge-in: stop the assistant the instant the user clearly starts speaking.
@@ -291,5 +314,18 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
 
   useEffect(() => teardown, [teardown]);
 
-  return { status, messages, error, safety, endReason, start, stop, interrupt, sendText, dismissSafety };
+  return {
+    status,
+    messages,
+    error,
+    safety,
+    endReason,
+    muted,
+    start,
+    stop,
+    interrupt,
+    toggleMute,
+    sendText,
+    dismissSafety,
+  };
 }

@@ -457,3 +457,55 @@
     height: 160px;
   }
 }
+/* ── Mute ────────────────────────────────────────────────── */
+.aura-voice .voice-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.aura-voice .mute-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid var(--vc-border);
+  background: var(--vc-surface);
+  color: var(--vc-muted);
+  font: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.aura-voice .mute-button:hover {
+  border-color: var(--vc-accent);
+  color: var(--vc-accent-strong);
+}
+
+/* Muted is a state worth seeing from across the room, not a subtle toggle. */
+.aura-voice .mute-button.is-muted {
+  background: var(--vc-danger);
+  border-color: var(--vc-danger);
+  color: var(--vc-surface);
+  font-weight: 600;
+}
+
+.aura-voice .mute-button.is-muted:hover {
+  color: var(--vc-surface);
+  border-color: var(--vc-danger);
+}
+
+.aura-voice .is-muted-notice {
+  color: var(--vc-danger);
+  font-weight: 500;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aura-voice .mute-button {
+    transition: none;
+  }
+}

@@ -13,6 +13,9 @@ export interface Strings {
   start: string;
   stop: string;
   interrupt: string;
+  mute: string;
+  unmute: string;
+  mutedNotice: string;
   language: string;
   captionsShow: string;
   captionsHide: string;
@@ -53,6 +56,9 @@ const en: Strings = {
   start: "Start voice conversation",
   stop: "Stop voice conversation",
   interrupt: "Interrupt",
+  mute: "Turn my microphone off",
+  unmute: "Turn my microphone back on",
+  mutedNotice: "Your microphone is off. Nothing is being heard or sent. The conversation is still here when you want it.",
   language: "Language",
   captionsShow: "Show captions",
   captionsHide: "Hide captions",
@@ -106,6 +112,9 @@ const hi: Strings = {
   start: "आवाज़ से बातचीत शुरू करें",
   stop: "बातचीत रोकें",
   interrupt: "रोकें",
+  mute: "मेरा माइक्रोफ़ोन बंद करें",
+  unmute: "मेरा माइक्रोफ़ोन फिर चालू करें",
+  mutedNotice: "आपका माइक्रोफ़ोन बंद है। कुछ भी सुना या भेजा नहीं जा रहा। बातचीत यहीं है, जब आप चाहें।",
   language: "भाषा",
   captionsShow: "कैप्शन दिखाएँ",
   captionsHide: "कैप्शन छिपाएँ",
@@ -152,6 +161,9 @@ const mr: Strings = {
   start: "आवाजाने संवाद सुरू करा",
   stop: "संवाद थांबवा",
   interrupt: "थांबवा",
+  mute: "माझा मायक्रोफोन बंद करा",
+  unmute: "माझा मायक्रोफोन पुन्हा चालू करा",
+  mutedNotice: "तुमचा मायक्रोफोन बंद आहे. काहीही ऐकले किंवा पाठवले जात नाही. संभाषण इथेच आहे, तुम्हाला हवे तेव्हा.",
   language: "भाषा",
   captionsShow: "कॅप्शन दाखवा",
   captionsHide: "कॅप्शन लपवा",

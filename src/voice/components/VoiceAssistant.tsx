@@ -12,6 +12,7 @@ import {
 import type { VoiceConfig } from "../lib/voiceTypes";
 import { LanguageSelect } from "./LanguageSelect";
 import { SafetyPanel } from "./SafetyPanel";
+import { MuteButton } from "./MuteButton";
 import { VoiceButton } from "./VoiceButton";
 import { VoiceConsent } from "./VoiceConsent";
 import { VoiceOrb } from "./VoiceOrb";
@@ -166,6 +167,7 @@ export function VoiceAssistant() {
           onInterrupt={voice.interrupt}
         />
         <VoiceStatus status={voice.status} error={voice.error} strings={strings} />
+        {voice.muted && <p className="voice-notice is-muted-notice">{strings.mutedNotice}</p>}
         {ended && <p className="voice-notice">{ended}</p>}
         {reachable === "no" && (
           <p className="voice-notice">
@@ -178,12 +180,24 @@ export function VoiceAssistant() {
           <p className="voice-notice">{strings.textOption}</p>
         )}
 
-        <VoiceButton
-          active={active}
-          onClick={active ? voice.stop : () => void voice.start()}
-          startLabel={strings.start}
-          stopLabel={strings.stop}
-        />
+        <div className="voice-controls">
+          <VoiceButton
+            active={active}
+            onClick={active ? voice.stop : () => void voice.start()}
+            startLabel={strings.start}
+            stopLabel={strings.stop}
+          />
+          {/* Only while a conversation is running — muting a microphone that
+              is not on would mean nothing. */}
+          {active && (
+            <MuteButton
+              muted={voice.muted}
+              onToggle={voice.toggleMute}
+              muteLabel={strings.mute}
+              unmuteLabel={strings.unmute}
+            />
+          )}
+        </div>
 
         {active && (
           <form className="voice-text-form" onSubmit={submitText}>

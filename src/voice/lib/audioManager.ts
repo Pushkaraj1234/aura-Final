@@ -86,6 +86,25 @@ export class AudioManager {
     this.pendingLength -= offset;
   }
 
+  /**
+   * Mute at the microphone track rather than by dropping frames further down.
+   *
+   * A disabled track delivers silence from the browser itself, so muting is
+   * something the platform enforces rather than something this code promises.
+   * The hook also stops sending while muted, but that is the second line, not
+   * the first — and for an app where someone may be muting because a person
+   * just walked into the room, which of the two it is matters.
+   *
+   * The track is disabled, not stopped: stopping it would end the capture and
+   * need a fresh permission prompt to come back, which is not what unmute
+   * should cost.
+   */
+  setMuted(muted: boolean): void {
+    this.stream?.getAudioTracks().forEach((track) => {
+      track.enabled = !muted;
+    });
+  }
+
   stopMicrophone(): void {
     this.stream?.getTracks().forEach((track) => track.stop());
     this.nodes.forEach((node) => node.disconnect());
