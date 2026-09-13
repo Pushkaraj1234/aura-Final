@@ -40,6 +40,11 @@ export function VoiceAssistant() {
   );
   const [captions, setCaptions] = useState(true);
   const [draft, setDraft] = useState("");
+  // Whether the backend answered when the page opened. Used to warn, never to
+  // hide the button: on a free instance the backend sleeps after a quiet
+  // period and the first request wakes it, so "did not answer just now" and
+  // "will not work" are different things.
+  const [reachable, setReachable] = useState<"checking" | "yes" | "no">("checking");
 
   const strings = getStrings(language);
   const voice = useVoiceAssistant({ language, storeTranscript: consent?.storeTranscript ?? false });
@@ -51,9 +56,17 @@ export function VoiceAssistant() {
     fetch(httpUrl("/voice/config"))
       .then((r) => (r.ok ? (r.json() as Promise<VoiceConfig>) : null))
       .then((c) => {
-        if (c && !cancelled) setConfig(c);
+        if (cancelled) return;
+        if (c) {
+          setConfig(c);
+          setReachable("yes");
+        } else {
+          setReachable("no");
+        }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (!cancelled) setReachable("no");
+      });
     return () => {
       cancelled = true;
     };
@@ -154,6 +167,13 @@ export function VoiceAssistant() {
         />
         <VoiceStatus status={voice.status} error={voice.error} strings={strings} />
         {ended && <p className="voice-notice">{ended}</p>}
+        {reachable === "no" && (
+          <p className="voice-notice">
+            The voice service did not answer just now. It sleeps when nobody has used
+            it for a while, so the first try can take about a minute to come back.
+            Press the button and give it a moment.
+          </p>
+        )}
         {(voice.error === "quota_exceeded" || voice.error === "unsupported") && (
           <p className="voice-notice">{strings.textOption}</p>
         )}

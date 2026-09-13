@@ -206,8 +206,13 @@ await page.waitForTimeout(1200);
 body = await text(page);
 check('voice page says plainly it is not a person', /This is not a person/i.test(body), body.slice(0, 600));
 check('voice page offers emergency help', /Emergency help/i.test(body), body.slice(0, 600));
-check('with no backend configured it says so rather than offering a mic',
-  /not switched on/i.test(body), body.slice(0, 900));
+// The backend origin is now committed as a default, so the feature is on by
+// build rather than waiting on a dashboard variable. What must stay true is
+// that the page never claims to be switched off when it is configured.
+check('does not claim the feature is switched off',
+  !/not switched on/i.test(body), body.slice(0, 900));
+check('reaches the consent step before any microphone',
+  /Start conversation/i.test(body), body.slice(0, 900));
 check('AURA is still styled like AURA (voice css did not escape)',
   await page.evaluate(() => {
     const bg = getComputedStyle(document.body).backgroundColor;

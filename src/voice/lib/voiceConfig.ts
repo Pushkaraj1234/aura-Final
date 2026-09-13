@@ -14,7 +14,18 @@ import type { VoiceConfig } from "./voiceTypes";
  * says the feature is not switched on yet instead of showing a microphone
  * button that fails when pressed.
  */
-export const BACKEND_URL = (import.meta.env.VITE_VOICE_BACKEND_URL ?? "").replace(/\/$/, "");
+/**
+ * The deployed voice backend. Not a secret — it is a public origin the browser
+ * connects to, and the provider key lives only in that backend's own
+ * environment. Committed as the default so the feature works from a plain
+ * build, with VITE_VOICE_BACKEND_URL overriding it for a different deployment.
+ */
+const DEFAULT_BACKEND_URL = "https://aura-voice-backend-5bnl.onrender.com";
+
+export const BACKEND_URL = (import.meta.env.VITE_VOICE_BACKEND_URL ?? DEFAULT_BACKEND_URL).replace(
+  /\/$/,
+  ""
+);
 
 /** False when no backend is configured, which the UI checks before offering to connect. */
 export const VOICE_ENABLED = BACKEND_URL.length > 0;
