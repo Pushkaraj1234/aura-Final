@@ -35,7 +35,7 @@ export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
       score: 100,
       overridden: true,
       overrideReason:
-        "You indicated an immediate safety concern. That answer alone sets the signal to its maximum — the weighted questions below are not used.",
+        "You indicated an immediate safety concern. That answer alone sets the signal to its maximum. The weighted questions below are not used.",
     };
   }
 

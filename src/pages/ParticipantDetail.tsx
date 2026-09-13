@@ -124,7 +124,7 @@ export const ParticipantDetail: React.FC<Props> = ({
         filterCategory: "priority",
         severity: "RED",
         title: "Case escalated by a counselor",
-        message: `${participant.name || participant.id} — ${reason}`,
+        message: `${participant.name || participant.id}: ${reason}`,
         actionLabel: "Open profile",
         actionView: "detail",
         actionParticipantId: participant.id,
@@ -344,13 +344,13 @@ export const ParticipantDetail: React.FC<Props> = ({
       .map(
         (c) => `<tr>
           <td>${esc(new Date(c.timestamp).toLocaleDateString())}</td>
-          <td>${esc(c.calculatedScore ?? "—")}</td>
+          <td>${esc(c.calculatedScore ?? "N/A")}</td>
           <td>${esc(c.wellbeing)}/5</td>
           <td>${esc(c.stress)}/5</td>
           <td>${esc(c.sleep)}/5</td>
           <td>${esc(c.safety)}</td>
           <td>${esc(c.connection)}/5</td>
-          <td>${c.supportRequested ? "Yes" : "—"}</td>
+          <td>${c.supportRequested ? "Yes" : "No"}</td>
         </tr>`
       )
       .join("");
@@ -358,12 +358,12 @@ export const ParticipantDetail: React.FC<Props> = ({
       .slice(0, 12)
       .map(
         (n) =>
-          `<li><strong>${esc(new Date(n.timestamp).toLocaleDateString())}</strong> — ${esc(n.text)}${
+          `<li><strong>${esc(new Date(n.timestamp).toLocaleDateString())}</strong>: ${esc(n.text)}${
             n.actionTaken ? ` <em>(${esc(n.actionTaken)})</em>` : ""
-          } <span class="muted">— ${esc(n.author)}</span></li>`
+          } <span class="muted">by ${esc(n.author)}</span></li>`
       )
       .join("");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>AURA referral summary — ${esc(
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>AURA referral summary: ${esc(
       participant.name || participant.id
     )}</title>
     <style>
@@ -374,29 +374,29 @@ export const ParticipantDetail: React.FC<Props> = ({
       ul{margin:6px 0;padding-left:18px} .muted{color:#8a827a} .disclaimer{margin-top:26px;padding:10px 12px;background:#faf5ef;border:1px solid #e7ddd3;border-radius:8px;font-size:11px;color:#6b625a}
       @media print{body{margin:12mm}}
     </style></head><body>
-      <h1>AURA — Referral / Session Summary</h1>
+      <h1>AURA Referral / Session Summary</h1>
       <div class="meta">Generated ${esc(new Date().toLocaleString())} · Prepared by ${esc(workerDisplayName)}</div>
 
       <h2>Participant</h2>
       <div class="grid">
-        <div><strong>Name</strong>: ${esc(participant.name || "—")}</div>
+        <div><strong>Name</strong>: ${esc(participant.name || "N/A")}</div>
         <div><strong>Case ID</strong>: ${esc(participant.id)}</div>
-        <div><strong>Complaint reference</strong>: ${esc(participant.caseReference || "—")}${
+        <div><strong>Complaint reference</strong>: ${esc(participant.caseReference || "N/A")}${
           participant.intakeSource ? ` (${esc(participant.intakeSource)})` : ""
         }</div>
-        <div><strong>Language</strong>: ${esc(participant.language || "—")}</div>
-        <div><strong>Age group</strong>: ${esc(participant.ageGroup || "—")}</div>
-        <div><strong>Region</strong>: ${esc(participant.region || "—")}</div>
+        <div><strong>Language</strong>: ${esc(participant.language || "N/A")}</div>
+        <div><strong>Age group</strong>: ${esc(participant.ageGroup || "N/A")}</div>
+        <div><strong>Region</strong>: ${esc(participant.region || "N/A")}</div>
         <div><strong>Assigned worker</strong>: ${esc(participant.assignedWorker || "Unassigned")}</div>
         <div><strong>Current status</strong>: ${esc(participant.status)}</div>
-        <div><strong>Support preference</strong>: ${esc(participant.preferredSupport || "—")}</div>
+        <div><strong>Support preference</strong>: ${esc(participant.preferredSupport || "N/A")}</div>
       </div>
 
       <h2>Current wellbeing signal (non-diagnostic)</h2>
       <div class="grid">
         <div><strong>Distress indicator</strong>: ${esc(trajectory.currentScore)}/100</div>
         <div><strong>Trajectory</strong>: ${esc(trajectory.classification || trajectory.category)}</div>
-        <div><strong>Rate of change</strong>: ${esc(riskAnalysis?.change ?? "—")} pts</div>
+        <div><strong>Rate of change</strong>: ${esc(riskAnalysis?.change ?? "N/A")} pts</div>
         <div><strong>Requires human review</strong>: ${riskAnalysis?.requiresHumanReview ? "Yes" : "No"}</div>
       </div>
       <p class="muted">${esc(trajectory.summaryDescription || trajectory.summary || "")}</p>

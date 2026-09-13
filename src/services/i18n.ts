@@ -289,7 +289,7 @@ export const TRANSLATIONS: Partial<Record<LanguageCode, Translations>> = {
       listening: "Listening to your reflection...",
       speakNow: "Speak naturally into your microphone or pick a demo prompt",
       samplePrompts: "Or choose an example prompt for demonstration:",
-      simulatedNotice: "Language pattern analysis only — does not diagnose or infer medical conditions.",
+      simulatedNotice: "Language pattern analysis only. It does not diagnose or infer medical conditions.",
       retry: "Record Again",
       useTranscription: "Use This Reflection"
     },
@@ -420,7 +420,7 @@ export const TRANSLATIONS: Partial<Record<LanguageCode, Translations>> = {
       listening: "आपकी बात सुनी जा रही है...",
       speakNow: "माइक्रोफोन में स्वाभाविक रूप से बोलें या डेमो विकल्प चुनें",
       samplePrompts: "या प्रदर्शन के लिए एक उदाहरण चुनें:",
-      simulatedNotice: "केवल भाषा पैटर्न विश्लेषण — किसी भी बीमारी का निदान नहीं करता है।",
+      simulatedNotice: "केवल भाषा पैटर्न विश्लेषण। किसी भी बीमारी का निदान नहीं करता है।",
       retry: "पुनः रिकॉर्ड करें",
       useTranscription: "इस प्रतिक्रिया का उपयोग करें"
     },
@@ -551,7 +551,7 @@ export const TRANSLATIONS: Partial<Record<LanguageCode, Translations>> = {
       listening: "तुमचे बोलणे ऐकले जात आहे...",
       speakNow: "मायक्रोफोनमध्ये सहजपणे बोला किंवा उदाहरणांमधून निवडा",
       samplePrompts: "किंवा प्रात्यक्षिकासाठी खालीलपैकी एक निवडा:",
-      simulatedNotice: "केवळ भाषा नमुना विश्लेषण — कोणत्याही आजाराचे निदान करत नाही.",
+      simulatedNotice: "केवळ भाषा नमुना विश्लेषण. कोणत्याही आजाराचे निदान करत नाही.",
       retry: "पुन्हा रेकॉर्ड करा",
       useTranscription: "हे उत्तर वापरा"
     },

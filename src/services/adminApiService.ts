@@ -104,7 +104,7 @@ class AdminApiService {
 
     if (gotHtmlInsteadOfApi) {
       throw new Error(
-        `The admin API did not respond at ${ADMIN_API_BASE}${endpoint} — the server returned a web page instead of data (HTTP ${res.status}). The deployment may not have rebuilt since the API was added. Open /api/config-status to check.`
+        `The admin API did not respond at ${ADMIN_API_BASE}${endpoint}. The server returned a web page instead of data (HTTP ${res.status}). The deployment may not have rebuilt since the API was added. Open /api/config-status to check.`
       );
     }
 
@@ -130,7 +130,7 @@ class AdminApiService {
       // serverless invocation looks like, and res.statusText is always empty
       // over HTTP/2, so the old fallback rendered the useless "HTTP 500:".
       throw new Error(
-        `The server returned HTTP ${res.status} with no error message — the API most likely crashed while starting up. Open /api/config-status to see whether the API is running.`
+        `The server returned HTTP ${res.status} with no error message. The API most likely crashed while starting up. Open /api/config-status to see whether the API is running.`
       );
     }
 

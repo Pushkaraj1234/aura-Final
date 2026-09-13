@@ -59,7 +59,7 @@ export const WorkersTab: React.FC = () => {
       if (r || u) {
         setNotice(
           `${w.name}'s caseload was redistributed: ${r} participant(s) reassigned` +
-            (u ? `, ${u} left unassigned (no capacity — see the Assignments tab).` : ".")
+            (u ? `, ${u} left unassigned (no capacity; see the Assignments tab).` : ".")
         );
       } else {
         setNotice(`${w.name} suspended. They had no assigned participants.`);
@@ -125,7 +125,7 @@ export const WorkersTab: React.FC = () => {
         <Spinner label="Loading counselors..." />
       ) : workers.length === 0 ? (
         <Card className="p-6">
-          <EmptyState message="No active counselors yet — approvals from the Verification Queue will appear here." />
+          <EmptyState message="No active counselors yet. Approvals from the Verification Queue will appear here." />
         </Card>
       ) : (
         <Card className="overflow-hidden">

@@ -108,7 +108,9 @@
 .aura-voice .secondary-button {
   min-height: 48px;
   padding: 10px 22px;
-  border-radius: 999px;
+  /* Not a capsule. 999px came from upstream and is the one shape this app
+     avoids on anything that reads as a button. */
+  border-radius: 12px;
   font: inherit;
   cursor: pointer;
 }
@@ -471,7 +473,7 @@
   gap: 8px;
   min-height: 44px;
   padding: 8px 18px;
-  border-radius: 999px;
+  border-radius: 12px;
   border: 1px solid var(--vc-border);
   background: var(--vc-surface);
   color: var(--vc-muted);

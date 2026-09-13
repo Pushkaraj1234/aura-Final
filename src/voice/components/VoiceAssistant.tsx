@@ -100,8 +100,8 @@ export function VoiceAssistant() {
             <h2>{strings.title}</h2>
             <p>
               Talking out loud is not switched on for this deployment yet. Everything
-              else — writing a check-in, messaging your counsellor, the emergency
-              contacts — works as usual.
+              else works as usual: writing a check-in, messaging your counsellor, the
+              emergency contacts.
             </p>
           </header>
         </section>

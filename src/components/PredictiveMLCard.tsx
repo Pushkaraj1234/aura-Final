@@ -50,7 +50,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
       case "Low": return "text-emerald-600 bg-emerald-50";
       case "Moderate": return "text-amber-600 bg-amber-50";
       case "High": return "text-rose-600 bg-rose-50";
-      case "Critical": return "text-purple-600 bg-purple-50";
+      case "Critical": return "text-[#A85D2E] bg-[#FDF9F5]";
       default: return "text-slate-600 bg-slate-50";
     }
   };
@@ -64,7 +64,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div className="flex items-center space-x-2">
-          <Activity className="text-violet-600" size={20} />
+          <Activity className="text-[#A85D2E]" size={20} />
           <h3 className="font-bold text-[#3C3530]">Predictive ML Horizon</h3>
         </div>
         <div className="flex items-center space-x-2">
@@ -73,7 +73,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
           </span>
           <button 
             onClick={() => setShowEval(!showEval)}
-            className="text-violet-600 hover:text-violet-800 text-xs font-semibold px-2 py-1 rounded-md hover:bg-violet-50 transition-colors"
+            className="text-[#A85D2E] hover:text-[#7A4A20] text-xs font-semibold px-2 py-1 rounded-md hover:bg-[#FDF9F5] transition-colors"
           >
             {showEval ? "Hide Model Details" : "View Model Details"}
           </button>
@@ -130,7 +130,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
       {/* Model Details & Evaluation Expandable */}
       {showEval && (
         <div className="p-4 rounded-xl bg-slate-800 text-slate-200 text-xs space-y-4 mt-2">
-          <div className="flex items-start space-x-2 text-violet-300">
+          <div className="flex items-start space-x-2 text-[#DBC3B2]">
             <Info size={16} className="shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong>Synthetic Tabular ML Layer:</strong> This model estimates the likelihood of worsening distress over the next 7 days using logistic regression. It evaluates the participant's individual baseline (historical variance in sleep, stress, wellbeing) against their current trajectory.

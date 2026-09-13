@@ -155,7 +155,7 @@ export const CaseEventsCard: React.FC<Props> = ({
             data-case-event-note
             maxLength={200}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="Optional — a short note for your own records"
+            placeholder="Optional: a short note for your own records"
             className="w-full px-3 py-2.5 rounded-xl border border-[#EFE8E2] bg-white text-sm text-[#3C3530] placeholder:text-[#B9B0A6] focus:outline-none focus:ring-2 focus:ring-[#DBC3B2]"
           />
 
@@ -214,7 +214,7 @@ export const CaseEventsCard: React.FC<Props> = ({
                     </p>
                     <p className="text-[11px] text-[#7F8C8D]">
                       {new Date(e.date).toLocaleDateString()}
-                      {e.note && <span data-no-translate> — {e.note}</span>}
+                      {e.note && <span data-no-translate>: {e.note}</span>}
                     </p>
                   </div>
                 </div>

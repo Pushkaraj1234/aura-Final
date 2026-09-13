@@ -122,7 +122,7 @@ export const Navbar: React.FC<Props> = ({
               the language picker. */}
           {user && (
             <nav
-              className={`hidden items-center space-x-0.5 bg-white/55 p-1 rounded-full border border-[#E8E4DE] backdrop-blur-sm mx-auto ${
+              className={`hidden items-center space-x-0.5 bg-white/55 p-1 rounded-xl border border-[#E8E4DE] backdrop-blur-sm mx-auto ${
                 isWorker ? "min-[1700px]:flex" : "min-[1500px]:flex"
               }`}
             >
@@ -231,7 +231,7 @@ export const Navbar: React.FC<Props> = ({
                 <>
                   <button
                     onClick={() => onNavigate("participant_home")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "participant_home"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -242,7 +242,7 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("messages")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "messages"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -258,7 +258,7 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("checkin")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "checkin"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -269,7 +269,7 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("support_resources")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "support_resources"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -280,7 +280,7 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("consent_mgmt")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "consent_mgmt"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -291,7 +291,7 @@ export const Navbar: React.FC<Props> = ({
                   </button>
                   <button
                     onClick={() => onNavigate("privacy")}
-                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "privacy"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
@@ -310,7 +310,7 @@ export const Navbar: React.FC<Props> = ({
 
             {/* Mockup specific element for counselors */}
             {user && isWorker && (
-              <div className="hidden lg:flex items-center space-x-2 px-3.5 py-1.5 bg-white rounded-full border border-[#ECE1D3]">
+              <div className="hidden lg:flex items-center space-x-2 px-3.5 py-1.5 bg-white rounded-xl border border-[#ECE1D3]">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#6E8A5E]"></div>
                 <span className="text-xs text-[#6E7A57] font-medium">North Region · 142 monitored</span>
               </div>
@@ -344,7 +344,7 @@ export const Navbar: React.FC<Props> = ({
             {/* Emergency Hotline Button */}
             <button
               onClick={onOpenEmergency}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-full bg-[#F3E7D8] border border-[#A85D2E]/30 text-[#9A5B33] text-xs font-semibold hover:bg-[#EBDAC6] transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-lg bg-[#F3E7D8] border border-[#A85D2E]/30 text-[#9A5B33] text-xs font-semibold hover:bg-[#EBDAC6] transition-all active:scale-95 cursor-pointer"
               title="Immediate Crisis & Emergency Resources"
             >
               <LifeBuoy size={14} className="text-[#9A5B33]" />
@@ -356,7 +356,7 @@ export const Navbar: React.FC<Props> = ({
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center space-x-3 pr-4 pl-1.5 py-1.5 bg-white/60 backdrop-blur-sm rounded-full border border-[#EFE8E2] shadow-sm hover:bg-white transition-colors cursor-pointer"
+                  className="flex items-center space-x-3 pr-4 pl-1.5 py-1.5 bg-white/60 backdrop-blur-sm rounded-2xl border border-[#EFE8E2] shadow-sm hover:bg-white transition-colors cursor-pointer"
                 >
                   <div className="w-8 h-8 rounded-full bg-[#A85D2E] text-white flex items-center justify-center text-xs font-bold">
                     {user.name.split(' ').map(n => n[0]).join('').substring(0, 2)}

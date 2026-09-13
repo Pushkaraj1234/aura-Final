@@ -94,7 +94,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
           <h3 className="text-xl font-bold text-[#3C3530]">Make your own first aid kit</h3>
         </div>
         <p className="text-sm text-[#7A726C] leading-relaxed max-w-xl">
-          A short list of the things that help <em>you</em> — your song, the place you go, the person you would
+          A short list of the things that help <em>you</em>: your song, the place you go, the person you would
           message. Written now, while it is easier to think, so a harder day does not have to.
         </p>
         <button

@@ -64,7 +64,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     } catch {
-      setError("Could not copy automatically — select the link and copy it.");
+      setError("Could not copy automatically. Select the link and copy it.");
     }
   };
 
@@ -133,7 +133,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
           </div>
           <p className="text-[11px] text-[#8A5A2B] flex items-start gap-1.5">
             <AlertTriangle size={12} className="mt-0.5 shrink-0" />
-            Shown once and not recoverable — only a hash of it is stored. It works for one
+            Shown once and not recoverable. Only a hash of it is stored. It works for one
             submission, expires in 14 days, and does not name this participant, so tell them who it
             is about yourself.
           </p>

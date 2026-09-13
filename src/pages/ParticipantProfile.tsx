@@ -173,17 +173,17 @@ export const ParticipantProfile: React.FC<Props> = ({
           .map(
             (c) => `<tr>
         <td>${esc(new Date(c.timestamp).toLocaleDateString())}</td>
-        <td>${esc(c.calculatedScore ?? "—")}</td>
+        <td>${esc(c.calculatedScore ?? "N/A")}</td>
         <td>${esc(c.wellbeing)}/5</td><td>${esc(c.stress)}/5</td><td>${esc(c.sleep)}/5</td>
         <td>${esc(c.safety)}</td><td>${esc(c.connection)}/5</td>
-        <td>${c.supportRequested ? "Yes" : "—"}</td>
+        <td>${c.supportRequested ? "Yes" : "No"}</td>
         <td>${esc(c.optionalNote || "")}</td>
       </tr>`
           )
           .join("")
       : `<tr><td colspan="9" style="color:#8a827a">No check-ins recorded.</td></tr>`;
     const html = `<!doctype html><html><head><meta charset="utf-8">
-<title>My AURA data — ${esc(b.account.name)}</title><style>
+<title>My AURA data: ${esc(b.account.name)}</title><style>
 *{box-sizing:border-box} body{font:14px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#2b2622;margin:32px;max-width:820px}
 h1{font-size:22px;margin:0 0 2px} h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8a5a2b;margin:24px 0 8px;border-bottom:1px solid #e7ddd3;padding-bottom:4px}
 .muted{color:#6b625a;font-size:12px} dl{display:grid;grid-template-columns:180px 1fr;gap:4px 16px;margin:6px 0}
@@ -200,13 +200,13 @@ th,td{border:1px solid #e7ddd3;padding:5px 7px;text-align:left} th{background:#f
   <dt>Name</dt><dd>${esc(b.account.name)}</dd>
   <dt>Email</dt><dd>${esc(b.account.email)}</dd>
   <dt>Account ID</dt><dd>${esc(b.account.id)}</dd>
-  <dt>Language</dt><dd>${esc(b.account.language || "—")}</dd>
-  <dt>Age range</dt><dd>${esc(b.account.ageRange || "—")}</dd>
-  <dt>Support preference</dt><dd>${esc(b.account.supportPreference || "—")}</dd>
+  <dt>Language</dt><dd>${esc(b.account.language || "N/A")}</dd>
+  <dt>Age range</dt><dd>${esc(b.account.ageRange || "N/A")}</dd>
+  <dt>Support preference</dt><dd>${esc(b.account.supportPreference || "N/A")}</dd>
   <dt>Emergency / trusted contact</dt><dd>${esc(b.account.emergencyContact || "None on file")}</dd>
   <dt>Consent given</dt><dd>${b.account.consentGiven ? "Yes" : "No"}</dd>
-  <dt>Account created</dt><dd>${esc(b.account.createdAt ? new Date(b.account.createdAt).toLocaleDateString() : "—")}</dd>
-  <dt>Current status</dt><dd>${esc(b.status || "—")}</dd>
+  <dt>Account created</dt><dd>${esc(b.account.createdAt ? new Date(b.account.createdAt).toLocaleDateString() : "N/A")}</dd>
+  <dt>Current status</dt><dd>${esc(b.status || "N/A")}</dd>
 </dl>
 
 <h2>Privacy & consent settings</h2>
@@ -232,7 +232,7 @@ ${
     ? `<ul>${b.followUps
         .map(
           (f: any) =>
-            `<li>${esc(f.interventionType || "Follow-up")} — ${esc(f.outcomeLabel || f.outcome || "")} ${
+            `<li>${esc(f.interventionType || "Follow-up")}: ${esc(f.outcomeLabel || f.outcome || "")} ${
               f.followUpDate ? `(${esc(new Date(f.followUpDate).toLocaleDateString())})` : ""
             }</li>`
         )
@@ -241,7 +241,7 @@ ${
 }
 
 <div class="disc">
-  AURA provides AI-assisted, human-reviewed wellbeing indicators — <strong>not a clinical diagnosis</strong>.
+  AURA provides AI-assisted, human-reviewed wellbeing indicators, <strong>not a clinical diagnosis</strong>.
   You can also download this data as a raw JSON file from the same screen. To delete your check-in history,
   use "Reset My Check-in Data"; to stop all monitoring, use "Withdraw Consent".
 </div>
@@ -324,7 +324,7 @@ ${
         senderId: user.id,
         senderRole: "participant",
         body:
-          "Session request — I'd like to schedule a time to talk." +
+          "Session request: I'd like to schedule a time to talk." +
           (note ? `\n\nNote: ${note}` : ""),
       });
       if (!sent) {
@@ -403,14 +403,14 @@ ${
         <div className="flex flex-col sm:flex-row items-center gap-3 z-10 shrink-0 md:pb-2">
           <button
             onClick={onStartCheckin}
-            className="px-6 py-3 rounded-full bg-[#E5D7CC] text-[#3C3530] font-bold text-sm hover:bg-white transition-all shadow-sm flex items-center justify-center space-x-2 active:scale-95 cursor-pointer border border-transparent"
+            className="px-6 py-3 rounded-xl bg-[#E5D7CC] text-[#3C3530] font-bold text-sm hover:bg-white transition-all shadow-sm flex items-center justify-center space-x-2 active:scale-95 cursor-pointer border border-transparent"
           >
             <Plus size={16} />
             <span>{count === 0 ? "Start First Check-in" : "Start Daily Check-in"}</span>
           </button>
           <button
             onClick={onOpenEmergency}
-            className="px-6 py-3 rounded-full bg-transparent hover:bg-white/5 border border-white/20 text-white font-bold text-sm transition-all flex items-center justify-center space-x-2 cursor-pointer"
+            className="px-6 py-3 rounded-xl bg-transparent hover:bg-white/5 border border-white/20 text-white font-bold text-sm transition-all flex items-center justify-center space-x-2 cursor-pointer"
           >
             <LifeBuoy size={16} className="text-[#A55D25]" />
             <span>Crisis Support</span>
@@ -437,7 +437,7 @@ ${
           <div className="flex-1">
             <h3 className="text-sm font-bold text-[#3C3530]">Would you like to talk to someone today?</h3>
             <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
-              {nudgeReason} There's no pressure — reaching out is always your choice.
+              {nudgeReason} There's no pressure. Reaching out is always your choice.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
@@ -586,8 +586,8 @@ ${
                     Talk it through, out loud
                   </h3>
                   <p className="text-sm text-[#6B5B4C] mt-1.5 max-w-xl leading-relaxed">
-                    Some days writing is the hard part. Speak instead and it answers back —
-                    interrupt it, pause, or stop whenever you want. It listens for as long
+                    Some days writing is the hard part. Speak instead and it answers back.
+                    Interrupt it, pause, or stop whenever you want. It listens for as long
                     as you need, and there is nothing you have to get right.
                   </p>
                 </div>
@@ -686,15 +686,15 @@ ${
                 <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#EFE8E2] text-center">
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
                     <span className="text-[10px] font-bold text-[#7F8C8D] block">Stress</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-sm font-bold text-[#7F8C8D]">N/A</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
                     <span className="text-[10px] font-bold text-[#7F8C8D] block">Sleep</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-sm font-bold text-[#7F8C8D]">N/A</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
                     <span className="text-[10px] font-bold text-[#7F8C8D] block">Safety</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-sm font-bold text-[#7F8C8D]">N/A</span>
                   </div>
                 </div>
 
@@ -727,7 +727,7 @@ ${
                     they choose again. */}
                 {!SUPPORT_PREFERENCES.includes(supportPref) && (
                   <option value={supportPref} disabled>
-                    {supportPref} (no longer offered — please choose again)
+                    {supportPref} (no longer offered, please choose again)
                   </option>
                 )}
               </select>
@@ -818,7 +818,7 @@ ${
                     value={sessionNote}
                     onChange={(e) => setSessionNote(e.target.value)}
                     rows={2}
-                    placeholder="Optional — anything you'd like them to know first"
+                    placeholder="Optional: anything you'd like them to know first"
                     className="w-full p-3 rounded-xl border border-[#EFE8E2] bg-white text-xs text-[#3C3530] focus:ring-2 focus:ring-[#8FAF8B] focus:outline-none resize-none"
                   />
                   {sessionError && (
@@ -1046,7 +1046,7 @@ ${
               <p className="text-[#7F8C8D]">
                 {ecValue
                   ? ecValue
-                  : "None on file. Optional — add a trusted person only if it is safe for you to name one."}
+                  : "None on file. Optional: add a trusted person only if it is safe for you to name one."}
               </p>
             )}
             {ecSaved && <p className="text-[11px] font-bold text-[#2F6B4F]">Saved.</p>}

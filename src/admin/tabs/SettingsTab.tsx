@@ -119,11 +119,11 @@ export const SettingsTab: React.FC = () => {
           <Card className="p-6">
             <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
               <div>
-                <h3 className="text-sm font-black text-[#3C3530] uppercase tracking-wider">AI Alert Thresholds — Sensitivity</h3>
+                <h3 className="text-sm font-black text-[#3C3530] uppercase tracking-wider">AI Alert Thresholds: Sensitivity</h3>
                 <p className="text-xs text-[#7F8C8D] mt-1 max-w-xl">
                   Tunes the client-side alert engine that decides when a distress signal is raised for human review.
                   Lower thresholds = more alerts (fewer missed cases, more noise); higher = fewer alerts. Applied the
-                  next time the app loads. Prototype rules — not clinically validated.
+                  next time the app loads. Prototype rules, not clinically validated.
                 </p>
               </div>
               <SecondaryButton onClick={resetDefaults}>
@@ -185,7 +185,7 @@ export const SettingsTab: React.FC = () => {
             <p className="text-[10px] text-[#B9B0A6] mt-4 flex items-start gap-1.5">
               <Info size={11} className="shrink-0 mt-0.5" />
               These values map 1:1 onto <span className="font-mono">alertConfig.ts</span>. The alert engine still never
-              auto-escalates without a human — this only changes when a case is surfaced.
+              auto-escalates without a human. This only changes when a case is surfaced.
             </p>
           </Card>
         </div>

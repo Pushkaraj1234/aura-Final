@@ -128,7 +128,7 @@ export const ModelTransparencyCard: React.FC = () => {
                 Rule-Based Weighted Heuristics + Multi-Step Trajectory Filter
               </p>
               <p className="text-[11px] text-[#7A726C] mt-1">
-                Deterministic and auditable — avoids black-box hallucinations.
+                Deterministic and auditable, which avoids black-box hallucinations.
               </p>
             </div>
 
@@ -357,7 +357,7 @@ export const HumanitarianImpactSection: React.FC = () => {
     { title: "Continuous Monitoring", desc: "Track longitudinal velocity and volatility over time rather than single points.", icon: Compass },
     { title: "Explainable Decisions", desc: "Show exactly which factors contributed to an alert with clear factor weighting.", icon: Info },
     { title: "Participant Control", desc: "Voluntary participation, consent preferences, and full data deletion rights.", icon: EyeOff },
-    { title: "Human-Centered Response", desc: "AI assists and prioritizes — trained humans review and care.", icon: Users }
+    { title: "Human-Centered Response", desc: "AI assists and prioritizes. Trained humans review and care.", icon: Users }
   ];
 
   return (

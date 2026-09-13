@@ -316,7 +316,7 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
                       rel="noreferrer noopener"
                       title={res.website}
                       data-no-translate
-                      className="text-violet-600 hover:underline break-all min-w-0"
+                      className="text-[#A85D2E] hover:underline break-all min-w-0"
                     >
                       {resourceLinkText(res.website)}
                     </a>

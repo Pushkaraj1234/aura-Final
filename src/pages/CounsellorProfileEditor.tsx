@@ -49,7 +49,7 @@ const Chip: React.FC<{ active: boolean; onClick: () => void; children: React.Rea
     type="button"
     onClick={onClick}
     aria-pressed={active}
-    className={`px-3 py-2 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+    className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
       active
         ? "bg-[#5A5049] text-white border-[#5A5049]"
         : "bg-white text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
@@ -410,7 +410,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
         <div>
           <h2 className="font-bold text-[#3C3530]">Session log</h2>
           <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl">
-            Record a session once it has happened. This is attendance only — no notes are stored
+            Record a session once it has happened. This is attendance only. No notes are stored
             here. It matters because someone can only review a session that has been logged as
             completed.
           </p>
@@ -480,7 +480,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
                   {s.participantId}
                 </span>
                 <span className="text-xs text-[#7A726C]">
-                  {s.heldAt ? new Date(s.heldAt).toLocaleDateString() : "—"} · {s.format}
+                  {s.heldAt ? new Date(s.heldAt).toLocaleDateString() : "N/A"} · {s.format}
                 </span>
                 <span className="ml-auto text-[11px] font-bold uppercase tracking-wide text-[#7A726C]">
                   {s.status}
@@ -501,7 +501,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
             <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl leading-relaxed">
               People can change counsellor at any time, for any reason, and most say
               nothing. These are the ones who chose to. You are not shown who wrote them
-              or when, and nothing here is part of anyone&rsquo;s record — it is here so
+              or when, and nothing here is part of anyone&rsquo;s record. It is here so
               it can be useful to you.
             </p>
           </div>

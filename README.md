@@ -257,5 +257,22 @@ only, never a value:
 If `/admin` shows Vercel's `404: NOT_FOUND`, the rewrites aren't live. If it loads but
 login fails, read the message on the login form — it names the missing variable.
 
+### Before a public launch
+
+Two things live outside the environment variables above.
+
+**The legal contact address.** `src/pages/Legal/legalMeta.ts` holds `OPERATOR_NAME` and
+`CONTACT_EMAIL`. The Privacy Policy (`/privacy-policy`) and the Terms (`/terms`) name
+`CONTACT_EMAIL` as the address for privacy questions, corrections and erasure requests.
+It ships blank, and while it is blank both pages say so plainly and point the reader at
+their counsellor instead. Set it, and bump `LAST_UPDATED` whenever the wording of either
+document changes.
+
+**A custom domain.** Add it in the Vercel dashboard under Project → Settings → Domains,
+then point the registrar's DNS at the record Vercel shows. Nothing in this repository
+hard-codes the hostname, so no code change is needed. The one place worth revisiting
+afterwards is `og:image` in `index.html`, which is a root-relative path and resolves
+against whichever host serves the page.
+
 ---
 *Developed for Smart India Hackathon (SIH) • Humanitarian Mental Health & Disaster Response Innovation*

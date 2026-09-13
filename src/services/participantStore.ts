@@ -543,7 +543,7 @@ export const participantStore = {
         action: "HIGH_DISTRESS_ALERT_CREATED",
         category: "ALERT",
         participantId: enrichedCheckIn.participantId,
-        description: `High distress alert created for participant ${enrichedCheckIn.participantId} (Score: ${analysis.distressScore}/100) — routed to Counselor review queue`,
+        description: `High distress alert created for participant ${enrichedCheckIn.participantId} (Score: ${analysis.distressScore}/100), routed to Counselor review queue`,
         severity: "HIGH"
       });
     }

@@ -85,7 +85,7 @@ export const FlagReviewTab: React.FC = () => {
     <div>
       <PageHeader
         title="AI Flag Review"
-        subtitle="Mark the alert engine's past judgments to build an accuracy picture over time. Advisory / audit only — never changes a case."
+        subtitle="Mark the alert engine's past judgments to build an accuracy picture over time. Advisory / audit only. It never changes a case."
         action={
           <SecondaryButton onClick={() => setFnOpen((o) => !o)}>
             <span className="flex items-center gap-1.5">
@@ -110,9 +110,9 @@ export const FlagReviewTab: React.FC = () => {
               {
                 label: "Precision / Recall",
                 value:
-                  (data.stats.precision == null ? "—" : `${data.stats.precision}%`) +
+                  (data.stats.precision == null ? "N/A" : `${data.stats.precision}%`) +
                   " / " +
-                  (data.stats.recall == null ? "—" : `${data.stats.recall}%`),
+                  (data.stats.recall == null ? "N/A" : `${data.stats.recall}%`),
                 tone: "#3F5E78",
               },
             ].map((s) => (
@@ -224,7 +224,7 @@ export const FlagReviewTab: React.FC = () => {
                     {noteFor === item.alertId && (
                       <input
                         autoFocus
-                        placeholder="Optional note — applied with your next TP/FP/Unclear click"
+                        placeholder="Optional note, applied with your next TP/FP/Unclear click"
                         value={noteText}
                         onChange={(e) => setNoteText(e.target.value)}
                         className="mt-2 w-full px-3 py-2 rounded-lg border border-[#EFE8E2] bg-[#FDF9F5] text-xs text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049]"
@@ -244,7 +244,7 @@ export const FlagReviewTab: React.FC = () => {
                   <div key={m.id} className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
                     <div>
                       <span className="text-sm font-bold text-[#3C3530]">{m.participantName}</span>
-                      {m.note && <span className="text-xs text-[#7F8C8D] ml-2">— {m.note}</span>}
+                      {m.note && <span className="text-xs text-[#7F8C8D] ml-2">{m.note}</span>}
                     </div>
                     <span className="text-[11px] text-[#7F8C8D]">{new Date(m.reviewedAt).toLocaleDateString()}</span>
                   </div>

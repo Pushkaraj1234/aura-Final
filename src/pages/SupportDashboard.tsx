@@ -113,7 +113,7 @@ export const SupportDashboard: React.FC<Props> = ({
     const scopeWord = currentWorker && assignedCount > 0 ? "your caseload" : "the platform";
     let subtitle: string;
     if (needsAttention === 0 && rising === 0) {
-      subtitle = `Nothing in ${scopeWord} needs attention right now — a calm start to the day.`;
+      subtitle = `Nothing in ${scopeWord} needs attention right now. A calm start to the day.`;
     } else {
       const parts: string[] = [];
       if (needsAttention > 0)
@@ -523,7 +523,7 @@ export const SupportDashboard: React.FC<Props> = ({
               Changes in how people are using the app
             </h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              Read from check-in rhythm rather than from anything anyone reported — so someone who
+              Read from check-in rhythm rather than from anything anyone reported, so someone who
               has stopped answering altogether still appears here, which is the one case every
               other list on this page will miss. Each carries the facts behind it; open the person
               to see them.
@@ -579,7 +579,7 @@ export const SupportDashboard: React.FC<Props> = ({
               The self-report may not be the whole picture
             </h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              These people did not report high distress — that is exactly why they are here. What they
+              These people did not report high distress. That is exactly why they are here. What they
               said and what everything else suggests do not line up, so the usual queue would never
               have shown them to you. Nothing here says anyone is being untruthful; it is a prompt to
               ask again, gently.
@@ -647,7 +647,7 @@ export const SupportDashboard: React.FC<Props> = ({
             </span>
             <h2 className="font-serif text-2xl text-[#3A2A1E]">People who may need a check-in</h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              Ordered by what looks most time-sensitive — safety signals first, then sustained changes and voluntary support requests.
+              Ordered by what looks most time-sensitive: safety signals first, then sustained changes and voluntary support requests.
             </p>
           </div>
           <button onClick={onNavigateAlerts} className="btn-ghost shrink-0 px-4 py-2 text-[12px]">
@@ -809,12 +809,12 @@ export const SupportDashboard: React.FC<Props> = ({
               </h2>
               <p className="text-[13px] text-[#8A7A6B]">A gentle view of how the group has been trending.</p>
             </div>
-            <div className="flex items-center gap-1 bg-[#F4EADF] rounded-full p-1">
+            <div className="flex items-center gap-1 bg-[#F4EADF] rounded-xl p-1">
               {([14, 30] as const).map((d) => (
                 <button
                   key={d}
                   onClick={() => setRangeDays(d)}
-                  className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-colors cursor-pointer ${
+                  className={`px-3 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer ${
                     rangeDays === d
                       ? "bg-white text-[#3A2A1E] ring-1 ring-[#ECE1D3]"
                       : "text-[#8A7A6B] hover:text-[#3A2A1E]"
@@ -843,7 +843,7 @@ export const SupportDashboard: React.FC<Props> = ({
                   : "from-[#E6C08E] to-[#EECBA0]";
                 return (
                   <div key={i} className="flex flex-col items-center gap-2 flex-1 min-w-0">
-                    <span className="text-[11px] font-semibold text-[#3A2A1E]">{b.score ?? "—"}</span>
+                    <span className="text-[11px] font-semibold text-[#3A2A1E]">{b.score ?? "N/A"}</span>
                     <div className="w-full max-w-[46px] h-36 flex items-end rounded-t-lg bg-[#F4EADF]">
                       <div
                         className={`w-full rounded-t-lg bg-gradient-to-t ${tone}`}
@@ -1097,7 +1097,7 @@ export const SupportDashboard: React.FC<Props> = ({
                             <span className="text-[#A99A8A] font-medium">Steady</span>
                           )
                         ) : (
-                          <span className="text-[#A99A8A]">—</span>
+                          <span className="text-[#A99A8A]">N/A</span>
                         )}
                       </td>
 

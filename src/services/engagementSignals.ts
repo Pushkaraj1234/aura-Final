@@ -108,7 +108,7 @@ export function assessEngagement(input: {
       add("silence", "Gone quiet",
         `${plural(daysSinceLastCheckIn, "day")} since the last check-in, against a usual ${baseline.toFixed(0)}-day rhythm`,
         "serious",
-        "Measured against this person's own pattern, not a fixed schedule — someone who was always sporadic is not withdrawing.");
+        "Measured against this person's own pattern, not a fixed schedule. Someone who was always sporadic is not withdrawing.");
     } else if (ratio >= 2 && daysSinceLastCheckIn >= 4) {
       add("silence", "Slower than usual",
         `${plural(daysSinceLastCheckIn, "day")} since the last check-in, usually every ${baseline.toFixed(0)}`,
@@ -185,7 +185,7 @@ export function assessEngagement(input: {
       add("unanswered", "Outreach unanswered",
         `no reply for ${plural(daysWaiting, "day")}`,
         daysWaiting >= 10 ? "serious" : "notable",
-        "Says nothing about why — only that the thread is one-directional.");
+        "Says nothing about why, only that the thread is one-directional.");
     }
   }
 

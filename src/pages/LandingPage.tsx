@@ -22,11 +22,11 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-20 sm:pt-16 sm:pb-24 lg:pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Top Pill */}
+          {/* An eyebrow, not a floating capsule. */}
           <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#DBC3B2]/25 border border-[#DBC3B2]/50 text-[#5A5049] text-xs sm:text-sm font-semibold shadow-xs">
-              <span>Humanitarian Technology</span>
-            </div>
+            <p className="text-xs sm:text-sm font-semibold uppercase tracking-[0.18em] text-[#8A7A6B] border-b border-[#DBC3B2]/60 pb-2">
+              Humanitarian Technology
+            </p>
           </div>
 
           {/* Main Hero Header */}
@@ -38,7 +38,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
               AI-assisted dynamic support for trauma-affected communities
             </p>
             <p className="text-base sm:text-lg text-[#7A726C] max-w-2xl mx-auto leading-relaxed">
-              Empowering counselors, humanitarian NGOs, and support teams to identify meaningful changes in psychological distress over time — with explainable indicators and human-in-the-loop governance.
+              Empowering counselors, humanitarian NGOs, and support teams to identify meaningful changes in psychological distress over time, with explainable indicators and human-in-the-loop governance.
             </p>
 
             {/* CTA Buttons */}
@@ -89,7 +89,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 </div>
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] block mb-1">
-                    Role 1 — Voluntary Intake
+                    Role 1: Voluntary Intake
                   </span>
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
                     Participant Experience
@@ -131,7 +131,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 </div>
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] block mb-1">
-                    Role 2 — Authorized Support
+                    Role 2: Authorized Support
                   </span>
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
                     Counselor Dashboard
@@ -195,7 +195,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
               </div>
               <h4 className="text-xl font-bold text-[#3C3530]">3. Human-in-the-Loop</h4>
               <p className="text-sm text-[#7A726C] leading-relaxed">
-                AI provides signals — humans make care decisions. No automatic medical diagnoses or non-consensual authority contact.
+                AI provides signals. Humans make care decisions. No automatic medical diagnoses or non-consensual authority contact.
               </p>
             </div>
           </div>
@@ -211,6 +211,17 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
           <p className="text-xs text-[#EFE8E2]/70">
             Synthetic dataset only • Built in accordance with trauma-informed and privacy-first design principles.
           </p>
+          <nav
+            aria-label="Legal"
+            className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 pt-3 text-xs font-semibold"
+          >
+            <a href="/privacy-policy" className="text-[#EFE8E2]/80 hover:text-white transition-colors">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="text-[#EFE8E2]/80 hover:text-white transition-colors">
+              Terms and Conditions
+            </a>
+          </nav>
         </div>
       </section>
     </div>

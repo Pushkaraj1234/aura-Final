@@ -80,7 +80,7 @@ export const CheckInResults: React.FC<Props> = ({
         participantId: participantRecord.id,
         senderId: user.id,
         senderRole: "participant",
-        body: "I'd like to talk to a counsellor — sent from my check-in results.",
+        body: "I'd like to talk to a counsellor (sent from my check-in results).",
       });
       if (!sent) {
         setSupportError(
@@ -574,7 +574,7 @@ export const CheckInResults: React.FC<Props> = ({
         {!assignedWorker && (
           <div className="p-3 rounded-xl bg-[#DBC3B2]/30 border border-[#DBC3B2]/60 text-xs text-[#3C3530] font-medium">
             You don't have a counsellor yet, so there's nobody to arrange a conversation. You can
-            pick one yourself — it takes a minute and you can change your mind later.
+            pick one yourself. It takes a minute and you can change your mind later.
           </div>
         )}
       </div>
@@ -655,7 +655,7 @@ export const CheckInResults: React.FC<Props> = ({
         <div className="p-5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs sm:text-sm text-[#3C3530] leading-relaxed italic space-y-2">
           <p>"{analysis.supportiveMessage}"</p>
           <span className="block text-[11px] text-[#7F8C8D] not-italic">
-            — AURA Non-Clinical Support Assistant
+            AURA Non-Clinical Support Assistant
           </span>
         </div>
 

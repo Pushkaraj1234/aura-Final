@@ -146,7 +146,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
             {guardianNotices.map((g) => (
               <li key={g.id} className="text-xs text-[#5A5049]">
                 <span className="font-semibold" data-no-translate>{g.guardianLabel}</span>
-                {" — asked "}
+                {", asked "}
                 {new Date(g.createdAt).toLocaleDateString()}
                 {g.status === "submitted" && g.submittedAt
                   ? `, replied ${new Date(g.submittedAt).toLocaleDateString()}`

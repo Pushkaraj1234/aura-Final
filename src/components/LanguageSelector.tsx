@@ -37,15 +37,15 @@ export const LanguageSelector: React.FC<Props> = ({ variant = "full", className 
     ? "Translating this page…"
     : degraded
       ? degradedReason
-        ? `Showing English — ${degradedReason}`
-        : "Showing English — the translation service could not be reached."
+        ? `Showing English. ${degradedReason}`
+        : "Showing English. The translation service could not be reached."
       : "";
 
   const Icon = loading ? Loader2 : degraded ? TriangleAlert : Globe2;
 
   return (
     <div
-      className={`inline-flex items-center gap-1.5 min-w-0 rounded-full border pl-2.5 pr-1.5 py-1 transition-colors ${
+      className={`inline-flex items-center gap-1.5 min-w-0 rounded-xl border pl-2.5 pr-1.5 py-1 transition-colors ${
         degraded
           ? "border-[#D49B6A]/50 bg-[#D49B6A]/10"
           : "border-[#EFE8E2] bg-white/70"

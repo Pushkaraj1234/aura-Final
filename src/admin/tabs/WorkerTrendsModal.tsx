@@ -46,7 +46,7 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
           <div>
             <h3 className="text-lg font-black text-[#3C3530]">{workerName}'s Caseload Trends</h3>
             <p className="text-xs text-[#7F8C8D] mt-0.5">
-              Aggregated distress indicator across their assigned caseload — anonymized by default.
+              Aggregated distress indicator across their assigned caseload, anonymized by default.
             </p>
           </div>
           <button onClick={onClose} className="text-[#7F8C8D] hover:text-[#3C3530] cursor-pointer">
@@ -132,7 +132,7 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
                             </Badge>
                           </div>
                           <span className="text-xs font-bold text-[#3C3530]">
-                            Latest: {latest ? `${latest.score}/100` : "—"}{" "}
+                            Latest: {latest ? `${latest.score}/100` : "N/A"}{" "}
                             <span className="text-[#7F8C8D] font-medium">({p.points.length} check-ins)</span>
                           </span>
                         </div>

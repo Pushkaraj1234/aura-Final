@@ -98,12 +98,12 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
             <div className="flex items-center gap-2 mb-1">
               <Siren size={16} className="text-[#B23A2E]" />
               <h3 className="text-sm font-black text-[#3C3530] uppercase tracking-wider">
-                Active Escalations — Platform-Wide
+                Active Escalations: Platform-Wide
               </h3>
             </div>
             <p className="text-xs text-[#7F8C8D] mb-4">
               Every open high-severity or escalated alert across all participants, whoever they are assigned to.
-              Oversight only — follow up through the assigned counselor, not directly on the case.
+              Oversight only. Follow up through the assigned counselor, not directly on the case.
             </p>
             {escalations === null ? (
               <Spinner label="Loading escalations..." />
@@ -200,7 +200,7 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
               </div>
               <p className="text-xs text-[#7F8C8D] mb-4">
                 Real, publicly published, non-identifying conflict statistics for the broad regions your caseload
-                spans — background context only, not derived from and not linked to any individual user.
+                spans. This is background context only, not derived from and not linked to any individual user.
               </p>
               <div className="grid sm:grid-cols-3 gap-4">
                 {regionalContext.map((r) => (
