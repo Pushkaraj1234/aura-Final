@@ -822,6 +822,30 @@ export const participantStore = {
     }
   },
 
+  /**
+   * Records an assignment the database has *already* made — specifically the
+   * one select_counsellor() makes when a participant picks someone.
+   *
+   * It deliberately does not write anything back to the server. The RPC is the
+   * only writer of that column on this path, and a second write from here is
+   * exactly the stale-cache replay that used to undo an admin's unassignment.
+   *
+   * Without this, choosing a counsellor looked broken even though the write
+   * had succeeded: the participant record is hydrated from the backend once,
+   * by init() -> syncWithBackend(), and every screen reads it from local
+   * storage after that. The database said the new counsellor, the page said
+   * the old one, and only a full reload agreed with the database.
+   */
+  applyAssignedWorker: (participantId: string, workerId: string | null) => {
+    const participants = getStoredParticipants();
+    const idx = participants.findIndex((p) => p.id === participantId);
+    if (idx < 0) return;
+    if (participants[idx].assignedWorker === (workerId || undefined)) return;
+    participants[idx] = { ...participants[idx], assignedWorker: workerId || undefined };
+    // Fires aura_data_updated, which is what pulls the new value into React.
+    saveStoredParticipants(participants);
+  },
+
   assignWorker: (participantId: string, workerName: string) => {
     const participants = getStoredParticipants();
     const idx = participants.findIndex((p) => p.id === participantId);

@@ -212,6 +212,28 @@ annotated list.
 | `SUPABASE_SERVICE_ROLE_KEY` | Every authenticated admin action (dashboard, queue, counselors, assignments, audit log) |
 | `GEMINI_API_KEY` | The `/api/ai/*` and `/api/chat` routes |
 | `SMTP_*` | Optional — counselor approval/rejection emails |
+| `VITE_VOICE_BACKEND_URL` | Optional — the voice companion. Unset means the feature says it is not switched on, and nothing else changes |
+
+#### The voice companion needs a backend of its own
+
+`src/voice/` is the client from [Pushkaraj1234/voice_companion](https://github.com/Pushkaraj1234/voice_companion),
+copied in as that repository's README describes. Its backend is **not** deployed
+with AURA and cannot be: a conversation holds a WebSocket open for its whole
+length, and a Vercel serverless function cannot do that — it is invoked per
+request and torn down. So run that repository's `backend/` somewhere that keeps a
+process alive (Render, Fly, Railway, a VM), and point `VITE_VOICE_BACKEND_URL`
+at its public origin.
+
+Two things to get right when you do:
+
+- The provider API key (`GEMINI_API_KEY`, or the local Whisper/Ollama/Piper
+  stack) belongs to that backend's environment only. Anything named `VITE_*` is
+  compiled into the browser bundle and is readable by anyone who opens the page.
+- Add AURA's origin to that backend's `ALLOWED_ORIGINS`, or the browser will
+  refuse the connection.
+
+Until it is set, the page says so in plain words rather than offering a
+microphone button that cannot connect.
 
 ### Checking a deployment
 

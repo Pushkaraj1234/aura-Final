@@ -20,6 +20,7 @@ import { ParticipantCheckin } from "./pages/ParticipantCheckin";
 import { CheckInResults } from "./pages/CheckInResults";
 import { ParticipantProfile } from "./pages/ParticipantProfile";
 import { ChooseCounsellor } from "./pages/ChooseCounsellor";
+import { VoiceCompanion } from "./pages/VoiceCompanion";
 import { CounsellorProfileEditor } from "./pages/CounsellorProfileEditor";
 import { SupportDashboard } from "./pages/SupportDashboard";
 import { ParticipantDetail } from "./pages/ParticipantDetail";
@@ -319,7 +320,21 @@ export const App: React.FC = () => {
             user={currentUser}
             participantId={participantRecordForUser.id}
             currentWorkerId={participantRecordForUser.assignedWorker}
+            onAssignmentChanged={(workerId) => {
+              // select_counsellor() has already written this. All that is left
+              // is to stop the rest of the app reading a cached record that
+              // still names the counsellor this person just left.
+              participantStore.applyAssignedWorker(participantRecordForUser.id, workerId);
+              setParticipants(participantStore.getAllParticipants());
+            }}
             onBack={() => setCurrentView("participant_home")}
+          />
+        )}
+
+        {currentView === "voice_companion" && currentUser && currentUser.role === "participant" && (
+          <VoiceCompanion
+            onBack={() => setCurrentView("participant_home")}
+            onOpenEmergency={() => setEmergencyModalOpen(true)}
           />
         )}
 
@@ -332,6 +347,7 @@ export const App: React.FC = () => {
             onOpenEmergency={() => setEmergencyModalOpen(true)}
             onOpenPrivacy={() => setCurrentView("privacy")}
             onOpenChooseCounsellor={() => setCurrentView("choose_counsellor")}
+            onOpenVoiceCompanion={() => setCurrentView("voice_companion")}
             onLogout={handleLogout}
             onUpdateConsent={handleUpdateConsent}
             onDataReset={() => {

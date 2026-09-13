@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FirstAidKitCard } from "../components/FirstAidKitCard";
 import { FirstAidKit } from "../types";
 import {
@@ -22,7 +22,8 @@ import {
   Download,
   Phone,
   Pencil,
-  CalendarClock
+  CalendarClock,
+  Mic
 } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { User, CheckIn, Participant } from "../types";
@@ -42,6 +43,7 @@ interface Props {
   onOpenEmergency: () => void;
   onOpenPrivacy: () => void;
   onOpenChooseCounsellor?: () => void;
+  onOpenVoiceCompanion?: () => void;
   onLogout: () => void;
   onUpdateConsent: (status: boolean) => void;
   onDataReset?: () => void;
@@ -59,6 +61,7 @@ export const ParticipantProfile: React.FC<Props> = ({
   onOpenEmergency,
   onOpenPrivacy,
   onOpenChooseCounsellor,
+  onOpenVoiceCompanion,
   onLogout,
   onUpdateConsent,
   onDataReset,
@@ -69,6 +72,32 @@ export const ParticipantProfile: React.FC<Props> = ({
   );
   const [prefSaved, setPrefSaved] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // participants.assigned_worker holds an id, so the card said "Your
+  // Counsellor" and left the person to guess who that was. Resolve it to the
+  // name they would recognise. Null while it loads, and null for an id with no
+  // profile behind it, which the heading falls back on rather than showing a
+  // raw uuid.
+  const assignedWorkerId = participantRecord?.assignedWorker;
+  const [counsellorName, setCounsellorName] = useState<string | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (!assignedWorkerId) {
+      setCounsellorName(null);
+      return;
+    }
+    apiService.profiles
+      .getName(assignedWorkerId)
+      .then((name) => {
+        if (!cancelled) setCounsellorName(name);
+      })
+      .catch(() => {
+        if (!cancelled) setCounsellorName(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [assignedWorkerId]);
 
   // Emergency / trusted contact (optional) — editable inline, persisted to
   // Supabase Auth user_metadata via authService.
@@ -654,12 +683,56 @@ ${
               that came back. Renders nothing when there is neither. */}
           {participantRecord?.id && <ParticipantTestCard participantId={participantRecord.id} />}
 
+          {/* Speaking, for the times writing is the harder way in. Separate from
+              the text chatbot on purpose — see pages/VoiceCompanion.tsx. */}
+          {onOpenVoiceCompanion && (
+            <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
+              <div className="flex items-center gap-2">
+                <Mic size={15} className="text-[#9A5B33]" />
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+                  Talk It Through
+                </h3>
+              </div>
+              <p className="text-xs text-[#7A726C] leading-relaxed">
+                Say it out loud instead of typing, in English, Hindi or Marathi. It is not a
+                person and nothing you say there reaches staff or changes your score.
+              </p>
+              <button
+                onClick={onOpenVoiceCompanion}
+                className="w-full py-2.5 rounded-xl bg-white border border-[#EFE8E2] text-[#3C3530] font-bold text-xs hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+              >
+                Start talking
+              </button>
+            </div>
+          )}
+
           {/* Your counsellor — choose or change, no approval and no reason needed */}
           {onOpenChooseCounsellor && (
             <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
-              <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
-                Your Counsellor
-              </h3>
+              {counsellorName ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#EFE8E2] text-[#5A5049] flex items-center justify-center text-xs font-black shrink-0">
+                    {counsellorName
+                      .split(" ")
+                      .map((w) => w[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase()}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-black text-[#3C3530] truncate" data-no-translate>
+                      {counsellorName}
+                    </h3>
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D]">
+                      Your counsellor
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+                  Your Counsellor
+                </h3>
+              )}
               <p className="text-xs text-[#7A726C] leading-relaxed">
                 {participantRecord?.assignedWorker
                   ? "You can change to a different counsellor whenever you want. You do not need to give a reason, and nobody is told why."
@@ -866,8 +939,21 @@ ${
 
           <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
             <span className="font-bold text-[#3C3530] block">Assigned Support Organization</span>
+            {/* The coordinator used to be the literal string "Sarah Jenkins,
+                MSW" regardless of who this person's counsellor actually was.
+                Once someone can choose their own, a hardcoded name here
+                contradicts the card above and reads as the switch not having
+                worked. Name whoever is really assigned, or say nobody is. */}
             <p className="text-[#7F8C8D]">
-              AURA Humanitarian Demo Unit • Case Coordinator: Sarah Jenkins, MSW
+              AURA Humanitarian Demo Unit
+              {counsellorName ? (
+                <>
+                  {" • Case Coordinator: "}
+                  <span data-no-translate>{counsellorName}</span>
+                </>
+              ) : (
+                " • No counsellor assigned yet"
+              )}
             </p>
             <p className="text-[11px] text-[#5A5049] font-semibold">
               Encrypted Synthetic Store • Non-diagnostic

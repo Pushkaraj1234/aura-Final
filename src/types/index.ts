@@ -968,6 +968,24 @@ export interface PublicReview {
 /** How the current assignment came about. */
 export type AssignmentSource = "admin" | "self";
 
+/**
+ * What someone chose to say after moving to a different counsellor.
+ *
+ * Saying nothing is the default and changes nothing: switching never requires
+ * a reason. This is only what a person volunteers afterwards, and it goes to
+ * the service rather than to the counsellor who was left — see the migration
+ * for why an "anonymous" exit note read by that counsellor would not be
+ * anonymous at all.
+ */
+export interface SwitchFeedback {
+  id: string;
+  previousWorkerId: string;
+  newWorkerId?: string | null;
+  rating?: number | null;
+  body?: string | null;
+  createdAt: string;
+}
+
 // ---------------------------------------------------------------------------
 // Counsellor-authored tests
 // ---------------------------------------------------------------------------
