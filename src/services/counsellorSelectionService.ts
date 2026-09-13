@@ -9,6 +9,8 @@ import {
   PublicReview,
   SessionFormat,
   SupportTag,
+  SwitchFeedback,
+  ReceivedSwitchFeedback,
 } from "../types";
 
 /**
@@ -175,6 +177,75 @@ export const counsellorSelectionService = {
         : "We could not change your counsellor just now. Please try again.";
     }
     return null;
+  },
+
+  /**
+   * Optional note about the counsellor a person has just moved away from.
+   *
+   * Deliberately separate from submitReview: a review needs a completed
+   * session behind it, and most switches have none. Returns null on success,
+   * or a message safe to show the user.
+   */
+  async submitSwitchFeedback(input: {
+    participantId: string;
+    previousWorkerId: string;
+    newWorkerId?: string | null;
+    rating?: number | null;
+    body?: string;
+  }): Promise<string | null> {
+    const body = input.body?.trim() || null;
+    if (!input.rating && !body) return "Please add a rating or a few words first.";
+
+    const { error } = await supabase.from("counsellor_switch_feedback").insert({
+      participant_id: input.participantId,
+      previous_worker_id: input.previousWorkerId,
+      new_worker_id: input.newWorkerId || null,
+      rating: input.rating || null,
+      body,
+    });
+    if (error) {
+      warn("submitSwitchFeedback", error);
+      return "We could not save that just now. Please try again.";
+    }
+    return null;
+  },
+
+  /**
+   * Exit notes written about the signed-in counsellor.
+   *
+   * The view is the only way to these rows — the table itself has no staff
+   * select policy, so querying it directly (where participant_id lives)
+   * returns nothing. What comes back is the rating, the words, and a month.
+   */
+  async listSwitchFeedbackAboutMe(): Promise<ReceivedSwitchFeedback[]> {
+    const { data, error } = await supabase
+      .from("my_switch_feedback_received")
+      .select("*")
+      .order("received_month", { ascending: false });
+    warn("listSwitchFeedbackAboutMe", error);
+    return (data || []).map((r: any) => ({
+      id: r.id,
+      rating: r.rating,
+      body: r.body,
+      receivedMonth: r.received_month,
+    }));
+  },
+
+  /** The person's own notes back, so they can see what they have already said. */
+  async listSwitchFeedback(): Promise<SwitchFeedback[]> {
+    const { data, error } = await supabase
+      .from("my_switch_feedback")
+      .select("*")
+      .order("created_at", { ascending: false });
+    warn("listSwitchFeedback", error);
+    return (data || []).map((r: any) => ({
+      id: r.id,
+      previousWorkerId: r.previous_worker_id,
+      newWorkerId: r.new_worker_id,
+      rating: r.rating,
+      body: r.body,
+      createdAt: r.created_at,
+    }));
   },
 
   // -------------------------------------------------------------------------

@@ -26,6 +26,13 @@ interface Props {
   user: User;
   participantId: string;
   currentWorkerId?: string | null;
+  /**
+   * Told that the database now says something different. Without this the
+   * switch succeeded and every other screen went on showing the old
+   * counsellor: the participant record is read from a local cache that is only
+   * refilled from the server at startup.
+   */
+  onAssignmentChanged?: (workerId: string) => void;
   onBack: () => void;
 }
 
@@ -83,6 +90,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
   user,
   participantId,
   currentWorkerId,
+  onAssignmentChanged,
   onBack,
 }) => {
   const [tab, setTab] = useState<Tab>("find");
@@ -103,6 +111,21 @@ export const ChooseCounsellor: React.FC<Props> = ({
   const [filterLanguage, setFilterLanguage] = useState<string>("");
   const [filterFormat, setFilterFormat] = useState<string>("");
   const [availableOnly, setAvailableOnly] = useState(false);
+
+  // Who the app believes is assigned right now. Seeded from the prop and
+  // moved forward the moment a switch succeeds, so the cards below re-badge
+  // without waiting for the record to travel back down through the store.
+  const [activeWorkerId, setActiveWorkerId] = useState<string | null>(currentWorkerId ?? null);
+  useEffect(() => {
+    setActiveWorkerId(currentWorkerId ?? null);
+  }, [currentWorkerId]);
+
+  // The optional "why did you change?" note, offered only after moving away
+  // from someone. Nothing here is required and skipping it costs nothing.
+  const [leftWorkerId, setLeftWorkerId] = useState<string | null>(null);
+  const [leftRating, setLeftRating] = useState(0);
+  const [leftBody, setLeftBody] = useState("");
+  const [leftSaving, setLeftSaving] = useState(false);
 
   // Sessions and reviews
   const [sessions, setSessions] = useState<CounsellingSession[]>([]);
@@ -192,6 +215,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
     list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
 
   const handleSelect = async (workerId: string) => {
+    const previous = activeWorkerId;
     setBusyId(workerId);
     setError(null);
     const message = await counsellorSelectionService.chooseCounsellor(workerId);
@@ -202,9 +226,47 @@ export const ChooseCounsellor: React.FC<Props> = ({
       setCounsellors(refreshed);
       return;
     }
-    setNotice("Your counsellor has been updated.");
+
+    const chosen = counsellors.find((c) => c.workerId === workerId);
+    setActiveWorkerId(workerId);
+    // The write has happened; tell the rest of the app so it stops showing
+    // the counsellor this person just left.
+    onAssignmentChanged?.(workerId);
+    setNotice(
+      chosen
+        ? `${chosen.displayName} is now your counsellor.`
+        : "Your counsellor has been updated."
+    );
+
+    // Only worth asking when they actually moved away from somebody.
+    if (previous && previous !== workerId) {
+      setLeftWorkerId(previous);
+      setLeftRating(0);
+      setLeftBody("");
+    }
+
     // Reload so availability and caseload reflect the change immediately.
     setCounsellors(await counsellorSelectionService.listCounsellors());
+  };
+
+  const submitLeftFeedback = async () => {
+    if (!leftWorkerId) return;
+    setLeftSaving(true);
+    const message = await counsellorSelectionService.submitSwitchFeedback({
+      participantId,
+      previousWorkerId: leftWorkerId,
+      newWorkerId: activeWorkerId,
+      rating: leftRating || null,
+      body: leftBody,
+    });
+    setLeftSaving(false);
+    if (message) {
+      setError(message);
+      return;
+    }
+    setLeftWorkerId(null);
+    setError(null);
+    setNotice("Thank you. That has been passed on, without your name.");
   };
 
   const applyQuiz = async () => {
@@ -484,7 +546,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                     key={m.counsellor.workerId}
                     counsellor={m.counsellor}
                     reasons={m.reasons}
-                    isCurrent={m.counsellor.workerId === currentWorkerId}
+                    isCurrent={m.counsellor.workerId === activeWorkerId}
                     busy={busyId === m.counsellor.workerId}
                     onSelect={() => handleSelect(m.counsellor.workerId)}
                   />
@@ -555,7 +617,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                   <CounsellorCard
                     key={c.workerId}
                     counsellor={c}
-                    isCurrent={c.workerId === currentWorkerId}
+                    isCurrent={c.workerId === activeWorkerId}
                     busy={busyId === c.workerId}
                     onSelect={() => handleSelect(c.workerId)}
                   />
@@ -648,6 +710,86 @@ export const ChooseCounsellor: React.FC<Props> = ({
               ))}
             </div>
           )}
+        </div>
+      )}
+
+      {/* Offered once, right after a switch. Closing it is a complete answer. */}
+      {leftWorkerId && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full space-y-4">
+            <h2 className="font-bold text-[#3C3530]">
+              Would you like to say why you changed?
+            </h2>
+            {/* This has to match where the note actually goes. It used to say the
+                counsellor was not told anything, which stopped being true when
+                the note started reaching them. */}
+            <p className="text-xs text-[#7A726C] leading-relaxed">
+              This is optional. You have already changed counsellor and nothing here
+              affects that.{" "}
+              {counsellors.find((c) => c.workerId === leftWorkerId)?.displayName ||
+                "The counsellor you left"}{" "}
+              will read this, so they can learn from it — but not your name, and not
+              the day you wrote it.
+            </p>
+
+            <div>
+              <p className="text-xs font-bold text-[#3C3530] mb-1.5">
+                How was your time with them? (optional)
+              </p>
+              <div className="flex items-center gap-1">
+                {[1, 2, 3, 4, 5].map((n) => (
+                  <button
+                    key={n}
+                    onClick={() => setLeftRating(n === leftRating ? 0 : n)}
+                    aria-label={`${n} star${n === 1 ? "" : "s"}`}
+                    className="p-1 cursor-pointer"
+                  >
+                    <Star
+                      size={24}
+                      className={n <= leftRating ? "text-[#8A5A2B] fill-current" : "text-[#DBC3B2]"}
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label
+                htmlFor="switch-reason"
+                className="block text-xs font-bold text-[#3C3530] mb-1.5"
+              >
+                In your own words (optional)
+              </label>
+              <textarea
+                id="switch-reason"
+                value={leftBody}
+                onChange={(e) => setLeftBody(e.target.value.slice(0, 600))}
+                rows={4}
+                placeholder="What made you want to change? Anything you say helps."
+                data-no-translate
+                className="w-full px-3 py-2 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530] resize-none"
+              />
+              <p className="text-[11px] text-[#7A726C] mt-1.5">
+                {600 - leftBody.length} characters left.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={submitLeftFeedback}
+                disabled={leftSaving || (!leftRating && !leftBody.trim())}
+                className="px-5 py-2.5 rounded-xl bg-[#5A5049] text-white text-xs font-bold hover:bg-[#3C3530] transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {leftSaving ? "Sending…" : "Send this"}
+              </button>
+              <button
+                onClick={() => setLeftWorkerId(null)}
+                className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+              >
+                No thanks
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
