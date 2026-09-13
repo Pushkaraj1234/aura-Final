@@ -15,6 +15,7 @@
     "seed:counsellors": "node scripts/seed-counsellors.mjs",
     "test:score": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recEngine.js --log-level=error && node tests/score-integrity.test.mjs",
     "test:guardian": "npx esbuild src/services/guardianQuestions.ts --bundle --format=esm --outfile=dist-test/guardianQuestions.js --log-level=error && node tests/guardian.test.mjs",
+    "test:exercises": "npx esbuild src/services/sectionExercises.ts --bundle --format=esm --outfile=dist-test/sectionExercises.js --log-level=error && node tests/section-exercises.test.mjs",
     "test:switch": "node tests/counsellor-switch.browser.mjs",
     "test:voice-mute": "node tests/voice-mute.browser.mjs"
   },

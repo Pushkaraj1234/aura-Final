@@ -17,12 +17,14 @@ import {
   Compass,
   FileText,
   AlertTriangle,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from "lucide-react";
 import { CheckInAnalysis, CheckIn, User, Recommendation, Participant } from "../types";
 import { ALERT_CONFIG } from "../services/alertConfig";
 import { ScoreFormulaCard } from "../components/ScoreFormulaCard";
 import { explainFactorPercentages } from "../services/recommendationEngine";
+import { exercisesForAnalysis, ExerciseSection } from "../services/sectionExercises";
 import { RecommendationActionModal } from "../components/RecommendationActionModal";
 import { apiService } from "../services/apiService";
 import { notificationService } from "../services/notificationService";
@@ -179,6 +181,21 @@ export const CheckInResults: React.FC<Props> = ({
   // Shown under each bar because "55%" on its own invites being read as a
   // share of the score, which it is not — every factor has its own band.
   const factorFormula = explainFactorPercentages(checkIn);
+
+  // The area this check-in reported most concern in, and the few things worth
+  // trying for it. Offered for one area rather than all four: someone reading
+  // their own distress score is not in a position to triage a list, and the
+  // one their answers put highest is the only one the screen can justify
+  // choosing for them.
+  const suggested = exercisesForAnalysis(analysis.factorPercentages);
+
+  // Every factor card, with the highest one lifted out of the background it
+  // shares with the other three. Without this the "Try these" column names an
+  // area and leaves the reader to find which bar it meant.
+  const factorCardClass = (section: ExerciseSection) =>
+    section === suggested.section
+      ? "p-4 rounded-2xl bg-[#FBF2E8] border border-[#D49B6A] ring-1 ring-[#D49B6A]/30 space-y-2"
+      : "p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2";
 
   // Loading Screen Animation
   if (loadingStage < 3) {
@@ -350,98 +367,141 @@ export const CheckInResults: React.FC<Props> = ({
             </span>
           </div>
 
-          <div className="grid sm:grid-cols-2 gap-4">
-            {/* Stress Factor */}
-            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-[#3C3530] flex items-center space-x-1.5">
-                  <Activity size={14} className="text-[#D49B6A]" />
-                  <span>Reported Stress Level</span>
+          {/* The four cards, and beside them the suggestions for whichever one
+              came out highest. On a narrow screen the column drops below the
+              cards rather than squeezing alongside them. */}
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_16rem] gap-4 items-start">
+            <div className="grid sm:grid-cols-2 gap-4">
+              {/* Stress Factor */}
+              <div className={factorCardClass("stress")}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[#3C3530] flex items-center space-x-1.5">
+                    <Activity size={14} className="text-[#D49B6A]" />
+                    <span>Reported Stress Level</span>
+                  </span>
+                  <span className="text-[#3C3530]">{analysis.factorPercentages.stress}%</span>
+                </div>
+                <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-[#D49B6A] h-2 rounded-full transition-all duration-700"
+                    style={{ width: `${analysis.factorPercentages.stress}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-[#7F8C8D] block">
+                  Questionnaire rating: {analysis.factors.stress}/5
                 </span>
-                <span className="text-[#3C3530]">{analysis.factorPercentages.stress}%</span>
+                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                  {factorFormula.stress} = {analysis.factorPercentages.stress}%
+                </span>
               </div>
-              <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-[#D49B6A] h-2 rounded-full transition-all duration-700"
-                  style={{ width: `${analysis.factorPercentages.stress}%` }}
-                />
+  
+              {/* Sleep Factor */}
+              <div className={factorCardClass("sleep")}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[#3C3530] flex items-center space-x-1.5">
+                    <Moon size={14} className="text-[#5A5049]" />
+                    <span>Sleep & Rest Quality</span>
+                  </span>
+                  <span className="text-[#3C3530]">{analysis.factorPercentages.sleep}%</span>
+                </div>
+                <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-[#5A5049] h-2 rounded-full transition-all duration-700"
+                    style={{ width: `${analysis.factorPercentages.sleep}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-[#7F8C8D] block">
+                  Restfulness rating: {analysis.factors.sleep}/5
+                </span>
+                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                  {factorFormula.sleep} = {analysis.factorPercentages.sleep}%
+                </span>
               </div>
-              <span className="text-[10px] text-[#7F8C8D] block">
-                Questionnaire rating: {analysis.factors.stress}/5
-              </span>
-              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
-                {factorFormula.stress} = {analysis.factorPercentages.stress}%
-              </span>
+  
+              {/* Emotional Wellbeing */}
+              <div className={factorCardClass("emotionalWellbeing")}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[#3C3530] flex items-center space-x-1.5">
+                    <Heart size={14} className="text-[#A55D25]" />
+                    <span>Emotional Wellbeing</span>
+                  </span>
+                  <span className="text-[#3C3530]">{analysis.factorPercentages.emotionalWellbeing}%</span>
+                </div>
+                <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-[#A55D25] h-2 rounded-full transition-all duration-700"
+                    style={{ width: `${analysis.factorPercentages.emotionalWellbeing}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-[#7F8C8D] block">
+                  Day rating: {analysis.factors.mood}/5
+                </span>
+                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                  {factorFormula.emotionalWellbeing} = {analysis.factorPercentages.emotionalWellbeing}%
+                </span>
+              </div>
+  
+              {/* Social Connection */}
+              <div className={factorCardClass("socialConnection")}>
+                <div className="flex items-center justify-between text-xs font-bold">
+                  <span className="text-[#3C3530] flex items-center space-x-1.5">
+                    <Users size={14} className="text-[#7F8C8D]" />
+                    <span>Social Connection</span>
+                  </span>
+                  <span className="text-[#3C3530]">{analysis.factorPercentages.socialConnection}%</span>
+                </div>
+                <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
+                  <div
+                    className="bg-[#7F8C8D] h-2 rounded-full transition-all duration-700"
+                    style={{ width: `${analysis.factorPercentages.socialConnection}%` }}
+                  />
+                </div>
+                <span className="text-[10px] text-[#7F8C8D] block">
+                  Peer support rating: {analysis.factors.socialConnection}/5
+                </span>
+                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                  {factorFormula.socialConnection} = {analysis.factorPercentages.socialConnection}%
+                </span>
+              </div>
             </div>
 
-            {/* Sleep Factor */}
-            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-[#3C3530] flex items-center space-x-1.5">
-                  <Moon size={14} className="text-[#5A5049]" />
-                  <span>Sleep & Rest Quality</span>
-                </span>
-                <span className="text-[#3C3530]">{analysis.factorPercentages.sleep}%</span>
+            {/* Try these — for the highest-scoring area only. */}
+            <aside className="p-4 rounded-2xl bg-white border border-[#D49B6A] space-y-3">
+              <div className="space-y-1">
+                <h5 className="text-sm font-bold text-[#3C3530] flex items-center space-x-1.5">
+                  <Sparkles size={14} className="text-[#D49B6A]" />
+                  <span>Try these</span>
+                </h5>
+                <p className="text-[10px] text-[#7F8C8D] leading-snug">
+                  Your highest reported area this check-in was{" "}
+                  <strong className="text-[#3C3530]">{suggested.label}</strong> (
+                  {analysis.factorPercentages[suggested.section]}%).
+                </p>
               </div>
-              <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-[#5A5049] h-2 rounded-full transition-all duration-700"
-                  style={{ width: `${analysis.factorPercentages.sleep}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-[#7F8C8D] block">
-                Restfulness rating: {analysis.factors.sleep}/5
-              </span>
-              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
-                {factorFormula.sleep} = {analysis.factorPercentages.sleep}%
-              </span>
-            </div>
 
-            {/* Emotional Wellbeing */}
-            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-[#3C3530] flex items-center space-x-1.5">
-                  <Heart size={14} className="text-[#A55D25]" />
-                  <span>Emotional Wellbeing</span>
-                </span>
-                <span className="text-[#3C3530]">{analysis.factorPercentages.emotionalWellbeing}%</span>
-              </div>
-              <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-[#A55D25] h-2 rounded-full transition-all duration-700"
-                  style={{ width: `${analysis.factorPercentages.emotionalWellbeing}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-[#7F8C8D] block">
-                Day rating: {analysis.factors.mood}/5
-              </span>
-              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
-                {factorFormula.emotionalWellbeing} = {analysis.factorPercentages.emotionalWellbeing}%
-              </span>
-            </div>
+              <ul className="space-y-2.5">
+                {suggested.exercises.map((exercise) => (
+                  <li
+                    key={exercise.title}
+                    className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-1"
+                  >
+                    <span className="text-xs font-bold text-[#3C3530] block">
+                      {exercise.title}
+                    </span>
+                    <span className="text-[11px] text-[#5A5049] block leading-snug">
+                      {exercise.body}
+                    </span>
+                  </li>
+                ))}
+              </ul>
 
-            {/* Social Connection */}
-            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-[#3C3530] flex items-center space-x-1.5">
-                  <Users size={14} className="text-[#7F8C8D]" />
-                  <span>Social Connection</span>
-                </span>
-                <span className="text-[#3C3530]">{analysis.factorPercentages.socialConnection}%</span>
-              </div>
-              <div className="w-full bg-[#EFE8E2] rounded-full h-2 overflow-hidden">
-                <div
-                  className="bg-[#7F8C8D] h-2 rounded-full transition-all duration-700"
-                  style={{ width: `${analysis.factorPercentages.socialConnection}%` }}
-                />
-              </div>
-              <span className="text-[10px] text-[#7F8C8D] block">
-                Peer support rating: {analysis.factors.socialConnection}/5
-              </span>
-              <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
-                {factorFormula.socialConnection} = {analysis.factorPercentages.socialConnection}%
-              </span>
-            </div>
+              {/* Says what these are, so nobody reads them as a prescription or
+                  as a way to move the number above. */}
+              <p className="text-[10px] text-[#7F8C8D] italic leading-snug">
+                Self-care you can try alongside support from a person — not
+                treatment, and not a way to change your score.
+              </p>
+            </aside>
           </div>
 
           <p className="text-[11px] text-[#7F8C8D] text-center italic">
