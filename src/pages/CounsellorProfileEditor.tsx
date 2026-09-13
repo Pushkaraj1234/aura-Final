@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ArrowLeft, Eye, EyeOff, Upload, CheckCircle2, CalendarPlus } from "lucide-react";
+import { ArrowLeft, Eye, EyeOff, Upload, CheckCircle2, CalendarPlus, Star } from "lucide-react";
 import {
   CounsellorGender,
   CounsellingSession,
@@ -8,6 +8,7 @@ import {
   SupportTag,
   User,
   Participant,
+  ReceivedSwitchFeedback,
 } from "../types";
 import { counsellorSelectionService } from "../services/counsellorSelectionService";
 
@@ -79,6 +80,9 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
   const [error, setError] = useState<string | null>(null);
 
   const [sessions, setSessions] = useState<CounsellingSession[]>([]);
+  // What people wrote on their way to someone else. See the migration for what
+  // is deliberately not in these rows.
+  const [exitNotes, setExitNotes] = useState<ReceivedSwitchFeedback[]>([]);
   const [logParticipant, setLogParticipant] = useState("");
   const [logDate, setLogDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [logFormat, setLogFormat] = useState<SessionFormat>("video");
@@ -89,14 +93,16 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
     (async () => {
       // allSettled: supabase-js rejects on an aborted request, and with
       // Promise.all one failure left this editor stuck on "Loading…".
-      const [existingR, tagR, sR] = await Promise.allSettled([
+      const [existingR, tagR, sR, exitR] = await Promise.allSettled([
         counsellorSelectionService.getOwnProfile(user.id),
         counsellorSelectionService.listTags(),
         counsellorSelectionService.listWorkerSessions(user.id),
+        counsellorSelectionService.listSwitchFeedbackAboutMe(),
       ]);
       if (existingR.status === "fulfilled" && existingR.value) setProfile(existingR.value);
       if (tagR.status === "fulfilled") setTags(tagR.value);
       if (sR.status === "fulfilled") setSessions(sR.value);
+      if (exitR.status === "fulfilled") setExitNotes(exitR.value);
       setLoading(false);
     })();
   }, [user.id]);
@@ -484,6 +490,49 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
           </ul>
         )}
       </div>
+
+      {/* What people said on their way out.
+          Renders nothing when there is nothing — a counsellor should not be
+          shown an empty "feedback" box every time they open their profile. */}
+      {exitNotes.length > 0 && (
+        <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 sm:p-8 space-y-4 shadow-xs">
+          <div>
+            <h2 className="font-bold text-[#3C3530]">When someone moved on</h2>
+            <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl leading-relaxed">
+              People can change counsellor at any time, for any reason, and most say
+              nothing. These are the ones who chose to. You are not shown who wrote them
+              or when, and nothing here is part of anyone&rsquo;s record — it is here so
+              it can be useful to you.
+            </p>
+          </div>
+
+          <ul className="space-y-3">
+            {exitNotes.map((n) => (
+              <li key={n.id} className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] p-4">
+                <div className="flex items-center gap-2">
+                  {n.rating ? (
+                    <span className="inline-flex items-center gap-0.5 text-[#8A5A2B]">
+                      {Array.from({ length: n.rating }).map((_, i) => (
+                        <Star key={i} size={12} className="fill-current" />
+                      ))}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-[#9A928C] font-semibold">No rating</span>
+                  )}
+                  <span className="ml-auto text-[11px] text-[#9A928C] font-semibold">
+                    {n.receivedMonth}
+                  </span>
+                </div>
+                {n.body && (
+                  <p className="text-sm text-[#5A5049] mt-2 leading-relaxed" data-no-translate>
+                    {n.body}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 };

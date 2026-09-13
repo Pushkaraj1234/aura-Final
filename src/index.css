@@ -12,7 +12,7 @@
      accent, caramel + dusty rose for signal warmth, a muted olive reserved
      for "improving / on track". No saturated reds, no cold blues. Used
      app-wide via these tokens and the retuned legacy names below. */
-  --color-canvas: #F8F0E7;
+  --color-canvas: #F0E0CB;
   --color-surface: #FDFAF4;
   --color-ink: #3A2A1E;
   --color-ink-soft: #8A7A6B;
@@ -39,7 +39,7 @@
   --color-info-soft: #EFEAE1;
 
   /* ---- Legacy names, retuned to the warm palette ------------------------ */
-  --color-natural-bg: #F8F0E7;
+  --color-natural-bg: #F0E0CB;
   --color-natural-dark: #3A2A1E;
   --color-natural-slate: #5A4636;
   --color-natural-muted: #8A7A6B;
@@ -60,12 +60,18 @@
 }
 
 body {
-  background-color: #F8F0E7;
-  /* Soft apricot glow, warmest toward the top, fading to cream. */
+  /* Deepened from #F8F0E7. The old ground was so close to the card colour
+     (#FDFAF4) that cards read as flat patches rather than as surfaces sitting
+     on something — the page looked washed out. This is the same hue, taken
+     several steps down in lightness, so white cards lift off it. Text stays
+     #3A2A1E, which is ~11:1 against this. */
+  background-color: #F0E0CB;
+  /* Warm apricot sweep: lightest at the top left, deepening across to the
+     right and again at the foot of the page. */
   background-image:
-    radial-gradient(1200px 720px at 82% -10%, rgba(232, 174, 120, 0.34), transparent 60%),
-    radial-gradient(1100px 700px at 12% 4%, rgba(240, 212, 182, 0.24), transparent 56%),
-    radial-gradient(1000px 800px at 50% 128%, rgba(214, 190, 166, 0.14), transparent 60%);
+    radial-gradient(1250px 820px at 88% 6%, rgba(226, 161, 96, 0.46), transparent 62%),
+    radial-gradient(1150px 760px at 6% -8%, rgba(255, 250, 243, 0.92), transparent 58%),
+    radial-gradient(1100px 900px at 52% 122%, rgba(198, 152, 106, 0.28), transparent 62%);
   background-attachment: fixed;
   color: #3A2A1E;
   font-family: var(--font-sans);

@@ -224,6 +224,10 @@ request and torn down. So run that repository's `backend/` somewhere that keeps 
 process alive (Render, Fly, Railway, a VM), and point `VITE_VOICE_BACKEND_URL`
 at its public origin.
 
+That repository carries a `render.yaml` blueprint: on Render, **New → Blueprint
+→ pick the repo**, and it asks only for `GEMINI_API_KEY` and `ALLOWED_ORIGINS`.
+Fly and Railway read its `backend/Dockerfile` directly.
+
 Two things to get right when you do:
 
 - The provider API key (`GEMINI_API_KEY`, or the local Whisper/Ollama/Piper
@@ -231,6 +235,8 @@ Two things to get right when you do:
   compiled into the browser bundle and is readable by anyone who opens the page.
 - Add AURA's origin to that backend's `ALLOWED_ORIGINS`, or the browser will
   refuse the connection.
+- `VITE_VOICE_BACKEND_URL` is compiled into the bundle at build time, so
+  setting it in Vercel does nothing until AURA is **redeployed**.
 
 Until it is set, the page says so in plain words rather than offering a
 microphone button that cannot connect.

@@ -266,7 +266,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
     }
     setLeftWorkerId(null);
     setError(null);
-    setNotice("Thank you — that has been passed to the support team.");
+    setNotice("Thank you. That has been passed on, without your name.");
   };
 
   const applyQuiz = async () => {
@@ -720,13 +720,16 @@ export const ChooseCounsellor: React.FC<Props> = ({
             <h2 className="font-bold text-[#3C3530]">
               Would you like to say why you changed?
             </h2>
+            {/* This has to match where the note actually goes. It used to say the
+                counsellor was not told anything, which stopped being true when
+                the note started reaching them. */}
             <p className="text-xs text-[#7A726C] leading-relaxed">
               This is optional. You have already changed counsellor and nothing here
               affects that.{" "}
               {counsellors.find((c) => c.workerId === leftWorkerId)?.displayName ||
                 "The counsellor you left"}{" "}
-              is not told that you wrote anything, and is not shown your name. It goes
-              to the support team, who use it to look after the service.
+              will read this, so they can learn from it — but not your name, and not
+              the day you wrote it.
             </p>
 
             <div>

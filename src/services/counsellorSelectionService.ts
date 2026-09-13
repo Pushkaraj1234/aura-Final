@@ -10,6 +10,7 @@ import {
   SessionFormat,
   SupportTag,
   SwitchFeedback,
+  ReceivedSwitchFeedback,
 } from "../types";
 
 /**
@@ -207,6 +208,27 @@ export const counsellorSelectionService = {
       return "We could not save that just now. Please try again.";
     }
     return null;
+  },
+
+  /**
+   * Exit notes written about the signed-in counsellor.
+   *
+   * The view is the only way to these rows — the table itself has no staff
+   * select policy, so querying it directly (where participant_id lives)
+   * returns nothing. What comes back is the rating, the words, and a month.
+   */
+  async listSwitchFeedbackAboutMe(): Promise<ReceivedSwitchFeedback[]> {
+    const { data, error } = await supabase
+      .from("my_switch_feedback_received")
+      .select("*")
+      .order("received_month", { ascending: false });
+    warn("listSwitchFeedbackAboutMe", error);
+    return (data || []).map((r: any) => ({
+      id: r.id,
+      rating: r.rating,
+      body: r.body,
+      receivedMonth: r.received_month,
+    }));
   },
 
   /** The person's own notes back, so they can see what they have already said. */

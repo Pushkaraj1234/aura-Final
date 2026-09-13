@@ -977,6 +977,20 @@ export type AssignmentSource = "admin" | "self";
  * for why an "anonymous" exit note read by that counsellor would not be
  * anonymous at all.
  */
+/**
+ * The same note as the counsellor it is about sees it.
+ *
+ * No participant id and no exact date — a month only, like PublicReview, so a
+ * counsellor who knows who they saw on a given day cannot read the identity
+ * back off the timestamp.
+ */
+export interface ReceivedSwitchFeedback {
+  id: string;
+  rating?: number | null;
+  body?: string | null;
+  receivedMonth: string;
+}
+
 export interface SwitchFeedback {
   id: string;
   previousWorkerId: string;

@@ -141,8 +141,16 @@ check('select_counsellor was actually called',
 // 3. The optional "why did you change?" note, offered only after leaving someone
 // ---------------------------------------------------------------------------
 check('offers to ask why they changed', /Would you like to say why you changed/i.test(body), body.slice(0, 600));
-check('names the counsellor they left, and says they are not told',
-  /Sarah Jenkins is not told/i.test(body.replace(/\s+/g, ' ')), body.slice(0, 900));
+// The promise made here has to match where the note actually goes. It now
+// reaches the counsellor, so the copy says so — and still promises the two
+// things the view really does withhold: the name and the date.
+const flat = body.replace(/\s+/g, ' ');
+check('names the counsellor who will read it',
+  /Sarah Jenkins will read this/i.test(flat), flat.slice(0, 900));
+check('promises only what the data actually withholds',
+  /not your name/i.test(flat) && /not the day you wrote it/i.test(flat), flat.slice(0, 900));
+check('does not claim the counsellor is kept in the dark',
+  !/is not told/i.test(flat), flat.slice(0, 900));
 
 await page.evaluate(() => {
   const t = document.querySelector('#switch-reason');

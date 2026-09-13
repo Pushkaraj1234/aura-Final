@@ -467,8 +467,10 @@ ${
 
       {/* Trajectory & Metrics Grid */}
       <div className="grid lg:grid-cols-12 gap-8">
-        {/* Left 8 Cols: Dynamic Wellbeing Trend Chart or Empty State */}
-        <div className="lg:col-span-8 bg-white p-6 sm:p-8 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-6">
+        {/* Left 8 Cols. A stack, not a single card: the graph alone left most of
+            this column empty while the right rail ran on for another screen. */}
+        <div className="lg:col-span-8 space-y-8">
+        <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#EFE8E2]">
             <div>
               <h3 className="text-xl font-bold text-[#3C3530]">Wellbeing Indicator Trajectory</h3>
@@ -561,6 +563,66 @@ ${
               <strong className="text-[#3C3530]">How to read your graph:</strong> A higher indicator score reflects elevated self-reported stress, insomnia, or environmental insecurity. Significant multi-day increases alert your assigned counselor to reach out.
             </div>
           </div>
+        </div>
+
+        {/* Talking out loud, given the room it deserves. It was a thumbnail in
+            the rail, below six other things — which is not where you put the
+            way in for someone who is finding it hard to write. */}
+        {onOpenVoiceCompanion && (
+          <section className="relative overflow-hidden rounded-3xl border border-[#E3C9A8] bg-linear-to-br from-[#FFF4E6] via-[#FDEAD6] to-[#F6DCC2] p-7 sm:p-9 shadow-xs">
+            {/* Soft echo of the listening orb on the voice page itself. */}
+            <span
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-[#E8B27A]/25 blur-2xl"
+            />
+            <div className="relative flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-8">
+              <div className="flex items-center justify-center h-24 w-24 rounded-full bg-[#A85D2E] text-white shadow-lg shadow-[#A85D2E]/25 shrink-0">
+                <Mic size={36} />
+              </div>
+
+              <div className="flex-1 min-w-0 space-y-3.5">
+                <div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-[#3C3530]">
+                    Talk it through, out loud
+                  </h3>
+                  <p className="text-sm text-[#6B5B4C] mt-1.5 max-w-xl leading-relaxed">
+                    Some days writing is the hard part. Speak instead and it answers back —
+                    interrupt it, pause, or stop whenever you want. It listens for as long
+                    as you need, and there is nothing you have to get right.
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {["English", "\u0939\u093f\u0928\u094d\u0926\u0940", "\u092e\u0930\u093e\u0920\u0940"].map((l) => (
+                    <span
+                      key={l}
+                      className="px-2.5 py-1 rounded-full bg-white/70 border border-[#E3C9A8] text-[11px] font-bold text-[#8A5A2B]"
+                    >
+                      {l}
+                    </span>
+                  ))}
+                </div>
+
+                {/* The three things worth knowing before you start, not after. */}
+                <p className="text-[11px] text-[#8A7461] font-semibold">
+                  Not a person &middot; Never read by staff &middot; Does not change your score
+                </p>
+              </div>
+
+              <button
+                onClick={onOpenVoiceCompanion}
+                className="shrink-0 px-6 py-3.5 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer shadow-sm"
+              >
+                Start talking
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* Anything a counsellor has set for this person, and the advice that
+            came back. Moved out of the rail: questions and written advice are
+            reading, and reading wants the wide column. */}
+        {participantRecord?.id && <ParticipantTestCard participantId={participantRecord.id} />}
         </div>
 
         {/* Right 4 Cols: Summary Stats & Latest Submission */}
@@ -678,33 +740,6 @@ ${
               </button>
             </div>
           </div>
-
-          {/* Anything a counsellor has set for this person, and the advice
-              that came back. Renders nothing when there is neither. */}
-          {participantRecord?.id && <ParticipantTestCard participantId={participantRecord.id} />}
-
-          {/* Speaking, for the times writing is the harder way in. Separate from
-              the text chatbot on purpose — see pages/VoiceCompanion.tsx. */}
-          {onOpenVoiceCompanion && (
-            <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
-              <div className="flex items-center gap-2">
-                <Mic size={15} className="text-[#9A5B33]" />
-                <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
-                  Talk It Through
-                </h3>
-              </div>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
-                Say it out loud instead of typing, in English, Hindi or Marathi. It is not a
-                person and nothing you say there reaches staff or changes your score.
-              </p>
-              <button
-                onClick={onOpenVoiceCompanion}
-                className="w-full py-2.5 rounded-xl bg-white border border-[#EFE8E2] text-[#3C3530] font-bold text-xs hover:bg-[#FDF9F5] transition-colors cursor-pointer"
-              >
-                Start talking
-              </button>
-            </div>
-          )}
 
           {/* Your counsellor — choose or change, no approval and no reason needed */}
           {onOpenChooseCounsellor && (
