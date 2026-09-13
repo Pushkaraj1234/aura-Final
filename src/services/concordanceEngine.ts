@@ -136,7 +136,7 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
       : "none reported";
     if (somatic.length >= 2 && claim !== "struggling") {
       add("somatic", "Physical symptoms", reading, "contradicts",
-        "Several bodily symptoms reported by someone whose mood rating is not low — a very common way distress presents.");
+        "Several bodily symptoms reported by someone whose mood rating is not low. This is a very common way distress presents.");
     } else if (somatic.length >= 2) {
       add("somatic", "Physical symptoms", reading, "supports");
     } else {
@@ -161,7 +161,7 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
 
   if (acoustic) {
     if (acoustic.pitchVariabilityScore < 0.15) {
-      add("voicePitch", "Voice: pitch range", `${acoustic.pitchVariabilityScore.toFixed(2)} — flat`,
+      add("voicePitch", "Voice: pitch range", `${acoustic.pitchVariabilityScore.toFixed(2)} (flat)`,
         claim === "fine" ? "contradicts" : "supports",
         "Flat delivery is consistent with emotional blunting.");
     } else {
@@ -169,7 +169,7 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
     }
 
     if (acoustic.pauseRatio > 0.35) {
-      add("voicePause", "Voice: pausing", `${acoustic.pauseRatio.toFixed(2)} — long pauses`,
+      add("voicePause", "Voice: pausing", `${acoustic.pauseRatio.toFixed(2)} (long pauses)`,
         claim === "fine" ? "contradicts" : "supports");
     } else {
       add("voicePause", "Voice: pausing", `${acoustic.pauseRatio.toFixed(2)}`, "neutral");
@@ -289,7 +289,7 @@ export function assessConcordance(checkIn: CheckIn, history: CheckIn[] = []): Co
   const allSame = scaleAnswers.every((v) => v === scaleAnswers[0]);
   const secs = checkIn.responseMeta?.completionSeconds;
   if (allSame && secs !== undefined && secs < 25) {
-    caveats.push(`Identical answers submitted in ${secs}s — may not reflect a considered response.`);
+    caveats.push(`Identical answers submitted in ${secs}s, which may not reflect a considered response.`);
   }
 
   const contradicting = signals.filter((s) => s.verdict === "contradicts").length;

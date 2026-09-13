@@ -50,7 +50,7 @@ const SafetyBanner: React.FC<{ onOpenEmergency: () => void }> = ({ onOpenEmergen
   <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#FDF9F5] border-b border-[#EFE8E2] text-[11px] text-[#7A726C]">
     <span className="flex items-center gap-1.5">
       <ShieldAlert size={13} className="text-[#A55D25] shrink-0" />
-      This chat isn't monitored in real time — if you're in immediate danger, don't wait for a reply.
+      This chat isn't monitored in real time. If you're in immediate danger, don't wait for a reply.
     </span>
     <button
       onClick={onOpenEmergency}
@@ -298,7 +298,7 @@ const WorkerMessages: React.FC<{ currentUser: User; participants: Participant[];
               <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FDF9F5]/40">
                 {threadMessages.length === 0 ? (
                   <p className="text-center text-xs text-[#B9B0A6] py-8">
-                    No messages yet — say hello to {selectedParticipant.name || "this participant"}.
+                    No messages yet. Say hello to {selectedParticipant.name || "this participant"}.
                   </p>
                 ) : (
                   threadMessages.map((m) => <MessageBubble key={m.id} message={m} isOwn={m.senderRole === "support_worker"} />)
@@ -451,7 +451,7 @@ const ParticipantMessages: React.FC<{
             <p className="text-center text-xs text-[#B9B0A6] py-8">Loading conversation...</p>
           ) : messages.length === 0 ? (
             <p className="text-center text-xs text-[#B9B0A6] py-8">
-              No messages yet — you can say hello to {workerName || "your counselor"} whenever you're ready.
+              No messages yet. You can say hello to {workerName || "your counselor"} whenever you're ready.
             </p>
           ) : (
             messages.map((m) => <MessageBubble key={m.id} message={m} isOwn={m.senderRole === "participant"} />)

@@ -66,7 +66,7 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
             {
               label: "ADMIN_PASSCODE set",
               ok: !!diagnostics.configured?.ADMIN_PASSCODE,
-              hint: "Add it to your hosting environment variables, then redeploy — environment changes only apply to a new build.",
+              hint: "Add it to your hosting environment variables, then redeploy. Environment changes only apply to a new build.",
             },
             {
               label: "ADMIN_JWT_SECRET set",
@@ -112,7 +112,7 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
           the URL. */}
       <a
         href="/"
-        className="fixed top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/80 backdrop-blur border border-[#EFE8E2] text-xs font-bold text-[#5A5049] hover:text-[#3C3530] hover:bg-white shadow-sm transition-colors"
+        className="fixed top-4 left-4 sm:top-6 sm:left-6 inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white/80 backdrop-blur border border-[#EFE8E2] text-xs font-bold text-[#5A5049] hover:text-[#3C3530] hover:bg-white shadow-sm transition-colors"
       >
         <ArrowLeft size={14} />
         <span>Back to AURA</span>

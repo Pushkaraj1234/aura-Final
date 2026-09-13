@@ -68,7 +68,7 @@ const Chip: React.FC<{ active: boolean; onClick: () => void; children: React.Rea
     type="button"
     onClick={onClick}
     aria-pressed={active}
-    className={`px-3 py-2 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+    className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
       active
         ? "bg-[#5A5049] text-white border-[#5A5049]"
         : "bg-white text-[#5A5049] border-[#EFE8E2] hover:border-[#DBC3B2]"
@@ -313,7 +313,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-[#3C3530]">Choose your counsellor</h1>
         <p className="text-sm text-[#7A726C] mt-2 max-w-2xl">
-          You can pick someone yourself, or leave it to your support team — either is fine, and you
+          You can pick someone yourself, or leave it to your support team. Either is fine, and you
           can change your mind later without giving a reason.
         </p>
       </div>
@@ -355,7 +355,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 {shortlistFor ? "Your shortlist is ready" : "Answer a few questions to narrow this down"}
               </h2>
               <p className="text-xs text-[#7A726C] mt-1">
-                Five quick preference questions — what you want help with, language, format. It is
+                Five quick preference questions: what you want help with, language, format. It is
                 not an assessment, and nothing you pick here is shared with your counsellor or added
                 to your health record.
               </p>
@@ -522,7 +522,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 No counsellors have published a profile yet.
               </p>
               <p className="text-xs text-[#7A726C] mt-2">
-                Your support team will assign someone to you in the meantime — you do not need to do
+                Your support team will assign someone to you in the meantime, so you do not need to do
                 anything.
               </p>
             </div>
@@ -637,7 +637,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
         <div className="space-y-4">
           <p className="text-sm text-[#7A726C] max-w-2xl">
             You can review a counsellor after a session you have actually had with them. Your name is
-            never shown with a review — not to the counsellor, and not to anyone else using AURA.
+            never shown with a review: not to the counsellor, and not to anyone else using AURA.
           </p>
 
           {sessions.length === 0 && (
@@ -728,7 +728,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
               affects that.{" "}
               {counsellors.find((c) => c.workerId === leftWorkerId)?.displayName ||
                 "The counsellor you left"}{" "}
-              will read this, so they can learn from it — but not your name, and not
+              will read this, so they can learn from it, but not your name and not
               the day you wrote it.
             </p>
 
@@ -824,7 +824,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 className="w-full px-3 py-2 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530] resize-none"
               />
               <p className="text-[11px] text-[#7A726C] mt-1.5">
-                Please don't include your name, phone number, or details of your case — reviews are
+                Please don't include your name, phone number, or details of your case. Reviews are
                 public once checked. {600 - reviewBody.length} characters left.
               </p>
             </div>

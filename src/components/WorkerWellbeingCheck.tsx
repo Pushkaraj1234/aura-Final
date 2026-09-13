@@ -198,7 +198,7 @@ export const WorkerWellbeingCheck: React.FC = () => {
                     return (
                       <div
                         key={h.at}
-                        title={`${new Date(h.at).toLocaleDateString()} — ${b.label} (${h.index}/100)`}
+                        title={`${new Date(h.at).toLocaleDateString()}: ${b.label} (${h.index}/100)`}
                         className="flex-1 rounded-t-md min-w-[6px]"
                         style={{ height: `${Math.max(6, h.index)}%`, backgroundColor: b.tone, opacity: 0.85 }}
                       />

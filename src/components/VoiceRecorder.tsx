@@ -234,7 +234,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               className="px-5 py-2.5 rounded-xl bg-[#5A5049] hover:bg-[#3C3530] text-white text-xs font-bold transition-all shadow-xs cursor-pointer flex items-center space-x-2"
             >
               <Mic size={14} />
-              <span>I Understand — Start Recording</span>
+              <span>I Understand, Start Recording</span>
             </button>
             <button
               onClick={() => setShowPrivacyNotice(false)}
@@ -483,7 +483,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
             {/* Voice tone analysis in progress / unavailable notice */}
             {audioUrl && isAnalyzingTone && (
-              <div className="p-3 rounded-xl bg-violet-50/60 border border-violet-100 text-xs text-violet-800 flex items-center space-x-2">
+              <div className="p-3 rounded-xl bg-[#FDF9F5]/60 border border-[#EFE8E2] text-xs text-[#7A4A20] flex items-center space-x-2">
                 <Loader2 size={14} className="animate-spin" />
                 <span>Reasoning about your vocal tone (pitch, pace, pauses, loudness) together with your words…</span>
               </div>
@@ -516,10 +516,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             </span>
           </div>
           <p className="text-xs text-[#7A726C] leading-relaxed">
-            When you record a voice reflection, AURA measures how it was spoken directly from the audio on your device — pitch variability, speaking pace, pauses, and loudness. Nothing here works by scanning for keywords: your transcript and these measured delivery numbers are both given to an LLM, which reasons about your emotional tone from the two together, including cases where your words and your tone disagree (e.g. saying "I'm fine" in a flat, quiet voice).
+            When you record a voice reflection, AURA measures how it was spoken directly from the audio on your device: pitch variability, speaking pace, pauses, and loudness. Nothing here works by scanning for keywords: your transcript and these measured delivery numbers are both given to an LLM, which reasons about your emotional tone from the two together, including cases where your words and your tone disagree (e.g. saying "I'm fine" in a flat, quiet voice).
           </p>
           <div className="pt-1 text-[11px] text-[#7F8C8D] border-t border-[#EFE8E2]">
-            <strong className="text-[#5A5049]">Notice:</strong> This is a screening aid, not a clinical or diagnostic tool. Raw audio never leaves your device — only the transcript and numeric delivery measurements are sent for analysis, and a human reviewer always makes the final call.
+            <strong className="text-[#5A5049]">Notice:</strong> This is a screening aid, not a clinical or diagnostic tool. Raw audio never leaves your device. Only the transcript and numeric delivery measurements are sent for analysis, and a human reviewer always makes the final call.
           </div>
         </div>
       </div>
@@ -575,7 +575,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               <ol className="space-y-1 text-[11px] list-decimal list-inside leading-relaxed">
                 <li>You voluntarily record or type a reflection.</li>
                 <li>Voice is converted to text where supported.</li>
-                <li>For voice recordings, your device also measures pitch, pace, pauses, and loudness — never keywords.</li>
+                <li>For voice recordings, your device also measures pitch, pace, pauses, and loudness. Never keywords.</li>
                 <li>An LLM reasons about the transcript and those delivery measurements together to infer emotional tone and trauma-informed screening signals.</li>
                 <li>The result becomes an additional wellbeing signal, combined with your voluntary check-in history.</li>
                 <li>Important signals are reviewed by a human counselor.</li>

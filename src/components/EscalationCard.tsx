@@ -159,7 +159,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
           </>
         )}
         This is a prompt for you to decide, not an instruction and not a clinical judgement. Nobody
-        has been contacted — reaching out at the wrong moment can carry its own risk, so that call
+        has been contacted. Reaching out at the wrong moment can carry its own risk, so that call
         is yours.
       </p>
     </div>

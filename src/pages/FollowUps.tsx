@@ -63,9 +63,13 @@ export const FollowUps: React.FC<Props> = ({
   ) => {
     const scoreNum = recordScore.trim() === "" ? undefined : Math.max(0, Math.min(100, Number(recordScore)));
     const delta = scoreNum != null ? scoreNum - fup.originalScore : undefined;
+    // The earlier note and the closing note run together in one field, so the
+    // join has to end the first sentence without doubling a full stop the
+    // counsellor already typed.
+    const priorNote = fup.notes?.trim() ? `${fup.notes.trim().replace(/[.;,]+$/, "")}. ` : "";
     const closingNote = recordNote.trim()
-      ? `${fup.notes ? fup.notes + " — " : ""}Closed by ${currentUser?.name || "counselor"}: ${recordNote.trim()}`
-      : `${fup.notes ? fup.notes + " — " : ""}Follow-up closed by ${currentUser?.name || "counselor"}.`;
+      ? `${priorNote}Closed by ${currentUser?.name || "counselor"}: ${recordNote.trim()}`
+      : `${priorNote}Follow-up closed by ${currentUser?.name || "counselor"}.`;
 
     participantStore.updateFollowUp(fup.id, {
       outcome,
@@ -377,7 +381,7 @@ export const FollowUps: React.FC<Props> = ({
                 </span>
                 <div className="flex items-baseline space-x-1">
                   <span className="text-2xl font-black text-[#3C3530]">
-                    {fup.followUpScore !== undefined ? fup.followUpScore : "—"}
+                    {fup.followUpScore !== undefined ? fup.followUpScore : "N/A"}
                   </span>
                   {fup.followUpScore !== undefined && <span className="text-xs text-[#7F8C8D]">/100</span>}
                 </div>
@@ -459,7 +463,7 @@ export const FollowUps: React.FC<Props> = ({
                       value={recordNote}
                       onChange={(e) => setRecordNote(e.target.value)}
                       rows={2}
-                      placeholder="Closing note (optional) — what happened, what's next"
+                      placeholder="Closing note (optional): what happened, what's next"
                       className="w-full p-2.5 rounded-lg border border-[#EFE8E2] text-xs text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#DBC3B2] resize-none"
                     />
                     <div className="flex flex-wrap items-center gap-2">
@@ -467,19 +471,19 @@ export const FollowUps: React.FC<Props> = ({
                         onClick={() => recordOutcome(fup, "improving")}
                         className="px-3 py-1.5 rounded-lg bg-emerald-600 text-white text-[11px] font-bold hover:bg-emerald-700 transition-colors cursor-pointer"
                       >
-                        Improving — close
+                        Improving, close
                       </button>
                       <button
                         onClick={() => recordOutcome(fup, "no_change")}
                         className="px-3 py-1.5 rounded-lg bg-[#5A5049] text-white text-[11px] font-bold hover:bg-[#3C3530] transition-colors cursor-pointer"
                       >
-                        No change — close
+                        No change, close
                       </button>
                       <button
                         onClick={() => recordOutcome(fup, "worsening")}
                         className="px-3 py-1.5 rounded-lg bg-[#A55D25] text-white text-[11px] font-bold hover:bg-[#8B4D1F] transition-colors cursor-pointer"
                       >
-                        Worsening — keep open
+                        Worsening, keep open
                       </button>
                       <button
                         onClick={() => setRecordingId(null)}

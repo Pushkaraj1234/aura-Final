@@ -150,7 +150,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
             </div>
 
             <div className="mt-4 pt-3 border-t border-[#EFE8E2] text-[11px] text-[#7F8C8D]">
-              Voluntary participant resources — not clinical prescriptions.
+              Voluntary participant resources, not clinical prescriptions.
             </div>
           </div>
         </div>

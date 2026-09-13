@@ -94,7 +94,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
           <Cpu size={15} className="text-[#5A5049]" />
           <h4 className="text-xs font-black uppercase tracking-wider text-[#3C3530]">
             {isDemoSample || analysis.isDemoSample
-              ? "Simulated Language Signal Analysis — Demo"
+              ? "Simulated Language Signal Analysis (Demo)"
               : "Language-Based Reflection Signal"}
           </h4>
         </div>
@@ -148,9 +148,9 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
 
       {/* Gemini trauma-informed screening (text content) */}
       {aiAnalysis && (
-        <div className="mt-4 p-4 rounded-xl bg-indigo-50/50 border border-indigo-100 space-y-3">
+        <div className="mt-4 p-4 rounded-xl bg-[#FDF9F5]/50 border border-[#EFE8E2] space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center space-x-2 text-indigo-800">
+            <div className="flex items-center space-x-2 text-[#7A4A20]">
               <BrainCircuit size={15} />
               <span className="text-xs font-bold uppercase tracking-wider">Gemini Trauma-Informed Screening</span>
             </div>
@@ -161,10 +161,10 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
 
           {aiAnalysis.traumaIndicators?.filter((t) => t !== "none_detected").length > 0 && (
             <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase text-indigo-900/70">Trauma indicators noted:</span>
+              <span className="text-[10px] font-bold uppercase text-[#5A5049]/90">Trauma indicators noted:</span>
               <div className="flex flex-wrap gap-1.5">
                 {aiAnalysis.traumaIndicators.filter((t) => t !== "none_detected").map((t) => (
-                  <span key={t} className="text-[10px] font-semibold bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-full">
+                  <span key={t} className="text-[10px] font-semibold bg-[#F3E7D8] text-[#3C3530] px-2 py-0.5 rounded-full">
                     {TAXONOMY_LABELS[t] || t}
                   </span>
                 ))}
@@ -174,10 +174,10 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
 
           {aiAnalysis.distressSignals?.filter((d) => d !== "none_detected").length > 0 && (
             <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase text-indigo-900/70">Distress signals noted:</span>
+              <span className="text-[10px] font-bold uppercase text-[#5A5049]/90">Distress signals noted:</span>
               <div className="flex flex-wrap gap-1.5">
                 {aiAnalysis.distressSignals.filter((d) => d !== "none_detected").map((d) => (
-                  <span key={d} className="text-[10px] font-semibold bg-indigo-100 text-indigo-900 px-2 py-0.5 rounded-full">
+                  <span key={d} className="text-[10px] font-semibold bg-[#F3E7D8] text-[#3C3530] px-2 py-0.5 rounded-full">
                     {TAXONOMY_LABELS[d] || d}
                   </span>
                 ))}
@@ -185,7 +185,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
             </div>
           )}
 
-          <div className="pt-2 text-xs text-indigo-900/80 border-t border-indigo-100/50 space-y-1">
+          <div className="pt-2 text-xs text-[#5A5049] border-t border-[#EFE8E2]/50 space-y-1">
             <div><strong>Language:</strong> {aiAnalysis.language} &nbsp;·&nbsp; <strong>Emotional state:</strong> {aiAnalysis.emotionalState} &nbsp;·&nbsp; <strong>Confidence:</strong> {aiAnalysis.confidence}</div>
             <div className="italic text-[11px]">"{aiAnalysis.rationale || aiAnalysis.evidence}"</div>
             <div className="pt-1"><strong>Suggested human action:</strong> {aiAnalysis.suggestedHumanAction}</div>
@@ -195,11 +195,11 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
 
       {/* Voice-tone reasoning: transcript + measured vocal delivery */}
       {voiceToneAnalysis && (
-        <div className="mt-4 p-4 rounded-xl bg-violet-50/60 border border-violet-100 space-y-3">
+        <div className="mt-4 p-4 rounded-xl bg-[#FDF9F5]/60 border border-[#EFE8E2] space-y-3">
           <div className="flex items-center justify-between flex-wrap gap-2">
-            <div className="flex items-center space-x-2 text-violet-800">
+            <div className="flex items-center space-x-2 text-[#7A4A20]">
               <Volume2 size={15} />
-              <span className="text-xs font-bold uppercase tracking-wider">Voice Tone — Delivery + Content</span>
+              <span className="text-xs font-bold uppercase tracking-wider">Voice Tone: Delivery + Content</span>
             </div>
             <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${riskBandStyle(voiceToneAnalysis.riskBand)}`}>
               {voiceToneAnalysis.riskBand} risk band
@@ -207,8 +207,8 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
           </div>
 
           <div className="flex items-center flex-wrap gap-2">
-            <span className="text-xs font-black text-violet-900">{voiceToneAnalysis.emotionalTone}</span>
-            <span className="text-[10px] text-violet-700">({voiceToneAnalysis.toneConfidence} confidence)</span>
+            <span className="text-xs font-black text-[#3C3530]">{voiceToneAnalysis.emotionalTone}</span>
+            <span className="text-[10px] text-[#8A5A2B]">({voiceToneAnalysis.toneConfidence} confidence)</span>
             {voiceToneAnalysis.contentVsDeliveryAlignment === "mismatched" && (
               <span className="text-[10px] font-bold uppercase bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full border border-amber-200">
                 Words vs. tone mismatch
@@ -216,16 +216,16 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
             )}
           </div>
 
-          <p className="text-xs text-violet-900/80 leading-relaxed">{voiceToneAnalysis.toneRationale}</p>
+          <p className="text-xs text-[#5A5049] leading-relaxed">{voiceToneAnalysis.toneRationale}</p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-violet-900/70 pt-1 border-t border-violet-100/60">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] text-[#5A5049]/90 pt-1 border-t border-[#EFE8E2]/60">
             <div><strong>Pitch variability:</strong> {(voiceToneAnalysis.acousticFeatures.pitchVariabilityScore * 100).toFixed(0)}%</div>
             <div><strong>Pace:</strong> {Math.round(voiceToneAnalysis.acousticFeatures.speakingRateWpm)} wpm</div>
             <div><strong>Pauses:</strong> {(voiceToneAnalysis.acousticFeatures.pauseRatio * 100).toFixed(0)}%</div>
             <div><strong>Vocal energy:</strong> {(voiceToneAnalysis.acousticFeatures.energyScore * 100).toFixed(0)}%</div>
           </div>
 
-          <div className="pt-1 text-[11px] text-violet-900/80">
+          <div className="pt-1 text-[11px] text-[#5A5049]">
             <strong>Suggested human action:</strong> {voiceToneAnalysis.suggestedHumanAction}
           </div>
         </div>
@@ -236,7 +236,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
         <Info size={13} className="text-[#DBC3B2] shrink-0 mt-0.5" />
         <p>
           <strong>Non-Diagnostic Notice:</strong> These signals are screening aids derived from your voluntary reflection
-          {voiceToneAnalysis ? " — including measured pitch, pace, pauses and loudness, reasoned about together with your words by an LLM" : ""}.
+          {voiceToneAnalysis ? ", including measured pitch, pace, pauses and loudness, reasoned about together with your words by an LLM" : ""}.
           They do not diagnose mental health conditions and do not replace clinical judgment; a human reviewer always makes the final call.
         </p>
       </div>

@@ -81,7 +81,7 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
         ) : sent ? (
           <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center space-y-2">
             <CheckCircle2 size={28} className="text-[#2F6B4F] mx-auto" />
-            <p className="text-sm font-bold text-[#3C3530]">Thank you — your answers have been sent.</p>
+            <p className="text-sm font-bold text-[#3C3530]">Thank you. Your answers have been sent.</p>
             <p className="text-xs text-[#7A726C] max-w-sm mx-auto">
               Only the counsellor who asked you will read them. You can close this page; the link
               will not open again.
@@ -95,7 +95,7 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
               </h1>
               <p className="text-sm text-[#7A726C] leading-relaxed">
                 A counsellor has asked for your view. There are five questions and there are no
-                right answers — what you have actually noticed is what helps. It takes a couple of
+                right answers. What you have actually noticed is what helps. It takes a couple of
                 minutes.
               </p>
               <p className="text-xs text-[#7A726C] flex items-start gap-2 pt-1">

@@ -173,6 +173,18 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
             >
               <span>{submitting ? "Submitting..." : "Submit Application"}</span>
             </button>
+
+            <p className="text-[11px] text-[#7F8C8D] leading-relaxed pt-1">
+              By applying you accept the{" "}
+              <a href="/terms" className="font-semibold text-[#9A5B33] underline underline-offset-2 hover:text-[#8A4A20]">
+                Terms and Conditions
+              </a>{" "}
+              and the{" "}
+              <a href="/privacy-policy" className="font-semibold text-[#9A5B33] underline underline-offset-2 hover:text-[#8A4A20]">
+                Privacy Policy
+              </a>
+              .
+            </p>
           </form>
 
           <div className="pt-2 border-t border-[#EFE8E2] text-center">

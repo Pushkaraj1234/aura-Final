@@ -44,7 +44,7 @@ const GUIDES: Record<string, ActionGuide> = {
     steps: [
       "If you are in immediate physical danger, contact local emergency services first.",
       "Open the emergency panel below for crisis lines available in your region.",
-      "If you can, tell one person you trust where you are — a neighbour, a friend, anyone.",
+      "If you can, tell one person you trust where you are: a neighbour, a friend, anyone.",
       "Your assigned counsellor is being notified. You do not have to explain everything again when they reach you.",
     ],
     isEmergency: true,
@@ -56,7 +56,7 @@ const GUIDES: Record<string, ActionGuide> = {
     intent:
       "You asked to speak with someone. Here is what happens next and how to make that conversation easier.",
     steps: [
-      "Your request is already on your counsellor's queue — you do not need to chase it.",
+      "Your request is already on your counsellor's queue. You do not need to chase it.",
       "Send a message now if there is something you would rather they read before you speak.",
       "Write down one or two things you want to raise. Under pressure it is easy to say 'I'm fine' and leave.",
       "You can ask for a different counsellor, an interpreter, or a woman or man specifically. That request is normal and will not be held against you.",
@@ -72,7 +72,7 @@ const GUIDES: Record<string, ActionGuide> = {
       "Support is not one thing. Knowing the options makes it easier to ask for the one you actually want.",
     steps: [
       "One-to-one conversation with a trained counsellor, in your own language where possible.",
-      "Peer groups with others who have been through similar events — often easier than talking to a professional.",
+      "Peer groups with others who have been through similar events, often easier than talking to a professional.",
       "Practical help: documentation, legal referral, housing, medical care. Distress is frequently about circumstances, not only feelings.",
       "Someone to sit with you while you make a difficult call or attend an appointment.",
       "You can take any of these and leave the rest.",
@@ -84,7 +84,7 @@ const GUIDES: Record<string, ActionGuide> = {
   calm: {
     title: "Settling a stressed body",
     intent:
-      "When stress is high the body reacts before thinking does. These are ways to bring the physical response down — they do not fix what caused it.",
+      "When stress is high the body reacts before thinking does. These are ways to bring the physical response down. They do not fix what caused it.",
     steps: [
       "Breathe out for longer than you breathe in. Four counts in, six or eight out, for about a minute. The long out-breath is what slows the heart.",
       "Name five things you can see, four you can hear, three you can touch. This pulls attention back to the room you are in.",
@@ -93,24 +93,24 @@ const GUIDES: Record<string, ActionGuide> = {
       "If a memory has taken over, say the date and where you are out loud. It is a way of telling your body the danger is not happening now.",
     ],
     footnote:
-      "If these make you feel worse rather than better, stop — for some people, turning attention inward is not the right tool. Tell your counsellor.",
+      "If these make you feel worse rather than better, stop. For some people, turning attention inward is not the right tool. Tell your counsellor.",
   },
 
   creative: {
     title: "Using creative outlets",
     intent:
-      "Writing, drawing, music and craft give difficult experience somewhere to go when talking about it directly is too much — or not possible yet.",
+      "Writing, drawing, music and craft give difficult experience somewhere to go when talking about it directly is too much, or not possible yet.",
     steps: [
       "Nobody has to see it. Work made only for yourself counts, and can be destroyed afterwards.",
       "It does not have to be about what happened. Making something ordinary is still the point.",
       "Ten minutes is enough. This works better little and often than in long sittings.",
-      "If it starts to pull you somewhere distressing, stop and do something physical — walk, wash up, step outside.",
+      "If it starts to pull you somewhere distressing, stop and do something physical: walk, wash up, step outside.",
       "Group art, music and craft sessions exist through support services, and are often easier than talking groups.",
     ],
     navigateTo: "support_resources",
     navigateLabel: "Find group activities",
     footnote:
-      "If making something reliably brings the worst of it back rather than easing it, that is worth telling your counsellor — it is common and there are ways around it.",
+      "If making something reliably brings the worst of it back rather than easing it, that is worth telling your counsellor. It is common and there are ways around it.",
   },
 
   sleep: {
@@ -121,11 +121,11 @@ const GUIDES: Record<string, ActionGuide> = {
       "Get up at roughly the same time each day, even after a bad night. The waking time steadies sleep more reliably than the bedtime does.",
       "If you are awake more than about twenty minutes, get up and do something quiet in dim light rather than lying there. Bed should not become the place you lie awake.",
       "Keep the last hour before sleep off screens and away from news.",
-      "If nightmares are waking you, that is worth telling your counsellor — there are specific approaches for them, and they are not something to simply endure.",
+      "If nightmares are waking you, that is worth telling your counsellor. There are specific approaches for them, and they are not something to simply endure.",
       "Daylight in the morning, even fifteen minutes, helps set the next night.",
     ],
     footnote:
-      "Sleep is often the first thing to improve with support, and the first to slip when things get harder — it is worth mentioning either way.",
+      "Sleep is often the first thing to improve with support, and the first to slip when things get harder, so it is worth mentioning either way.",
   },
 
   social: {
@@ -134,10 +134,10 @@ const GUIDES: Record<string, ActionGuide> = {
       "Isolation makes distress heavier, and withdrawing is one of the most common responses to it. The way back is smaller than people expect.",
     steps: [
       "Aim for one contact, not a social life. A message, a short call, sitting near someone without talking.",
-      "Shared activity is easier than conversation — cooking, walking, queueing together. There is no requirement to discuss what happened.",
+      "Shared activity is easier than conversation: cooking, walking, queueing together. There is no requirement to discuss what happened.",
       "You do not owe anyone your story. You can spend time with people and say nothing about it.",
       "Peer groups exist for exactly this, and many people find them easier than one-to-one support.",
-      "If everyone you were close to is gone or far away, say so — rebuilding that is something your counsellor can help with practically.",
+      "If everyone you were close to is gone or far away, say so. Rebuilding that is something your counsellor can help with practically.",
     ],
     navigateTo: "support_resources",
     navigateLabel: "See community options",
@@ -148,7 +148,7 @@ const GUIDES: Record<string, ActionGuide> = {
     intent:
       "After upheaval, ordinary structure disappears. Restoring a little of it gives the day edges again.",
     steps: [
-      "Pick one fixed point — the same waking time, one meal at the same hour. One is enough to start.",
+      "Pick one fixed point: the same waking time, one meal at the same hour. One is enough to start.",
       "Eat something at regular times even when appetite is gone. Not eating makes mood and concentration worse quickly.",
       "Get outside once a day if it is safe to do so, however briefly.",
       "Choose one small task you can finish. Completing something is worth more here than how useful it was.",
@@ -161,7 +161,7 @@ const GUIDES: Record<string, ActionGuide> = {
     intent:
       "One check-in is a snapshot. What actually helps you and your counsellor is the direction over time.",
     steps: [
-      "Check in regularly rather than only on bad days — otherwise the record only ever shows the worst of it.",
+      "Check in regularly rather than only on bad days. Otherwise the record only ever shows the worst of it.",
       "Answer honestly even when the honest answer is 'worse'. Nothing here is a test, and a worse answer is not a failure.",
       "Use the written or spoken reflection when you have something that does not fit the questions.",
       "Look at your own trend before an appointment. It is often easier to point at a pattern than to describe one.",
@@ -177,7 +177,7 @@ const GUIDES: Record<string, ActionGuide> = {
     steps: [
       "Where would you go if you had to leave quickly, and how would you get there?",
       "Who is the one person you would contact, and do you have their number somewhere other than your phone?",
-      "What would you need to take — documents, medication, money — and can any of it be kept ready?",
+      "What would you need to take (documents, medication, money), and can any of it be kept ready?",
       "Are there times or places where you feel less safe, and can any of them be avoided or changed?",
       "Work through this with your counsellor rather than alone. A plan someone else knows about is a stronger plan.",
     ],
@@ -259,7 +259,7 @@ export function getActionGuide(rec: Recommendation): ActionGuide {
     title: rec.title,
     intent: rec.description,
     steps: [
-      "Talk this through with your counsellor — they can turn it into something specific to your situation.",
+      "Talk this through with your counsellor. They can turn it into something specific to your situation.",
       "Take one small piece of it rather than all of it.",
     ],
     navigateTo: "support_resources",

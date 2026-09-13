@@ -140,7 +140,7 @@ export function assessEscalation(input: {
     evidence.push(
       `Court hearing ${describeTiming(days)}${
         caseReading.hearingCount > 1
-          ? ` — their ${caseReading.hearingCount === 2 ? "second" : `${caseReading.hearingCount}th`} on record`
+          ? `, their ${caseReading.hearingCount === 2 ? "second" : `${caseReading.hearingCount}th`} on record`
           : ""
       }.`
     );
@@ -150,7 +150,7 @@ export function assessEscalation(input: {
   if (caseReading.recentHearing && caseReading.daysSinceRecentHearing !== null) {
     basis.add("case");
     evidence.push(
-      `Court hearing ${describeTiming(-caseReading.daysSinceRecentHearing)} — the days after one are when distress tends to surface.`
+      `Court hearing ${describeTiming(-caseReading.daysSinceRecentHearing)}. The days after one are when distress tends to surface.`
     );
     level = raise(level, "watch");
   }
@@ -163,7 +163,7 @@ export function assessEscalation(input: {
       const days = Math.round((now - new Date(e.date).getTime()) / 86_400_000);
       evidence.push(
         `${CASE_EVENT_LABELS[e.type]} recorded ${describeTiming(-days)}${
-          e.note ? ` — ${e.note}` : ""
+          e.note ? `: ${e.note}` : ""
         }.`
       );
     });
@@ -206,7 +206,7 @@ export function assessEscalation(input: {
 
   const headline =
     level === "urgent"
-      ? "Escalation detected — contact recommended within 24 hours"
+      ? "Escalation detected: contact recommended within 24 hours"
       : level === "contact"
         ? "Contact recommended within 72 hours"
         : level === "watch"

@@ -178,7 +178,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
           <input
             value={title}
             onChange={(e) => setTitle(e.target.value.slice(0, 160))}
-            placeholder="Title — e.g. Weekly review"
+            placeholder="Title, e.g. Weekly review"
             data-no-translate
             className="w-full p-3 rounded-xl border border-[#EFE8E2] text-sm font-semibold text-[#3C3530]"
           />
@@ -335,9 +335,9 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                     <p className="text-sm font-bold text-[#3C3530] truncate" data-no-translate>{t.title}</p>
                     <p className="text-[11px] text-[#7A726C]">
                       {t.questions.length} question{t.questions.length === 1 ? "" : "s"} ·{" "}
-                      {t.status === "draft" && "draft — not sent"}
+                      {t.status === "draft" && "draft, not sent"}
                       {t.status === "assigned" && "sent, waiting for answers"}
-                      {t.status === "submitted" && "answered — needs your review"}
+                      {t.status === "submitted" && "answered, needs your review"}
                       {t.status === "reviewed" && `reviewed${r?.mark != null ? ` · ${r.mark}/100` : ""}`}
                     </p>
                   </div>

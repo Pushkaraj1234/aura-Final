@@ -45,7 +45,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
   if (analysis.status === "unavailable") {
     return (
       <p className="text-[11px] text-[#7F8C8D] mt-2 flex items-center gap-1.5">
-        <ShieldQuestion size={12} /> AI document screening unavailable{analysis.reason ? ` — ${analysis.reason}` : ""}. Review the document manually.
+        <ShieldQuestion size={12} /> AI document screening unavailable{analysis.reason ? ` (${analysis.reason})` : ""}. Review the document manually.
       </p>
     );
   }
@@ -81,9 +81,9 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
       {open && (
         <div className="mt-2 space-y-2 text-[11px] text-[#5A5049]">
           <div className="grid sm:grid-cols-3 gap-2">
-            <div><span className="text-[#7F8C8D]">Field:</span> {analysis.field || "—"}</div>
-            <div><span className="text-[#7F8C8D]">Issuer:</span> {analysis.issuingBody || "—"}</div>
-            <div><span className="text-[#7F8C8D]">Name on doc:</span> {analysis.holderName || "—"}</div>
+            <div><span className="text-[#7F8C8D]">Field:</span> {analysis.field || "N/A"}</div>
+            <div><span className="text-[#7F8C8D]">Issuer:</span> {analysis.issuingBody || "N/A"}</div>
+            <div><span className="text-[#7F8C8D]">Name on doc:</span> {analysis.holderName || "N/A"}</div>
           </div>
           {(analysis.matchedIndicators?.length || 0) > 0 && (
             <div>
@@ -107,7 +107,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
             </div>
           )}
           <p className="text-[10px] text-[#B9B0A6]">
-            Advisory only — not authoritative verification. Always open and read the document before deciding.
+            Advisory only, not authoritative verification. Always open and read the document before deciding.
           </p>
         </div>
       )}
@@ -185,7 +185,7 @@ export const PendingQueueTab: React.FC = () => {
           {!result.emailSent && (
             <div className="text-xs text-[#2F6B4F] space-y-1 mt-2">
               <p className="font-bold">
-                Email delivery failed — relay these credentials to the applicant manually:
+                Email delivery failed. Relay these credentials to the applicant manually:
               </p>
               <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-[#CFE6D6] font-mono">
                 <span>{result.email}</span>

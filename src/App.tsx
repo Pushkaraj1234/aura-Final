@@ -511,6 +511,26 @@ export const App: React.FC = () => {
       </ErrorBoundary>
       </main>
 
+      {/* The two legal documents, reachable from every signed-in screen. The
+          landing page carries its own footer links; without these, anyone past
+          sign-in would have no way back to them. Real hrefs, because both pages
+          are served from real paths rather than from currentView. */}
+      {currentView !== "landing" && (
+        <footer className="border-t border-[#ECE1D3] mt-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-[#8A7A6B]">
+            <a href="/privacy-policy" className="font-semibold hover:text-[#3A2A1E] transition-colors">
+              Privacy Policy
+            </a>
+            <a href="/terms" className="font-semibold hover:text-[#3A2A1E] transition-colors">
+              Terms and Conditions
+            </a>
+            <span className="text-[#A99A8A]">
+              AURA provides wellbeing signals, not a medical diagnosis.
+            </span>
+          </div>
+        </footer>
+      )}
+
       {/* Emergency Crisis Modal */}
       <EmergencyModal
         isOpen={emergencyModalOpen}

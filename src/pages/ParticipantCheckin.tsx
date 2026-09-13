@@ -99,7 +99,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
   const [publicUnderstandingReflection, setPublicUnderstandingReflection] = useState<string>("");
 
   // Q9: Institutional Trust & Legal Documentation (MCQ - Single-select)
-  const [institutionalResponse, setInstitutionalResponse] = useState<string>("Partially — Approached institutions, but meaningful follow-through has been slow");
+  const [institutionalResponse, setInstitutionalResponse] = useState<string>("Partially: Approached institutions, but meaningful follow-through has been slow");
 
   // Q10: Key Priorities for Reparations & Healing (MCQ - Single-select)
   const [reparationsPriority, setReparationsPriority] = useState<string>("Truth, recognition, and legal accountability for perpetrators");
@@ -377,7 +377,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <strong className="text-[#3C3530]">How you answer, not only what:</strong> This
                 form notes how long you spend on a question, whether you go back and change an
                 answer, and whether you leave the app partway through. It is used only to tell a
-                counsellor a check-in may be worth a second look — it never changes your score,
+                counsellor a check-in may be worth a second look. It never changes your score,
                 and no keystrokes, camera or microphone are involved.
               </span>
             </div>
@@ -433,7 +433,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
             </div>
             {privateSpace === false && (
               <p className="text-[11px] text-[#A55D25] leading-relaxed">
-                That is completely fine — you can carry on now, or come back when you have more privacy.
+                That is completely fine. You can carry on now, or come back when you have more privacy.
                 Either way we will treat today's answers gently.
               </p>
             )}
@@ -1159,7 +1159,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                       const updated = copingReflection ? `${copingReflection}, ${tag.toLowerCase()}` : tag;
                       setCopingReflection(updated);
                     }}
-                    className="text-xs bg-[#FDF9F5] hover:bg-[#DBC3B2]/25 hover:text-[#5A5049] text-[#3C3530] border border-[#EFE8E2] px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                    className="text-xs bg-[#FDF9F5] hover:bg-[#DBC3B2]/25 hover:text-[#5A5049] text-[#3C3530] border border-[#EFE8E2] px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                   >
                     + {tag}
                   </button>
@@ -1247,7 +1247,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                       const updated = publicUnderstandingReflection ? `${publicUnderstandingReflection}\n\n${pill}` : pill;
                       setPublicUnderstandingReflection(updated);
                     }}
-                    className="text-xs bg-[#FDF9F5] hover:bg-[#DBC3B2]/25 hover:text-[#5A5049] text-[#3C3530] border border-[#EFE8E2] px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+                    className="text-xs bg-[#FDF9F5] hover:bg-[#DBC3B2]/25 hover:text-[#5A5049] text-[#3C3530] border border-[#EFE8E2] px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                   >
                     + "{pill}"
                   </button>
@@ -1287,22 +1287,22 @@ export const ParticipantCheckin: React.FC<Props> = ({
               {[
                 {
                   id: "formally_documented",
-                  label: "Yes — Formally Documented & Supported",
+                  label: "Yes: Formally Documented & Supported",
                   desc: "My testimony or case was recorded with dignity by trusted human rights or legal advocates."
                 },
                 {
                   id: "partial_response",
-                  label: "Partially — Approached Institutions with Limited Follow-up",
+                  label: "Partially: Approached Institutions with Limited Follow-up",
                   desc: "Shared my account, but meaningful assistance, protection, or legal accountability has stalled."
                 },
                 {
                   id: "dismissed",
-                  label: "No — Dismissed, Questioned, or Ignored",
+                  label: "No: Dismissed, Questioned, or Ignored",
                   desc: "Faced skepticism, indifference, or hostility when attempting to seek justice or protection."
                 },
                 {
                   id: "fear_retaliation",
-                  label: "Never Reported — Fear of Retaliation or Disbelief",
+                  label: "Never Reported: Fear of Retaliation or Disbelief",
                   desc: "Did not approach authorities due to fear of reprisals, compromised safety, or lack of trust."
                 },
                 {
@@ -1433,7 +1433,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 A few practical questions about the last day or two.
               </h3>
               <p className="text-xs sm:text-sm text-[#7F8C8D]">
-                Not about how you felt — just what happened. Answer only what you want to; skip anything you would rather not say.
+                Not about how you felt, just what happened. Answer only what you want to; skip anything you would rather not say.
               </p>
             </div>
 

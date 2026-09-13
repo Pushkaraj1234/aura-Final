@@ -144,7 +144,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       case "CHECK_IN":
         return "bg-sky-50 text-sky-700 border-sky-200";
       case "ANALYSIS":
-        return "bg-indigo-50 text-indigo-700 border-indigo-200";
+        return "bg-[#FDF9F5] text-[#8A5A2B] border-[#DBC3B2]/60";
       case "ALERT":
         return "bg-amber-50 text-amber-800 border-amber-200";
       case "SUPPORT":
@@ -156,7 +156,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       case "SAFETY":
         return "bg-rose-50 text-rose-700 border-rose-200 font-bold";
       case "NOTIFICATION":
-        return "bg-purple-50 text-purple-700 border-purple-200";
+        return "bg-[#FDF9F5] text-[#8A5A2B] border-[#DBC3B2]/60";
       case "AUTH":
       case "access":
         return "bg-slate-100 text-slate-700 border-slate-200";
@@ -177,7 +177,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       case "SYSTEM":
         return "bg-slate-100 text-slate-600";
       case "ADMIN":
-        return "bg-purple-50 text-purple-700";
+        return "bg-[#FDF9F5] text-[#8A5A2B]";
       default:
         return "bg-slate-50 text-slate-600";
     }

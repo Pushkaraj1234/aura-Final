@@ -3,6 +3,8 @@ import {createRoot} from 'react-dom/client';
 import App from './App.tsx';
 import {AdminApp} from './admin/AdminApp.tsx';
 import {GuardianForm} from './pages/GuardianForm.tsx';
+import {PrivacyPolicy} from './pages/Legal/PrivacyPolicy.tsx';
+import {TermsAndConditions} from './pages/Legal/TermsAndConditions.tsx';
 import {LanguageProvider} from './context/LanguageContext.tsx';
 import './index.css';
 
@@ -10,6 +12,18 @@ import './index.css';
 // only thing that decides between the two apps; App.tsx's own currentView
 // state machine is completely untouched and never sees /admin.
 const isAdminRoute = typeof window !== 'undefined' && window.location.pathname.startsWith('/admin');
+
+// The two legal documents live at real paths so a link to either one survives
+// being copied into an email, a store listing or a compliance form. App.tsx
+// navigates by view state, which cannot be linked to from outside, so they are
+// bootstrapped here alongside /admin rather than added to that state machine.
+const legalRoute = (() => {
+  if (typeof window === 'undefined') return null;
+  const path = window.location.pathname.replace(/\/+$/, '').toLowerCase();
+  if (path === '/privacy-policy') return 'privacy-policy' as const;
+  if (path === '/terms') return 'terms' as const;
+  return null;
+})();
 
 // A guardian arrives with a one-time link and has no account, so they must not
 // meet the sign-in screen. The decision is made here rather than inside App
@@ -37,7 +51,17 @@ window.addEventListener('unhandledrejection', (event) => {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LanguageProvider>
-      {guardianToken ? <GuardianForm token={guardianToken} /> : isAdminRoute ? <AdminApp /> : <App />}
+      {legalRoute === 'privacy-policy' ? (
+        <PrivacyPolicy />
+      ) : legalRoute === 'terms' ? (
+        <TermsAndConditions />
+      ) : guardianToken ? (
+        <GuardianForm token={guardianToken} />
+      ) : isAdminRoute ? (
+        <AdminApp />
+      ) : (
+        <App />
+      )}
     </LanguageProvider>
   </StrictMode>,
 );

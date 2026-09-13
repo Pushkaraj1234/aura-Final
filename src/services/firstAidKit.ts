@@ -64,7 +64,7 @@ export const FIRST_AID_PROMPTS: FirstAidPrompt[] = [
   {
     category: "words",
     label: "Words for myself",
-    question: "What would you want to hear right now — and who would say it?",
+    question: "What would you want to hear right now, and who would say it?",
     placeholder: "What you would tell a friend in your position",
     why: "Written now, it can be read later by a version of you who cannot think of it.",
   },

@@ -52,7 +52,7 @@ const en: Strings = {
   listeningHint: "Take your time. I'm here.",
   thinking: "Give me a moment...",
   speaking: "I'm speaking...",
-  speakingHint: "You can interrupt me at any time — just start talking.",
+  speakingHint: "You can interrupt me at any time. Just start talking.",
   start: "Start voice conversation",
   stop: "Stop voice conversation",
   interrupt: "Interrupt",

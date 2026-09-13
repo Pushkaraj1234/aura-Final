@@ -324,9 +324,9 @@ export function evaluateCheckIn(
   let workerNotification: AlertDecision["workerNotification"];
   if (notifySupportWorker) {
     const who = participantName && participantName.trim() ? participantName.trim() : `Participant ${currentCheckIn.participantId.slice(0, 8)}`;
-    const workerMsg = `${who} — Current indicator: ${currentScore}/100 (${trajectoryDescription}, change: ${change >= 0 ? "+" : ""}${change} pts). ${reason}`;
+    const workerMsg = `${who}. Current indicator: ${currentScore}/100 (${trajectoryDescription}, change: ${change >= 0 ? "+" : ""}${change} pts). ${reason}`;
     workerNotification = {
-      title: `${title} — ${who}`,
+      title: `${title}: ${who}`,
       message: workerMsg,
       severity: severity === "RED" ? "RED" : severity === "ORANGE" ? "ORANGE" : "YELLOW",
       category,

@@ -177,7 +177,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   <span>Make your own first aid kit</span>
                 </div>
                 <p className="text-xs text-[#7A726C] leading-relaxed">
-                  A short, private list of what helps <em>you</em> — a song, a place you go, someone you could
+                  A short, private list of what helps <em>you</em>: a song, a place you go, someone you could
                   message. Written now, while it is easier to think, so a harder day does not have to.
                 </p>
               </div>
@@ -194,7 +194,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 onClick={onComplete}
                 className="w-full py-3 rounded-2xl border border-[#EFE8E2] text-[#5A5049] font-bold text-sm hover:bg-[#FDF9F5] transition-colors cursor-pointer"
               >
-                Skip for now — I can do this later
+                Skip for now, I can do this later
               </button>
             </div>
           )}
@@ -231,11 +231,11 @@ export const ParticipantSignUp: React.FC<Props> = ({
             <div className="space-y-3 pt-2 border-t border-[#3F4E4E] text-xs text-[#EFE8E2]/90">
               <div className="flex items-start space-x-2">
                 <CheckCircle2 size={16} className="text-[#DBC3B2] shrink-0 mt-0.5" />
-                <span>Voluntary participation — skip or leave anytime.</span>
+                <span>Voluntary participation. Skip or leave anytime.</span>
               </div>
               <div className="flex items-start space-x-2">
                 <CheckCircle2 size={16} className="text-[#DBC3B2] shrink-0 mt-0.5" />
-                <span>No diagnosis — provides supportive signals only.</span>
+                <span>No diagnosis. Supportive signals only.</span>
               </div>
               <div className="flex items-start space-x-2">
                 <CheckCircle2 size={16} className="text-[#DBC3B2] shrink-0 mt-0.5" />
@@ -425,17 +425,17 @@ export const ParticipantSignUp: React.FC<Props> = ({
               {/* Emergency / Trusted Contact — optional, always skippable */}
               <div>
                 <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
-                  Emergency / Trusted Contact <span className="normal-case font-medium text-[#B9B0A6]">(optional — you can skip this)</span>
+                  Emergency / Trusted Contact <span className="normal-case font-medium text-[#B9B0A6]">(optional, you can skip this)</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Priya (sister) — +91 98xxxxxxx"
+                  placeholder="e.g. Priya (sister), +91 98xxxxxxx"
                   value={formData.emergencyContact}
                   onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049] focus:border-transparent text-sm"
                 />
                 <p className="text-[11px] text-[#7F8C8D] mt-1">
-                  Only a name and how to reach someone you trust. Leave blank if naming a contact is not safe for you — it is never required.
+                  Only a name and how to reach someone you trust. Leave blank if naming a contact is not safe for you. It is never required.
                 </p>
               </div>
 
@@ -491,6 +491,17 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   <span>Create Account</span>
                   <ArrowRight size={16} />
                 </button>
+                <p className="text-[11px] text-[#7F8C8D] leading-relaxed pt-1">
+                  By creating an account you accept the{" "}
+                  <a href="/terms" className="font-semibold text-[#9A5B33] underline underline-offset-2 hover:text-[#8A4A20]">
+                    Terms and Conditions
+                  </a>{" "}
+                  and the{" "}
+                  <a href="/privacy-policy" className="font-semibold text-[#9A5B33] underline underline-offset-2 hover:text-[#8A4A20]">
+                    Privacy Policy
+                  </a>
+                  .
+                </p>
               </div>
 
               <div className="text-center pt-2 text-xs text-[#7F8C8D]">
