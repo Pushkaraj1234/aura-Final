@@ -55,7 +55,12 @@ if (typeof window !== "undefined") {
         id: session.user.id,
         email: session.user.email || "",
         name: meta.name || session.user.email?.split("@")[0] || "User",
-        role: (meta.role as UserRole) || (session.user.email?.includes("worker") ? "support_worker" : "participant"),
+        // Optimistic only. An address is not a credential, so the old
+        // `email.includes("worker")` fallback is gone — anyone whose address
+        // happened to contain the word was handed a counsellor's view of the
+        // app. signInToPortal() replaces this with the role the database
+        // holds, which is the one RLS actually enforces.
+        role: (meta.role as UserRole) || "participant",
         language: meta.language || "English",
         ageRange: meta.ageRange || "25-34",
         supportPreference: meta.supportPreference || "Human counselor",
@@ -115,7 +120,10 @@ export const authService = {
         id: supaAuth.user.id,
         email: supaAuth.user.email || cleanEmail,
         name: meta.name || cleanEmail.split("@")[0] || "User",
-        role: (meta.role as UserRole) || (cleanEmail.includes("worker") ? "support_worker" : "participant"),
+        // Optimistic, and corrected by signInToPortal() against profiles.role.
+        // user_metadata is written by the client at sign-up, so it says what
+        // the browser claimed rather than what the database granted.
+        role: (meta.role as UserRole) || "participant",
         language: meta.language || "English",
         ageRange: meta.ageRange || "25-34",
         supportPreference: meta.supportPreference || "Human counselor",
@@ -227,6 +235,91 @@ export const authService = {
 
     // 3. Normal user error response from Supabase
     throw new Error(supaError?.message || "Invalid email or password. Please try again.");
+  },
+
+  /**
+   * Signs in through one particular door, and refuses the wrong one.
+   *
+   * Both login screens used to call login() and navigate on success, without
+   * ever asking what kind of account had just signed in. A participant's own
+   * email and password therefore worked on the counsellor portal — the page
+   * headed "Authorized Humanitarian Personnel Only" — and then dropped them on
+   * the participant home screen, because that is where App routes a
+   * participant. Nothing was exposed (row-level security answers to the
+   * database, not to which form was used) but the door announced a check it
+   * was not performing, which is its own kind of broken.
+   *
+   * The role is read from profiles, never from user_metadata: metadata is
+   * written by the browser at sign-up, so it reports what the client claimed,
+   * while profiles.role is what the database granted and what is_staff()
+   * enforces. That makes this check agree with what the person will actually
+   * be able to see once they are inside.
+   *
+   * Fails closed. If the role cannot be read, the staff door stays shut rather
+   * than guessing — a door marked "authorized personnel only" should refuse
+   * when it cannot tell, and the message says to try again rather than
+   * implying the credentials were wrong.
+   */
+  signInToPortal: async (
+    email: string,
+    password: string,
+    portal: "staff" | "participant"
+  ): Promise<User> => {
+    const user = await authService.login(email, password);
+
+    // The offline demo fallback mints a local session with no database behind
+    // it (ids like "user-1001", a "demo-token-" token). There is no profile to
+    // read and no real data to protect, so the locally chosen role stands.
+    const token = authService.getToken() || "";
+    if (token.startsWith("demo-token-")) return user;
+
+    let role: string | null = null;
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .maybeSingle();
+      if (!error && data?.role) role = data.role as string;
+    } catch {
+      role = null;
+    }
+
+    if (!role) {
+      await authService.logout();
+      throw new Error(
+        "We couldn't confirm what this account has access to. Please try signing in again."
+      );
+    }
+
+    const isStaff = role === "support_worker" || role === "admin";
+    const belongsHere = portal === "staff" ? isStaff : role === "participant";
+
+    if (!belongsHere) {
+      await authService.logout();
+      throw new Error(
+        portal === "staff"
+          ? "This is the counsellor portal, and that's a participant account. Sign in from the participant page instead."
+          : "That's a counsellor account. Sign in through the counsellor portal instead."
+      );
+    }
+
+    // The database disagreeing with the sign-in metadata is the normal case for
+    // accounts seeded server-side, which carry no metadata at all. Persist what
+    // the database says, so App routes on the same role RLS will enforce.
+    if (user.role !== role) {
+      user.role = role as UserRole;
+      try {
+        localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new Event("aura_auth_updated"));
+        }
+      } catch {
+        /* storage unavailable; the returned user still carries the right role */
+      }
+    }
+
+    return user;
   },
 
   /**

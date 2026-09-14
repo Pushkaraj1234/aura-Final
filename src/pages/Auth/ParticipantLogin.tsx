@@ -22,7 +22,10 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
     }
 
     try {
-      await authService.login(email, password);
+      // The mirror of the counsellor portal's check: a counsellor signing in
+      // here is sent to their own door rather than dropped into a participant
+      // view of the app.
+      await authService.signInToPortal(email, password, "participant");
       onSuccess();
     } catch (err: any) {
       setError(err.message || "Invalid credentials. Please try again.");

@@ -21,7 +21,10 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
     }
 
     try {
-      await authService.login(email, password);
+      // "staff" is checked against profiles.role, so a participant's own
+      // credentials are refused here rather than quietly signing them in and
+      // redirecting to the participant home screen.
+      await authService.signInToPortal(email, password, "staff");
       onSuccess();
     } catch (err: any) {
       setError(err.message || "Invalid credentials. Please try again.");
