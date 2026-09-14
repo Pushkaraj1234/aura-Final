@@ -410,7 +410,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
         <div>
           <h2 className="font-bold text-[#3C3530]">Session log</h2>
           <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl">
-            Record a session once it has happened. This is attendance only — no notes are stored
+            Record a session once it has happened. This is attendance only. No notes are stored
             here. It matters because someone can only review a session that has been logged as
             completed.
           </p>
@@ -501,7 +501,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
             <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl leading-relaxed">
               People can change counsellor at any time, for any reason, and most say
               nothing. These are the ones who chose to. You are not shown who wrote them
-              or when, and nothing here is part of anyone&rsquo;s record — it is here so
+              or when, and nothing here is part of anyone&rsquo;s record. It is here so
               it can be useful to you.
             </p>
           </div>

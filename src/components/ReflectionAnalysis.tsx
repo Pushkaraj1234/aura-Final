@@ -94,7 +94,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
           <Cpu size={15} className="text-[#5A5049]" />
           <h4 className="text-xs font-black uppercase tracking-wider text-[#3C3530]">
             {isDemoSample || analysis.isDemoSample
-              ? "Simulated Language Signal Analysis — Demo"
+              ? "Simulated language signal analysis (demo)"
               : "Language-Based Reflection Signal"}
           </h4>
         </div>
@@ -199,7 +199,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center space-x-2 text-violet-800">
               <Volume2 size={15} />
-              <span className="text-xs font-bold uppercase tracking-wider">Voice Tone — Delivery + Content</span>
+              <span className="text-xs font-bold uppercase tracking-wider">Voice tone: delivery and content</span>
             </div>
             <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${riskBandStyle(voiceToneAnalysis.riskBand)}`}>
               {voiceToneAnalysis.riskBand} risk band
@@ -236,7 +236,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
         <Info size={13} className="text-[#DBC3B2] shrink-0 mt-0.5" />
         <p>
           <strong>Non-Diagnostic Notice:</strong> These signals are screening aids derived from your voluntary reflection
-          {voiceToneAnalysis ? " — including measured pitch, pace, pauses and loudness, reasoned about together with your words by an LLM" : ""}.
+          {voiceToneAnalysis ? ", including measured pitch, pace, pauses and loudness, reasoned about together with your words by an LLM" : ""}.
           They do not diagnose mental health conditions and do not replace clinical judgment; a human reviewer always makes the final call.
         </p>
       </div>

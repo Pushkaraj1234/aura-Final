@@ -206,7 +206,7 @@ export const ConsentManagement: React.FC<Props> = ({
                   Counselor Sharing
                 </span>
                 <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
-                  Permits trained humanitarian case workers to view elevated distress signals and offer 1-on-1 check-ins.
+                  Lets a trained case worker see raised distress signals and offer a one-to-one check-in.
                 </p>
               </div>
             </div>

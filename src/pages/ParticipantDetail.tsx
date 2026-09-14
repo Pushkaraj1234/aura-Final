@@ -124,7 +124,7 @@ export const ParticipantDetail: React.FC<Props> = ({
         filterCategory: "priority",
         severity: "RED",
         title: "Case escalated by a counselor",
-        message: `${participant.name || participant.id} — ${reason}`,
+        message: `${participant.name || participant.id}: ${reason}`,
         actionLabel: "Open profile",
         actionView: "detail",
         actionParticipantId: participant.id,
@@ -358,12 +358,12 @@ export const ParticipantDetail: React.FC<Props> = ({
       .slice(0, 12)
       .map(
         (n) =>
-          `<li><strong>${esc(new Date(n.timestamp).toLocaleDateString())}</strong> — ${esc(n.text)}${
+          `<li><strong>${esc(new Date(n.timestamp).toLocaleDateString())}</strong>: ${esc(n.text)}${
             n.actionTaken ? ` <em>(${esc(n.actionTaken)})</em>` : ""
-          } <span class="muted">— ${esc(n.author)}</span></li>`
+          } <span class="muted">${esc(n.author)}</span></li>`
       )
       .join("");
-    const html = `<!doctype html><html><head><meta charset="utf-8"><title>AURA referral summary — ${esc(
+    const html = `<!doctype html><html><head><meta charset="utf-8"><title>AURA referral summary: ${esc(
       participant.name || participant.id
     )}</title>
     <style>
@@ -374,7 +374,7 @@ export const ParticipantDetail: React.FC<Props> = ({
       ul{margin:6px 0;padding-left:18px} .muted{color:#8a827a} .disclaimer{margin-top:26px;padding:10px 12px;background:#faf5ef;border:1px solid #e7ddd3;border-radius:8px;font-size:11px;color:#6b625a}
       @media print{body{margin:12mm}}
     </style></head><body>
-      <h1>AURA — Referral / Session Summary</h1>
+      <h1>AURA referral and session summary</h1>
       <div class="meta">Generated ${esc(new Date().toLocaleString())} · Prepared by ${esc(workerDisplayName)}</div>
 
       <h2>Participant</h2>

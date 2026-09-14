@@ -18,7 +18,7 @@ import { RegionPlanningData } from "../types";
 export const MOCK_REGIONS: RegionPlanningData[] = [
   {
     regionId: "reg-b",
-    name: "Region B — Central Relief Hub & Transit Camp",
+    name: "Region B, central relief hub and transit camp",
     code: "REG-B",
     activeParticipants: 48,
     demandTrend: "increasing",
@@ -30,7 +30,7 @@ export const MOCK_REGIONS: RegionPlanningData[] = [
   },
   {
     regionId: "reg-a",
-    name: "Region A — Northern District Residential Zone",
+    name: "Region A, northern district housing",
     code: "REG-A",
     activeParticipants: 36,
     demandTrend: "stable",
@@ -42,7 +42,7 @@ export const MOCK_REGIONS: RegionPlanningData[] = [
   },
   {
     regionId: "reg-c",
-    name: "Region C — Eastern Community Shelter Complex",
+    name: "Region C, eastern shelter complex",
     code: "REG-C",
     activeParticipants: 28,
     demandTrend: "decreasing",
@@ -54,7 +54,7 @@ export const MOCK_REGIONS: RegionPlanningData[] = [
   },
   {
     regionId: "reg-d",
-    name: "Region D — Western Outpost Logistics Center",
+    name: "Region D, western logistics outpost",
     code: "REG-D",
     activeParticipants: 16,
     demandTrend: "increasing",
@@ -380,7 +380,7 @@ export const CommunityInsights: React.FC = () => {
           </div>
 
           <div className="text-xs text-[#7F8C8D] italic">
-            Synthetic broad-area aggregation — no exact locations stored or displayed.
+            Broad areas only. No exact location is stored or shown.
           </div>
         </div>
 

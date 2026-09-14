@@ -37,8 +37,8 @@ export const LanguageSelector: React.FC<Props> = ({ variant = "full", className 
     ? "Translating this page…"
     : degraded
       ? degradedReason
-        ? `Showing English — ${degradedReason}`
-        : "Showing English — the translation service could not be reached."
+        ? `Showing English. ${degradedReason}`
+        : "Showing English. The translation service could not be reached."
       : "";
 
   const Icon = loading ? Loader2 : degraded ? TriangleAlert : Globe2;

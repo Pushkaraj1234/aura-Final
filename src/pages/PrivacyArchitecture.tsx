@@ -75,7 +75,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
               Monitor → Detect → Predict → Explain → Recommend → Review → Measure
             </h2>
             <p className="text-xs text-[#7F8C8D] mt-0.5">
-              Strictly non-diagnostic decision support designed to empower humanitarian workers and counselors.
+              This does not diagnose anything. It helps a counselor decide who to check on first.
             </p>
           </div>
 
@@ -118,7 +118,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 step: "05",
                 title: "Support Plan Gen",
                 subtitle: "Recommendation Engine",
-                desc: "Matches trajectory severity to evidence-based humanitarian protocols and suggests tailored steps.",
+                desc: "Matches what the trend is doing to a written humanitarian protocol, and suggests the next step.",
                 tag: "Humanitarian Matching",
                 color: "bg-[#3C3530] text-white"
               },

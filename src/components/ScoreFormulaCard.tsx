@@ -83,7 +83,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               {breakdown.terms.map((t) => fmt(t.points)).join(" + ")} = {fmt(breakdown.subtotal)} →{" "}
               {breakdown.score}
               {aiAdjustment !== 0 && ` ${aiAdjustment > 0 ? "+" : "−"} ${Math.abs(aiAdjustment)} = ${derived}`}
-              {!reconciles && ` — but ${displayedScore} is shown above`}
+              {!reconciles && `, but ${displayedScore} is shown above`}
             </span>
           </span>
         </span>
@@ -97,7 +97,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
         <div className="px-4 pb-4 space-y-3 border-t border-[#EFE8E2] pt-3">
           <p className="text-[11px] text-[#7F8C8D] leading-relaxed">
             Each question carries a fixed weight. Your answer is converted to points, and the points are added
-            up — nothing is hidden and no external data is used.
+            up. Nothing is hidden and no outside data is used.
           </p>
 
           {/* Rows rather than a table: on a phone a table either scrolls the
@@ -159,7 +159,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
                         {typeof aiAdjustmentCap === "number" && `, up to ${aiAdjustmentCap} point${aiAdjustmentCap === 1 ? "" : "s"}`})
                       </>
                     )}
-                    {aiClamped && " — held at that limit"}
+                    {aiClamped && " (held at that limit)"}
                   </span>
                   <span
                     className={`text-[12px] font-mono font-bold whitespace-nowrap ${
@@ -187,7 +187,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
                 </p>
                 <p className="text-[11px] text-[#5A5049] leading-relaxed">
                   Your answers work out to <strong>{derived}</strong>, but <strong>{displayedScore}</strong> is
-                  shown above. That means the score displayed was not produced by the calculation on this page —
+                  shown above. That means the score displayed was not produced by the calculation on this page.
                   most often a result saved under an older version of the scoring. Please mention it to your
                   support worker; the working shown here is the one you can check.
                 </p>
@@ -207,7 +207,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               going better.
             </p>
             <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
-              Asking for support is deliberately <em>not</em> scored. It still brings a counsellor sooner — it just
+              Asking for support is deliberately <em>not</em> scored. It still brings a counsellor sooner. It just
               does not change this number, so saying you would rather not talk to anyone can never make your
               score look calmer than your answers earned.
             </p>
@@ -216,20 +216,20 @@ export const ScoreFormulaCard: React.FC<Props> = ({
           {aiConsulted ? (
             <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
               The questionnaire above is scored by fixed rules. Anything you wrote or said is read separately by
-              the AI, which can move the total by at most 15 points either way — enough to weigh something the
+              the AI, which can move the total by at most 15 points either way. Enough to weigh something the
               questions could not ask about, not enough to replace an answer you can check for yourself.
               {aiClamped &&
                 " Here it wanted to move the score further than that, so it was held at the limit and your support worker has been told the two readings disagree."}
             </p>
           ) : (
             <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
-              No AI review this time — that only happens when you write or record a reflection. This score is the
+              No AI review this time. That only happens when you write or record a reflection. This score is the
               questionnaire alone.
             </p>
           )}
 
           <p className="text-[10px] text-[#7F8C8D] leading-relaxed italic">
-            The percentage bars above are a separate visual scale for reading each area at a glance — they are not
+            The percentage bars above are a separate visual scale for reading each area at a glance. They are not
             the points in this breakdown and do not add up to the score. This is a transparent rule-based calculation
             on your own voluntary answers, not a clinical measurement or a diagnosis.
           </p>

@@ -146,7 +146,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
             {guardianNotices.map((g) => (
               <li key={g.id} className="text-xs text-[#5A5049]">
                 <span className="font-semibold" data-no-translate>{g.guardianLabel}</span>
-                {" — asked "}
+                {", asked "}
                 {new Date(g.createdAt).toLocaleDateString()}
                 {g.status === "submitted" && g.submittedAt
                   ? `, replied ${new Date(g.submittedAt).toLocaleDateString()}`
@@ -158,7 +158,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
           </ul>
           {/* They are told this happened and who was asked, so they can object
               to the wrong person being asked. What was said goes to the
-              counsellor only — an answer the person it is about will read is
+              counsellor only. An answer the person it is about will read is
               not the honest answer. */}
           <p className="text-[11px] text-[#7A726C] mt-2 leading-relaxed">
             What they said goes only to your counsellor. If you would rather someone was not asked,

@@ -12,7 +12,7 @@ const REGIONAL_RESOURCES = [
   // --- India (deployment region) -----------------------------------------
   {
     region: "India (National)",
-    name: "Tele MANAS — National Mental Health Helpline (Govt. of India)",
+    name: "Tele MANAS, the national mental health helpline (Govt. of India)",
     contact: "14416  ·  1-800-891-4416",
     detail: "24/7, free, confidential. Support in Hindi, English, Marathi and other regional languages.",
     type: "phone"
@@ -21,7 +21,7 @@ const REGIONAL_RESOURCES = [
     region: "India (National)",
     name: "KIRAN Mental Health Rehabilitation Helpline",
     contact: "1800-599-0019",
-    detail: "24/7 toll-free helpline (13 languages) from the Ministry of Social Justice & Empowerment.",
+    detail: "Free, 24/7, in 13 languages. Run by the Ministry of Social Justice and Empowerment.",
     type: "phone"
   },
   {
@@ -47,14 +47,14 @@ const REGIONAL_RESOURCES = [
   },
   {
     region: "Maharashtra, India",
-    name: "AASRA — Suicide Prevention (Mumbai)",
+    name: "AASRA, suicide prevention (Mumbai)",
     contact: "+91 98204 66726",
     detail: "24/7 confidential support for anyone feeling suicidal or in emotional crisis.",
     type: "phone"
   },
   {
     region: "Maharashtra, India",
-    name: "Connecting Trust — Distress Helpline (Pune)",
+    name: "Connecting Trust, distress helpline (Pune)",
     contact: "+91 99220 01122  ·  +91 99220 04305",
     detail: "Emotional support and suicide prevention. Every day, 12 p.m.–8 p.m.",
     type: "phone"

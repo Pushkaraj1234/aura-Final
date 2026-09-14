@@ -39,7 +39,7 @@ export const LandingAuth: React.FC<Props> = ({ onChoice, onBack }) => {
               <div className="p-3.5 rounded-2xl bg-[#FDF9F5]/5 border border-[#EFE8E2]/15 text-xs text-[#EFE8E2]/85 flex items-start space-x-3">
                 <Lock size={16} className="text-[#DBC3B2] shrink-0 mt-0.5" />
                 <span>
-                  <strong className="text-white">Role-Protected:</strong> Participants and counselors access tailored, role-specific views.
+                  <strong className="text-white">Role-protected:</strong> Participants and counselors see different things.
                 </span>
               </div>
             </div>

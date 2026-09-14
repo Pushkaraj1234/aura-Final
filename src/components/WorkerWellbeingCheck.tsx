@@ -30,7 +30,7 @@ const STORAGE_PREFIX = "aura_worker_wellbeing_";
 const QUESTIONS: { key: keyof Omit<Entry, "at" | "index">; label: string; low: string; high: string; reverse?: boolean }[] = [
   { key: "exhaustion", label: "Emotional exhaustion this week", low: "Not at all", high: "Completely drained" },
   { key: "detachment", label: "Feeling detached or numb toward the work", low: "Not at all", high: "Very much" },
-  { key: "accomplishment", label: "Sense of doing meaningful, effective work", low: "None", high: "Strong", reverse: true },
+  { key: "accomplishment", label: "A sense that your work is doing something", low: "None", high: "Strong", reverse: true },
   { key: "sleep", label: "Sleep quality recently", low: "Very poor", high: "Restful", reverse: true },
 ];
 
@@ -198,7 +198,7 @@ export const WorkerWellbeingCheck: React.FC = () => {
                     return (
                       <div
                         key={h.at}
-                        title={`${new Date(h.at).toLocaleDateString()} — ${b.label} (${h.index}/100)`}
+                        title={`${new Date(h.at).toLocaleDateString()}: ${b.label} (${h.index}/100)`}
                         className="flex-1 rounded-t-md min-w-[6px]"
                         style={{ height: `${Math.max(6, h.index)}%`, backgroundColor: b.tone, opacity: 0.85 }}
                       />

@@ -13,17 +13,14 @@ export const EmptyWellbeingState: React.FC<Props> = ({ onStartCheckin }) => {
       </div>
 
       <div className="max-w-md space-y-2">
-        <span className="text-[11px] font-black uppercase tracking-wider text-[#5A5049] bg-[#DBC3B2]/20 px-3 py-1 rounded-full inline-block">
-          New Participant Baseline
-        </span>
         <h3 className="text-2xl font-black text-[#3C3530]">
-          Your wellbeing journey starts here
+          Nothing here yet
         </h3>
         <p className="text-sm font-semibold text-[#7A726C]">
-          You haven't completed a wellbeing check-in yet.
+          You haven't done a check-in.
         </p>
         <p className="text-xs text-[#7F8C8D] leading-relaxed pt-1">
-          After your first check-in, your wellbeing signal will appear here. As you complete future check-ins, AURA can help you visualize changes over time.
+          The first one puts a number on this page. After a few, you'll be able to see whether it's moving, and which part of the week is moving it.
         </p>
       </div>
 
@@ -33,7 +30,7 @@ export const EmptyWellbeingState: React.FC<Props> = ({ onStartCheckin }) => {
           className="px-6 py-3.5 rounded-2xl bg-[#5A5049] text-white font-bold text-sm hover:bg-[#3C3530] transition-all shadow-xs flex items-center justify-center space-x-2 active:scale-95 cursor-pointer group"
         >
           <Plus size={18} className="group-hover:rotate-90 transition-transform" />
-          <span>Start First Check-in</span>
+          <span>Start your first check-in</span>
         </button>
       </div>
 

@@ -51,7 +51,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
       {!compact && (
         <div className="space-y-2">
           <p className="text-sm text-[#5A5049] leading-relaxed">
-            These are your things, not ours — a song you want to hear, a place you go, the person you would
+            These are your things, not ours. A song you want to hear, a place you go, the person you would
             message. You are writing them now so that a harder day does not have to think of them.
           </p>
           <p className="text-xs text-[#7F8C8D] leading-relaxed">
@@ -109,7 +109,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
 
               {full ? (
                 <p className="text-[11px] text-[#7F8C8D]">
-                  That is plenty for this one — remove something above if you want to swap it.
+                  That is plenty for this one. Remove something above if you want to swap it.
                 </p>
               ) : (
                 <div className="flex gap-2">
@@ -150,7 +150,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
             <div className="space-y-1">
               <p className="text-sm font-bold text-[#3C3530]">This is private</p>
               <p className="text-xs text-[#7A726C] leading-relaxed">
-                Only you can see your kit. Your counsellor cannot, unless you decide otherwise below — and you can
+                Only you can see your kit. Your counsellor cannot, unless you decide otherwise below, and you can
                 change that back at any time.
               </p>
             </div>
@@ -184,7 +184,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
         <HeartPulse size={13} className="text-[#A55D25] shrink-0 mt-0.5" />
         <p>
           A kit is for the hard hours, not for emergencies. If you are in danger or thinking of hurting yourself,
-          use Emergency Help instead — that reaches a person.
+          use Emergency Help instead. That reaches a person.
         </p>
       </div>
 

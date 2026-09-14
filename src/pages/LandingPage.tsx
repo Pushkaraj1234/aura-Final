@@ -22,23 +22,16 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
       {/* Hero Section */}
       <section className="relative overflow-hidden pt-12 pb-20 sm:pt-16 sm:pb-24 lg:pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          {/* Top Pill */}
-          <div className="flex justify-center mb-6">
-            <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-[#DBC3B2]/25 border border-[#DBC3B2]/50 text-[#5A5049] text-xs sm:text-sm font-semibold shadow-xs">
-              <span>Humanitarian Technology</span>
-            </div>
-          </div>
-
           {/* Main Hero Header */}
           <div className="text-center max-w-4xl mx-auto space-y-6">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-[#3C3530] tracking-tight leading-[1.08]">
-              Adaptive Wellbeing & Distress Monitoring
+              Notice when someone is slipping.
             </h1>
             <p className="text-xl sm:text-2xl font-medium text-[#5A5049] max-w-3xl mx-auto">
-              AI-assisted dynamic support for trauma-affected communities
+              A short check-in, a few times a week. AURA tells you whose answers are drifting, and what moved.
             </p>
             <p className="text-base sm:text-lg text-[#7A726C] max-w-2xl mx-auto leading-relaxed">
-              Empowering counselors, humanitarian NGOs, and support teams to identify meaningful changes in psychological distress over time — with explainable indicators and human-in-the-loop governance.
+              It can be wrong. A counselor decides what happens next, and every score shows the arithmetic behind it.
             </p>
 
             {/* CTA Buttons */}
@@ -47,7 +40,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 onClick={() => onStart()}
                 className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-[#5A5049] text-white font-bold text-base hover:bg-[#3C3530] transition-all shadow-lg shadow-[#5A5049]/20 flex items-center justify-center space-x-2 group active:scale-95 cursor-pointer"
               >
-                <span>Explore Prototype Demo</span>
+                <span>Start the demo</span>
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -57,7 +50,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
               <div className="inline-flex items-center space-x-2 text-xs font-semibold text-[#7A726C] bg-white/90 border border-[#EFE8E2] px-4 py-2 rounded-xl shadow-xs">
                 <AlertCircle size={14} className="text-[#A55D25] shrink-0" />
                 <span>
-                  Synthetic Demonstration Data • <strong>Does NOT diagnose mental disorders</strong> • Human Review Always Required
+                  Demo data. <strong>AURA doesn't diagnose</strong>, and a person reviews every flag.
                 </span>
               </div>
             </div>
@@ -70,10 +63,10 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
-              Select Demonstration Role
+              Two ways in
             </h2>
             <p className="text-sm text-[#7F8C8D] mt-2">
-              Experience the end-to-end trauma-informed workflow from either viewpoint.
+              Same data, both sides.
             </p>
           </div>
 
@@ -89,27 +82,23 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 </div>
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] block mb-1">
-                    Role 1 — Voluntary Intake
+                    If you're being supported
                   </span>
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
-                    Participant Experience
+                    Participant
                   </h3>
                   <p className="text-sm text-[#7F8C8D] mt-2 leading-relaxed">
-                    A person affected by traumatic events who voluntarily completes low-friction, dignity-first wellbeing reflections and accesses localized support.
+                    A few short questions about your week, one screen at a time.
                   </p>
                 </div>
                 <ul className="text-xs text-[#7A726C] space-y-2 pt-2">
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#5A5049] mr-2 shrink-0" />
-                    Informed, trauma-conscious consent flow
+                    One question per screen
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#5A5049] mr-2 shrink-0" />
-                    1-question-per-screen responsive check-in
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle2 size={14} className="text-[#5A5049] mr-2 shrink-0" />
-                    Immediate emergency crisis interception
+                    Emergency help in the top bar
                   </li>
                 </ul>
               </div>
@@ -131,27 +120,31 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 </div>
                 <div>
                   <span className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] block mb-1">
-                    Role 2 — Authorized Support
+                    If you're the counselor
                   </span>
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
-                    Counselor Dashboard
+                    Counselor dashboard
                   </h3>
                   <p className="text-sm text-[#7F8C8D] mt-2 leading-relaxed">
-                    Counselors, case workers, and humanitarian teams reviewing aggregated trends, explainable AI factors, and escalating care where needed.
+                    Everyone assigned to you, worst first.
                   </p>
                 </div>
                 <ul className="text-xs text-[#7A726C] space-y-2 pt-2">
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#3C3530] mr-2 shrink-0" />
-                    Dynamic multi-day trend analysis (0-100 score)
+                    A 0-100 score, arithmetic shown
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#3C3530] mr-2 shrink-0" />
-                    Explainable AI: Transparent factor breakdown
+                    What moved it: sleep, stress, safety, connection
                   </li>
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#3C3530] mr-2 shrink-0" />
-                    Human-in-the-loop review & escalation log
+                    An audit log of who read what
+                  </li>
+                  <li className="flex items-center">
+                    <CheckCircle2 size={14} className="text-[#3C3530] mr-2 shrink-0" />
+                    Nothing escalates without you
                   </li>
                 </ul>
               </div>
@@ -169,33 +162,33 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
       <section className="py-16 bg-[#FDF9F5]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white p-8 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-3">
+            <div className="p-8 space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-[#DBC3B2]/20 text-[#5A5049] flex items-center justify-center mb-4">
                 <TrendingUp size={24} />
               </div>
-              <h4 className="text-xl font-bold text-[#3C3530]">1. Monitor Dynamically</h4>
+              <h4 className="text-xl font-bold text-[#3C3530]">Change, not snapshots</h4>
               <p className="text-sm text-[#7A726C] leading-relaxed">
-                Rather than relying on one-off questionnaires, AURA measures <strong>change over time</strong>, catching gradual distress climbs before acute escalation.
+                AURA compares today's answer to the ones before. That's where the slow climbs show up, the ones nobody says out loud.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-3">
+            <div className="p-8 space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-[#DBC3B2]/20 text-[#5A5049] flex items-center justify-center mb-4">
                 <Activity size={24} />
               </div>
-              <h4 className="text-xl font-bold text-[#3C3530]">2. Understand with XAI</h4>
+              <h4 className="text-xl font-bold text-[#3C3530]">No black boxes</h4>
               <p className="text-sm text-[#7A726C] leading-relaxed">
-                No black-box predictions. Every signal is accompanied by transparent contributing factors (sleep, stress, safety, connection, support requests).
+                Every signal shows its working.
               </p>
             </div>
 
-            <div className="bg-white p-8 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-3">
+            <div className="p-8 space-y-3">
               <div className="w-12 h-12 rounded-2xl bg-[#DBC3B2]/20 text-[#5A5049] flex items-center justify-center mb-4">
                 <Shield size={24} />
               </div>
-              <h4 className="text-xl font-bold text-[#3C3530]">3. Human-in-the-Loop</h4>
+              <h4 className="text-xl font-bold text-[#3C3530]">A person decides</h4>
               <p className="text-sm text-[#7A726C] leading-relaxed">
-                AI provides signals — humans make care decisions. No automatic medical diagnoses or non-consensual authority contact.
+                A counselor signs off before anyone is contacted. AURA never diagnoses, and never calls anybody's family on its own.
               </p>
             </div>
           </div>
@@ -205,11 +198,11 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
       {/* Footer Banner */}
       <section className="bg-[#3C3530] text-white py-8 px-4 border-t border-[#3F4E4E] text-center">
         <div className="max-w-4xl mx-auto space-y-2">
-          <p className="text-xs font-semibold text-[#DBC3B2] uppercase tracking-widest">
-            AURA Humanitarian Technology Initiative
+          <p className="text-xs font-semibold text-[#DBC3B2]">
+            AURA
           </p>
           <p className="text-xs text-[#EFE8E2]/70">
-            Synthetic dataset only • Built in accordance with trauma-informed and privacy-first design principles.
+            A prototype, not a clinical tool.
           </p>
         </div>
       </section>

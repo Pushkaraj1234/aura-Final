@@ -82,7 +82,7 @@ export const CheckInResults: React.FC<Props> = ({
         participantId: participantRecord.id,
         senderId: user.id,
         senderRole: "participant",
-        body: "I'd like to talk to a counsellor — sent from my check-in results.",
+        body: "I'd like to talk to a counsellor. Sent from my check-in results.",
       });
       if (!sent) {
         setSupportError(
@@ -498,7 +498,7 @@ export const CheckInResults: React.FC<Props> = ({
               {/* Says what these are, so nobody reads them as a prescription or
                   as a way to move the number above. */}
               <p className="text-[10px] text-[#7F8C8D] italic leading-snug">
-                Self-care you can try alongside support from a person — not
+                Self-care you can try alongside support from a person. Not
                 treatment, and not a way to change your score.
               </p>
             </aside>
@@ -634,7 +634,7 @@ export const CheckInResults: React.FC<Props> = ({
         {!assignedWorker && (
           <div className="p-3 rounded-xl bg-[#DBC3B2]/30 border border-[#DBC3B2]/60 text-xs text-[#3C3530] font-medium">
             You don't have a counsellor yet, so there's nobody to arrange a conversation. You can
-            pick one yourself — it takes a minute and you can change your mind later.
+            pick one yourself. It takes a minute, and you can change your mind later.
           </div>
         )}
       </div>
@@ -643,7 +643,7 @@ export const CheckInResults: React.FC<Props> = ({
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE8E2] shadow-xs space-y-6">
         <div className="space-y-1">
           <span className="text-xs font-black uppercase tracking-wider text-[#5A5049]">
-            Tailored Suggestions
+            Suggestions
           </span>
           <h3 className="text-xl font-bold text-[#3C3530]">
             Personalized Recommendations
@@ -715,7 +715,7 @@ export const CheckInResults: React.FC<Props> = ({
         <div className="p-5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs sm:text-sm text-[#3C3530] leading-relaxed italic space-y-2">
           <p>"{analysis.supportiveMessage}"</p>
           <span className="block text-[11px] text-[#7F8C8D] not-italic">
-            — AURA Non-Clinical Support Assistant
+            AURA, non-clinical support assistant
           </span>
         </div>
 

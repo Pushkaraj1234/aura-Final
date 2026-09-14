@@ -183,7 +183,7 @@ export const ParticipantProfile: React.FC<Props> = ({
           .join("")
       : `<tr><td colspan="9" style="color:#8a827a">No check-ins recorded.</td></tr>`;
     const html = `<!doctype html><html><head><meta charset="utf-8">
-<title>My AURA data — ${esc(b.account.name)}</title><style>
+<title>My AURA data: ${esc(b.account.name)}</title><style>
 *{box-sizing:border-box} body{font:14px/1.6 -apple-system,Segoe UI,Roboto,sans-serif;color:#2b2622;margin:32px;max-width:820px}
 h1{font-size:22px;margin:0 0 2px} h2{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#8a5a2b;margin:24px 0 8px;border-bottom:1px solid #e7ddd3;padding-bottom:4px}
 .muted{color:#6b625a;font-size:12px} dl{display:grid;grid-template-columns:180px 1fr;gap:4px 16px;margin:6px 0}
@@ -232,7 +232,7 @@ ${
     ? `<ul>${b.followUps
         .map(
           (f: any) =>
-            `<li>${esc(f.interventionType || "Follow-up")} — ${esc(f.outcomeLabel || f.outcome || "")} ${
+            `<li>${esc(f.interventionType || "Follow-up")}: ${esc(f.outcomeLabel || f.outcome || "")} ${
               f.followUpDate ? `(${esc(new Date(f.followUpDate).toLocaleDateString())})` : ""
             }</li>`
         )
@@ -241,7 +241,7 @@ ${
 }
 
 <div class="disc">
-  AURA provides AI-assisted, human-reviewed wellbeing indicators — <strong>not a clinical diagnosis</strong>.
+  These are wellbeing signals, reviewed by a person. <strong>They are not a clinical diagnosis.</strong>
   You can also download this data as a raw JSON file from the same screen. To delete your check-in history,
   use "Reset My Check-in Data"; to stop all monitoring, use "Withdraw Consent".
 </div>
@@ -324,7 +324,7 @@ ${
         senderId: user.id,
         senderRole: "participant",
         body:
-          "Session request — I'd like to schedule a time to talk." +
+          "Session request. I'd like to schedule a time to talk." +
           (note ? `\n\nNote: ${note}` : ""),
       });
       if (!sent) {
@@ -437,7 +437,7 @@ ${
           <div className="flex-1">
             <h3 className="text-sm font-bold text-[#3C3530]">Would you like to talk to someone today?</h3>
             <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
-              {nudgeReason} There's no pressure — reaching out is always your choice.
+              {nudgeReason} There's no pressure. Reaching out is always your choice.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
@@ -502,7 +502,7 @@ ${
                   First Reflection Logged
                 </h4>
                 <p className="text-xs text-[#7F8C8D] max-w-md">
-                  Initial wellbeing indicator recorded at <strong>{latestCheckIn?.calculatedScore}/100</strong>. Daily reflections will automatically unlock trajectory graphs and dynamic change detection.
+                  First score recorded: <strong>{latestCheckIn?.calculatedScore}/100</strong>. After a few more check-ins, this page can show how it has moved.
                 </p>
               </div>
 
@@ -560,7 +560,7 @@ ${
           <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start space-x-3 text-xs text-[#7A726C]">
             <Activity size={18} className="text-[#5A5049] shrink-0 mt-0.5" />
             <div>
-              <strong className="text-[#3C3530]">How to read your graph:</strong> A higher indicator score reflects elevated self-reported stress, insomnia, or environmental insecurity. Significant multi-day increases alert your assigned counselor to reach out.
+              <strong className="text-[#3C3530]">How to read this:</strong> A higher indicator score reflects elevated self-reported stress, insomnia, or environmental insecurity. Significant multi-day increases alert your assigned counselor to reach out.
             </div>
           </div>
         </div>
@@ -586,7 +586,7 @@ ${
                     Talk it through, out loud
                   </h3>
                   <p className="text-sm text-[#6B5B4C] mt-1.5 max-w-xl leading-relaxed">
-                    Some days writing is the hard part. Speak instead and it answers back —
+                    Some days writing is the hard part. Speak instead and it answers back.
                     interrupt it, pause, or stop whenever you want. It listens for as long
                     as you need, and there is nothing you have to get right.
                   </p>
@@ -727,7 +727,7 @@ ${
                     they choose again. */}
                 {!SUPPORT_PREFERENCES.includes(supportPref) && (
                   <option value={supportPref} disabled>
-                    {supportPref} (no longer offered — please choose again)
+                    {supportPref} (no longer offered, please choose again)
                   </option>
                 )}
               </select>
@@ -818,7 +818,7 @@ ${
                     value={sessionNote}
                     onChange={(e) => setSessionNote(e.target.value)}
                     rows={2}
-                    placeholder="Optional — anything you'd like them to know first"
+                    placeholder="Optional: anything you'd like them to know first"
                     className="w-full p-3 rounded-xl border border-[#EFE8E2] bg-white text-xs text-[#3C3530] focus:ring-2 focus:ring-[#8FAF8B] focus:outline-none resize-none"
                   />
                   {sessionError && (
@@ -844,7 +844,7 @@ ${
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EFE8E2]">
             <div>
               <div className="flex items-center space-x-2">
-                <h3 className="text-xl font-bold text-[#3C3530]">Your Current Tailored Recommendations</h3>
+                <h3 className="text-xl font-bold text-[#3C3530]">What might help right now</h3>
               </div>
               <p className="text-xs text-[#7F8C8D] mt-1">
                 Generated from your latest check-in reflection responses.
@@ -1046,7 +1046,7 @@ ${
               <p className="text-[#7F8C8D]">
                 {ecValue
                   ? ecValue
-                  : "None on file. Optional — add a trusted person only if it is safe for you to name one."}
+                  : "None on file. Add a trusted person only if it is safe for you to name one."}
               </p>
             )}
             {ecSaved && <p className="text-[11px] font-bold text-[#2F6B4F]">Saved.</p>}

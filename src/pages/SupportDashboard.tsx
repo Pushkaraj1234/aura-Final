@@ -113,7 +113,7 @@ export const SupportDashboard: React.FC<Props> = ({
     const scopeWord = currentWorker && assignedCount > 0 ? "your caseload" : "the platform";
     let subtitle: string;
     if (needsAttention === 0 && rising === 0) {
-      subtitle = `Nothing in ${scopeWord} needs attention right now — a calm start to the day.`;
+      subtitle = `Nothing in ${scopeWord} needs attention right now. A calm start to the day.`;
     } else {
       const parts: string[] = [];
       if (needsAttention > 0)
@@ -523,7 +523,7 @@ export const SupportDashboard: React.FC<Props> = ({
               Changes in how people are using the app
             </h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              Read from check-in rhythm rather than from anything anyone reported — so someone who
+              Read from check-in rhythm rather than from anything anyone reported, so someone who
               has stopped answering altogether still appears here, which is the one case every
               other list on this page will miss. Each carries the facts behind it; open the person
               to see them.
@@ -579,7 +579,7 @@ export const SupportDashboard: React.FC<Props> = ({
               The self-report may not be the whole picture
             </h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              These people did not report high distress — that is exactly why they are here. What they
+              These people did not report high distress. That is exactly why they are here. What they
               said and what everything else suggests do not line up, so the usual queue would never
               have shown them to you. Nothing here says anyone is being untruthful; it is a prompt to
               ask again, gently.
@@ -647,7 +647,7 @@ export const SupportDashboard: React.FC<Props> = ({
             </span>
             <h2 className="font-serif text-2xl text-[#3A2A1E]">People who may need a check-in</h2>
             <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
-              Ordered by what looks most time-sensitive — safety signals first, then sustained changes and voluntary support requests.
+              Ordered by what looks most time-sensitive. Safety signals first, then sustained changes, then people who asked for support.
             </p>
           </div>
           <button onClick={onNavigateAlerts} className="btn-ghost shrink-0 px-4 py-2 text-[12px]">
@@ -770,7 +770,7 @@ export const SupportDashboard: React.FC<Props> = ({
           </span>
           <h3 className="font-serif text-xl sm:text-2xl text-[#3A2A1E]">From a gentle signal to real support</h3>
           <p className="text-[13px] text-[#8A7A6B] max-w-3xl leading-relaxed">
-            AURA notices meaningful changes over time, explains why something stood out, brings it to a person on the support team, and follows up on how people are doing afterwards.
+            AURA watches how answers change over time and explains why something stood out. A person on the support team decides what to do about it.
           </p>
         </div>
 

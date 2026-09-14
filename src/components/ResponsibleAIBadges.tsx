@@ -128,7 +128,7 @@ export const ModelTransparencyCard: React.FC = () => {
                 Rule-Based Weighted Heuristics + Multi-Step Trajectory Filter
               </p>
               <p className="text-[11px] text-[#7A726C] mt-1">
-                Deterministic and auditable — avoids black-box hallucinations.
+                Deterministic and auditable. It cannot hallucinate a number.
               </p>
             </div>
 
@@ -352,12 +352,12 @@ export const WhyAuraPanel: React.FC = () => {
  */
 export const HumanitarianImpactSection: React.FC = () => {
   const impacts = [
-    { title: "Earlier Signals", desc: "Detect meaningful changes between check-ins before crises escalate.", icon: Zap },
-    { title: "Better Prioritization", desc: "Help support teams focus limited human counselor resources where needed most.", icon: Award },
-    { title: "Continuous Monitoring", desc: "Track longitudinal velocity and volatility over time rather than single points.", icon: Compass },
-    { title: "Explainable Decisions", desc: "Show exactly which factors contributed to an alert with clear factor weighting.", icon: Info },
-    { title: "Participant Control", desc: "Voluntary participation, consent preferences, and full data deletion rights.", icon: EyeOff },
-    { title: "Human-Centered Response", desc: "AI assists and prioritizes — trained humans review and care.", icon: Users }
+    { title: "Earlier signals", desc: "Catch a slow climb between check-ins, before it becomes a crisis.", icon: Zap },
+    { title: "Better prioritization", desc: "There are never enough counselors. This says who to see first.", icon: Award },
+    { title: "Continuous monitoring", desc: "How fast a score is moving, and how steadily.", icon: Compass },
+    { title: "Explainable decisions", desc: "Every alert shows which answers produced it, and how much each one counted.", icon: Info },
+    { title: "Participant control", desc: "Taking part is optional. You can withdraw consent and have your data deleted.", icon: EyeOff },
+    { title: "A person decides", desc: "AURA sorts the queue. People do the rest.", icon: Users }
   ];
 
   return (
