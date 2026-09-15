@@ -25,7 +25,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
           {/* Main Hero Header */}
           <div className="text-center max-w-4xl mx-auto space-y-6">
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-[#3C3530] tracking-tight leading-[1.08]">
-              Notice when someone is slipping.
+              Atrocity Understanding &amp; Recovery Assist
             </h1>
             <p className="text-xl sm:text-2xl font-medium text-[#5A5049] max-w-3xl mx-auto">
               A short check-in, a few times a week. AURA tells you whose answers are drifting, and what moved.
