@@ -594,6 +594,19 @@ export interface Alert {
   decisionNotes?: string;
   actionTaken?: string;
   reviewedAt?: string;
+  /**
+   * When a human opened this alert and took it on. The clock a breach is
+   * measured against, because it is the promise the team actually controls:
+   * whether someone picks up the phone inside an hour is not something a
+   * counsellor can guarantee, whether they have looked at the alert is.
+   */
+  acknowledgedAt?: string;
+  /**
+   * When someone actually tried to reach the participant. Kept separate from
+   * acknowledgement on purpose. Collapsing the two lets a team acknowledge its
+   * way to a clean dashboard without anybody having been contacted.
+   */
+  contactAttemptedAt?: string;
   reviewedBy?: string;
   changeDelta?: number;
   score: number;

@@ -15,6 +15,7 @@
     "seed:counsellors": "node scripts/seed-counsellors.mjs",
     "test:score": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recEngine.js --log-level=error && node tests/score-integrity.test.mjs",
     "test:guardian": "npx esbuild src/services/guardianQuestions.ts --bundle --format=esm --outfile=dist-test/guardianQuestions.js --log-level=error && node tests/guardian.test.mjs",
+    "test:sla": "npx esbuild src/services/slaEngine.ts --bundle --format=esm --outfile=dist-test/slaEngine.js --log-level=error && node tests/sla.test.mjs",
     "test:instruments": "npx esbuild src/services/instruments.ts --bundle --format=esm --outfile=dist-test/instruments.js --log-level=error && node tests/instruments.test.mjs",
     "test:concordance-policy": "npx esbuild src/services/concordanceEngine.ts --bundle --format=esm --outfile=dist-test/concordanceEngine.js --log-level=error && npx esbuild src/services/riskEngine.ts --bundle --format=esm --outfile=dist-test/riskEngine.js --log-level=error && node tests/concordance-policy.test.mjs",
     "test:community": "npx esbuild src/services/communityAggregates.ts --bundle --format=esm --outfile=dist-test/communityAggregates.js --log-level=error && node tests/community-aggregates.test.mjs",
