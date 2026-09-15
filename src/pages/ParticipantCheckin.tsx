@@ -34,7 +34,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { CheckIn, SafetyResponse, WellbeingScore, RiskAnalysis, ParticipantReflection, SomaticSymptom } from "../types";
-import { analyzeDistress } from "../services/riskEngine";
+import { analyzeDistress, SCORE_VERSION, stressFromCoping } from "../services/riskEngine";
 import { useLanguage } from "../context/LanguageContext";
 import { LanguageSelector } from "../components/LanguageSelector";
 import { VoiceRecorder } from "../components/VoiceRecorder";
@@ -91,6 +91,8 @@ export const ParticipantCheckin: React.FC<Props> = ({
 
   // Q6: Social Support & Isolation (MCQ - Single-select 1-5)
   const [connection, setConnection] = useState<WellbeingScore>(3);
+  // 5 = on top of things, 1 = not at all. Inverted into CheckIn.stress below.
+  const [copingCapacity, setCopingCapacity] = useState<WellbeingScore>(3);
 
   // Q7: Open Reflection - Survivor Coping & Resilience
   const [copingReflection, setCopingReflection] = useState<string>("");
@@ -180,8 +182,25 @@ export const ParticipantCheckin: React.FC<Props> = ({
   const [currentReflection, setCurrentReflection] = useState<ParticipantReflection | null>(null);
   const [showVoiceRecorder, setShowVoiceRecorder] = useState<boolean>(false);
 
-  // Computed stress based on wellbeing and sleep trauma rating (1-5)
-  const computedStress: WellbeingScore = Math.min(5, Math.max(1, Math.round(6 - ((wellbeing + sleep) / 2))));
+  /**
+   * Stress, now measured instead of inferred.
+   *
+   * This used to be `round(6 - (wellbeing + sleep) / 2)`, which meant the
+   * 22-point stress term carried no information of its own: it restated the
+   * two answers either side of it, and those two ended up driving 61 of the
+   * 100 points between them. Someone sleeping adequately and in fair spirits
+   * but under real pressure could not score as stressed, because nothing
+   * asked them.
+   *
+   * Step 7 now asks. It is worded positively ("on top of things") so it runs
+   * the same direction as the other three scales on screen, and the stored
+   * field keeps the meaning it has always had -- CheckIn.stress is 1 (calm)
+   * to 5 (very stressed). Inverting here rather than in riskEngine is
+   * deliberate: trajectoryEngine recomputes every historical check-in with
+   * the current formula, so flipping what a stored 5 means would silently
+   * rewrite the trend of all 360 rows already recorded.
+   */
+  const stress: WellbeingScore = stressFromCoping(copingCapacity);
 
   // Offline Simulation State (Requirement #13)
   const [isOffline, setIsOffline] = useState(false);
@@ -207,7 +226,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
   ].filter(Boolean).join("\n\n");
 
   const handleNext = async (safetyOverride?: boolean) => {
-    if (step >= 13) {
+    if (step >= 14) {
       setIsProcessingAI(true);
       try {
         const isSafetyConcern = safetyOverride !== undefined ? safetyOverride : immediateSafetyConcern;
@@ -221,7 +240,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
             const { apiService } = await import('../services/apiService');
             aiAnalysis = await apiService.ai.analyzeReflection(transcript);
             aiComprehensiveAnalysis = await apiService.ai.analyzeComprehensiveCheckIn(
-              { wellbeing, stress: computedStress, sleep, safety, connection, supportRequested, immediateSafetyConcern: isSafetyConcern },
+              { wellbeing, stress, sleep, safety, connection, supportRequested, immediateSafetyConcern: isSafetyConcern },
               transcript
             );
           } catch (e) {
@@ -250,12 +269,13 @@ export const ParticipantCheckin: React.FC<Props> = ({
           participantId,
           timestamp: new Date().toISOString(),
           wellbeing,
-          stress: computedStress,
+          stress,
           sleep,
           safety,
           connection,
           supportRequested,
           immediateSafetyConcern: isSafetyConcern,
+          scoreVersion: SCORE_VERSION,
           notes: compiledNotes || transcript || undefined,
           voiceInputUsed: currentReflection?.type === "voice" || currentReflection?.audioRecorded,
           shareNoteWithWorker: currentReflection ? currentReflection.shareWithWorker : true,
@@ -278,7 +298,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
         const analysis = analyzeDistress(newCheckIn, previousCheckIn);
         setResultAnalysis(analysis);
         onSaveCheckIn(newCheckIn);
-        setStep(14);
+        setStep(15);
       } finally {
         setIsProcessingAI(false);
       }
@@ -308,7 +328,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
     const analysis = analyzeDistress(newCheckIn, previousCheckIn);
     setResultAnalysis(analysis);
     onSaveCheckIn(newCheckIn);
-    setStep(14);
+    setStep(15);
   };
 
   // Step 0: Consent Gate
@@ -465,7 +485,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
   }
 
   // Step 13: Reflection Results & Explainable AI Factor Summary
-  if (step >= 13 && resultAnalysis) {
+  if (step >= 15 && resultAnalysis) {
     const isUrgent = resultAnalysis.level === "Urgent";
     const isRecommended = resultAnalysis.level === "Follow-up Recommended";
 
@@ -755,10 +775,10 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <span>Step 2 • Current Safety & Security Status</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
-                How secure and protected do you feel in your current living environment?
+                Right now, how safe is the place you are staying?
               </h3>
               <p className="text-xs sm:text-sm text-[#7F8C8D]">
-                Assessing physical safety and sanctuary is foundational to survivor recovery and ongoing risk evaluation.
+                About where you are now, not how you have felt about it in the past.
               </p>
             </div>
 
@@ -902,10 +922,10 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <span>Step 4 • Overall Emotional Wellbeing</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
-                How would you describe your overall emotional wellbeing over the past few days?
+                Over the last 3 days, how often have you been in good spirits?
               </h3>
               <p className="text-xs sm:text-sm text-[#7F8C8D]">
-                Trauma recovery is non-linear. Your response helps establish an honest baseline without clinical diagnosis.
+                How often, not how bad. There is no right answer and nothing here is a diagnosis.
               </p>
             </div>
 
@@ -913,28 +933,28 @@ export const ParticipantCheckin: React.FC<Props> = ({
               {[
                 {
                   value: 5 as WellbeingScore,
-                  label: "5 - Grounded and Resilient",
-                  desc: "Experiencing emotional stability, able to focus on routines, and feeling hopeful about the future."
+                  label: "All of the time",
+                  desc: "Good spirits held across the three days."
                 },
                 {
                   value: 4 as WellbeingScore,
-                  label: "4 - Generally Managing",
-                  desc: "Coping with day-to-day demands, though carrying some quiet sadness, grief, or fatigue."
+                  label: "Most of the time",
+                  desc: "More of the time than not."
                 },
                 {
                   value: 3 as WellbeingScore,
-                  label: "3 - Moderate Emotional Strain",
-                  desc: "Feeling emotionally drained, vulnerable, or needing frequent pauses to navigate the day."
+                  label: "Some of the time",
+                  desc: "About half, with the rest harder."
                 },
                 {
                   value: 2 as WellbeingScore,
-                  label: "2 - Severe Distress",
-                  desc: "High emotional exhaustion, difficulty focusing, persistent sadness, or feeling weighed down."
+                  label: "Rarely",
+                  desc: "Only in brief patches."
                 },
                 {
                   value: 1 as WellbeingScore,
-                  label: "1 - Acute Crisis / Overwhelmed",
-                  desc: "Feeling completely depleted, overwhelmed, or unable to bear the emotional pain."
+                  label: "At no time",
+                  desc: "Not at any point across the three days."
                 }
               ].map((opt) => {
                 const isSelected = wellbeing === opt.value;
@@ -978,10 +998,10 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <span>Step 5 • Sleep & Trauma-Related Nightmares</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
-                How frequently are you experiencing intrusive memories, flashbacks, or nightmares?
+                Over the last 3 days, how often have you woken up feeling rested?
               </h3>
               <p className="text-xs sm:text-sm text-[#7F8C8D]">
-                Involuntary memories and sleep disturbances are a common physiological response to surviving atrocities.
+                About the rest you actually got. What interrupted it is asked separately.
               </p>
             </div>
 
@@ -989,28 +1009,28 @@ export const ParticipantCheckin: React.FC<Props> = ({
               {[
                 {
                   value: 5 as WellbeingScore,
-                  label: "5 - Restful Sleep / Minimal Intrusion",
-                  desc: "Sleeping consistently with peaceful or manageable dreams and minimal night disturbance."
+                  label: "All of the time",
+                  desc: "Woke up rested each of those mornings."
                 },
                 {
                   value: 4 as WellbeingScore,
-                  label: "4 - Mild Sleep Disruption",
-                  desc: "Occasional bad dreams or waking up alert once or twice a week, but able to fall back asleep."
+                  label: "Most of the time",
+                  desc: "Rested more mornings than not."
                 },
                 {
                   value: 3 as WellbeingScore,
-                  label: "3 - Moderate Flashbacks & Nightmares",
-                  desc: "Waking up with a racing heart, vivid traumatic dreams, or restlessness several nights weekly."
+                  label: "Some of the time",
+                  desc: "About half the mornings."
                 },
                 {
                   value: 2 as WellbeingScore,
-                  label: "2 - Severe Insomnia & Fear of Sleeping",
-                  desc: "Dreading going to sleep, intense nocturnal panic, and persistent daytime exhaustion."
+                  label: "Rarely",
+                  desc: "Almost never woke up rested."
                 },
                 {
                   value: 1 as WellbeingScore,
-                  label: "1 - Constant Terror / Fragmented Rest",
-                  desc: "Barely able to sleep; traumatic replays keep you alert and terrified throughout the night."
+                  label: "At no time",
+                  desc: "Not one morning."
                 }
               ].map((opt) => {
                 const isSelected = sleep === opt.value;
@@ -1054,10 +1074,10 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <span>Step 6 • Social Support & Community Connection</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
-                What is your current level of connection with family, trusted allies, or community?
+                Over the last 3 days, how often have you felt close to someone?
               </h3>
               <p className="text-xs sm:text-sm text-[#7F8C8D]">
-                Atrocities often shatter community networks; social connection is one of the strongest protective factors.
+                Feeling close, not how many people were nearby. A crowded place can still be a lonely one.
               </p>
             </div>
 
@@ -1065,28 +1085,28 @@ export const ParticipantCheckin: React.FC<Props> = ({
               {[
                 {
                   value: 5 as WellbeingScore,
-                  label: "5 - Well Supported",
-                  desc: "Surrounded by compassionate family, trusted companions, or supportive survivor networks."
+                  label: "All of the time",
+                  desc: "There was someone, throughout."
                 },
                 {
                   value: 4 as WellbeingScore,
-                  label: "4 - Regular Trusted Contact",
-                  desc: "In regular touch with at least one or two people who genuinely understand and stand with you."
+                  label: "Most of the time",
+                  desc: "Someone there more often than not."
                 },
                 {
                   value: 3 as WellbeingScore,
-                  label: "3 - Limited Connection",
-                  desc: "Some acquaintances or neighbors, but feeling mostly misunderstood or hesitant to speak openly."
+                  label: "Some of the time",
+                  desc: "In moments, not as a rule."
                 },
                 {
                   value: 2 as WellbeingScore,
-                  label: "2 - Displaced or Disconnected",
-                  desc: "Separated from loved ones, living in an unfamiliar community, or lacking close confidants."
+                  label: "Rarely",
+                  desc: "Once or twice, briefly."
                 },
                 {
                   value: 1 as WellbeingScore,
-                  label: "1 - Completely Isolated",
-                  desc: "Cut off from all family and community, carrying this burden completely alone."
+                  label: "At no time",
+                  desc: "Not at any point."
                 }
               ].map((opt) => {
                 const isSelected = connection === opt.value;
@@ -1121,12 +1141,89 @@ export const ParticipantCheckin: React.FC<Props> = ({
           </div>
         )}
 
-        {/* Step 7: Question 7 (Qualitative Reflection with Voice or Text) */}
+        {/* Step 7: Load and pressure. The one scored question that used to be
+            inferred from the two either side of it rather than asked. */}
         {step === 7 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
-                <span>Step 7 • Strengths, Coping & Resilience</span>
+                <Activity size={14} />
+                <span>Step 7 • Load &amp; Pressure</span>
+              </span>
+              <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
+                Over the last 3 days, how often have you felt on top of things?
+              </h3>
+              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+                Not how serious things are, just how often you felt able to keep up with them.
+              </p>
+            </div>
+
+            <div className="space-y-3 pt-2">
+              {[
+                {
+                  value: 5 as WellbeingScore,
+                  label: "All of the time",
+                  desc: "Able to keep up with what the days asked of you."
+                },
+                {
+                  value: 4 as WellbeingScore,
+                  label: "Most of the time",
+                  desc: "Mostly keeping up, with some stretches where it slipped."
+                },
+                {
+                  value: 3 as WellbeingScore,
+                  label: "Some of the time",
+                  desc: "Keeping up about half of it, losing the rest."
+                },
+                {
+                  value: 2 as WellbeingScore,
+                  label: "Rarely",
+                  desc: "Most of it stayed on top of you rather than the other way round."
+                },
+                {
+                  value: 1 as WellbeingScore,
+                  label: "At no time",
+                  desc: "None of it felt manageable."
+                }
+              ].map((opt) => {
+                const isSelected = copingCapacity === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setCopingCapacity(opt.value)}
+                    className={`w-full p-4 rounded-2xl border text-left transition-all cursor-pointer flex items-center justify-between ${
+                      isSelected
+                        ? "border-[#5A5049] bg-[#DBC3B2]/20 ring-2 ring-[#5A5049]/30 shadow-xs"
+                        : "border-[#EFE8E2] hover:border-[#DBC3B2] hover:bg-[#FDF9F5]"
+                    }`}
+                  >
+                    <div className="space-y-1 pr-3">
+                      <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
+                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                    </div>
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        isSelected
+                          ? "border-[#5A5049] bg-[#5A5049] text-white"
+                          : "border-[#D1DCD6] bg-white"
+                      }`}
+                    >
+                      {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Step 8: Question 8 (Qualitative Reflection with Voice or Text) */}
+        {step === 8 && (
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
+                <span>Step 8 • Strengths, Coping & Resilience</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What has helped you endure, cope, or find moments of peace or strength?
@@ -1212,12 +1309,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
         )}
 
         {/* Step 8: Question 8 (Qualitative Reflection - Survivor Voice) */}
-        {step === 8 && (
+        {step === 9 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <MessageSquare size={14} />
-                <span>Step 8 • Truth, Dignity & Public Understanding</span>
+                <span>Step 9 • Truth, Dignity & Public Understanding</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What do you wish institutions, investigators, or the public understood about survivors of atrocities?
@@ -1268,12 +1365,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
         )}
 
         {/* Step 9: Question 9 (MCQ - Single-select) */}
-        {step === 9 && (
+        {step === 10 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <Building2 size={14} />
-                <span>Step 9 • Institutional Response & Justice Access</span>
+                <span>Step 10 • Institutional Response & Justice Access</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Have authorities, institutions, or human rights bodies acknowledged your experience?
@@ -1344,12 +1441,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
         )}
 
         {/* Step 10: Question 10 (MCQ - Single-select) */}
-        {step === 10 && (
+        {step === 11 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <Scale size={14} />
-                <span>Step 10 • Priorities for Recovery & Reparation</span>
+                <span>Step 11 • Priorities for Recovery & Reparation</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What is your highest priority for healing, justice, and rebuilding your life?
@@ -1422,12 +1519,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
         {/* Step 11: Question 11 (MCQ - Single-select) */}
         {/* Step 11: behaviour and body — deliberately factual, low-stigma,
             and entirely skippable. None of it changes the distress score. */}
-        {step === 11 && (
+        {step === 12 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <Activity size={14} />
-                <span>Step 11 • The Last Day or Two</span>
+                <span>Step 12 • The Last Day or Two</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 A few practical questions about the last day or two.
@@ -1553,12 +1650,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
           </div>
         )}
 
-        {step === 12 && (
+        {step === 13 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#5A5049] flex items-center space-x-1.5">
                 <HeartHandshake size={14} />
-                <span>Step 12 • Counselor Connection & Support Preference</span>
+                <span>Step 13 • Counselor Connection & Support Preference</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Would you like to connect with a confidential, specialized human counselor?
@@ -1630,12 +1727,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
         )}
 
         {/* Step 13: Question 13 (MCQ - Single-select) */}
-        {step === 13 && (
+        {step === 14 && (
           <div className="space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-black uppercase tracking-wider text-[#A55D25] flex items-center space-x-1.5">
                 <AlertTriangle size={14} />
-                <span>Step 13 • Immediate Safety Confirmation</span>
+                <span>Step 14 • Immediate Safety Confirmation</span>
               </span>
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Are you in immediate physical danger or thinking of hurting yourself right now?

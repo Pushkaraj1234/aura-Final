@@ -1,5 +1,5 @@
 import { supabase } from "./supabaseClient";
-import { calculateRawScore } from "./riskEngine";
+import { calculateRawScore, SCORE_VERSION } from "./riskEngine";
 import {
   CheckIn,
   Participant,
@@ -225,6 +225,10 @@ export const checkInsTable = {
       // scale and reading as "moderate distress" for someone who might be
       // calm or in crisis.
       calculated_score: calculateRawScore(checkIn as CheckIn),
+      // Which model produced that number. Rows written before step 7 existed
+      // inferred stress from wellbeing and sleep, and the column defaults to 1
+      // for them, so a trend can show where the measurement changed.
+      score_version: checkIn.scoreVersion ?? SCORE_VERSION,
       notes: checkIn.notes || checkIn.optionalNote || "",
       optional_note: checkIn.optionalNote || "",
       share_note_with_worker: checkIn.shareNoteWithWorker ?? true,

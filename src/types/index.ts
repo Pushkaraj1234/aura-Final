@@ -228,6 +228,14 @@ export interface CheckIn {
   connection: WellbeingScore;// 1 (Isolated) to 5 (Well-connected)
   supportRequested: boolean;
   immediateSafetyConcern: boolean;
+  /**
+   * Which scoring model produced this row. 1 inferred stress from wellbeing
+   * and sleep; 2 asks for it directly. The weights are the same in both, so a
+   * v1 and a v2 score are on the same 0-100 scale, but they are not the same
+   * measurement and a trend crossing the boundary should say so.
+   * Absent on rows written before the column existed, which are all v1.
+   */
+  scoreVersion?: number;
   calculatedScore?: number;
   aiComprehensiveAnalysis?: any;
   optionalNote?: string;

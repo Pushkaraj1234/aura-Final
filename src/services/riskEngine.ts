@@ -1,4 +1,4 @@
-import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakdown, ScoreTerm } from "../types/index.js";
+import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakdown, ScoreTerm, WellbeingScore } from "../types/index.js";
 
 /**
  * Transparent Simulated AI Distress Risk Engine
@@ -16,6 +16,48 @@ import { CheckIn, RiskAnalysis, SupportPriority, FactorContribution, ScoreBreakd
  * the arithmetic, so the formula shown on screen can never drift away from the
  * formula actually used. Change a weight here and the explanation follows.
  */
+/**
+ * The scoring model a new check-in is recorded under.
+ *
+ * 1: stress was inferred as round(6 - (wellbeing + sleep) / 2), so the
+ *    22-point term restated its neighbours and carried nothing of its own.
+ * 2: stress is asked directly, at step 7 of the questionnaire.
+ *
+ * The weights below are identical under both, deliberately. Historical rows
+ * are rescored live by trajectoryEngine rather than read back from
+ * calculated_score, so changing a weight rewrites the past as well as the
+ * present. Bump this when the inputs or the arithmetic change in a way that
+ * makes two scores incomparable, and leave it alone otherwise.
+ */
+export const SCORE_VERSION = 2;
+
+/**
+ * Turns the step 7 answer into the stress value the formula expects.
+ *
+ * Step 7 asks how often someone felt on top of things, so 5 is the good end,
+ * matching the three scales either side of it on screen. CheckIn.stress runs
+ * the other way: 1 is calm, 5 is very stressed. That is not an inconsistency
+ * worth tidying, it is load-bearing. trajectoryEngine rescores every
+ * historical check-in with the current formula rather than reading back
+ * calculated_score, so redefining what a stored 5 means would rewrite the
+ * trend of every row already recorded.
+ *
+ * It lives here, as one function with a test, because a sign error in this
+ * line would invert the stress contribution for everyone and nothing on
+ * screen would look obviously wrong.
+ */
+export const stressFromCoping = (coping: WellbeingScore): WellbeingScore =>
+  (6 - coping) as WellbeingScore;
+
+/**
+ * Whether this row's stress value came from a question the person answered.
+ *
+ * Rows written before step 7 existed carry no scoreVersion at all, and rows
+ * written since carry 2, so an absent version means version 1 rather than
+ * something unknown.
+ */
+const stressWasAsked = (checkIn: CheckIn): boolean => (checkIn.scoreVersion ?? 1) >= 2;
+
 export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
   // Asking for support is deliberately NOT scored. It used to add 10 points,
   // which meant an identical person who said "I'm fine, I don't need anyone"
@@ -55,8 +97,22 @@ export const explainRawScore = (checkIn: CheckIn): ScoreBreakdown => {
     },
     {
       key: "stress",
-      label: "Reported stress level",
-      response: `${checkIn.stress}/5`,
+      // Two different things have to be explained here, honestly, because this
+      // card is the participant's own derivation of their own number.
+      //
+      // From version 2 the person answered step 7 directly, and the answer
+      // they picked ran the other way: 5 was "on top of things all of the
+      // time". Showing them "4/5" for an answer they gave as "2" would be
+      // arithmetically right and unrecognisable, so the answer is shown in the
+      // direction they gave it and the arithmetic below converts it.
+      //
+      // Version 1 rows never had a stress question at all. It was inferred
+      // from wellbeing and sleep, so calling it "reported" would credit the
+      // person with an answer they were never asked for.
+      label: stressWasAsked(checkIn) ? "Load and pressure" : "Stress (inferred from wellbeing and sleep)",
+      response: stressWasAsked(checkIn)
+        ? `"on top of things" ${6 - checkIn.stress}/5`
+        : `${checkIn.stress}/5`,
       expression: `((${checkIn.stress} − 1) ÷ 4) × 22`,
       formula: "((stress − 1) ÷ 4) × 22",
       points: ((checkIn.stress - 1) / 4) * 22,
