@@ -151,8 +151,10 @@ export const ModelTransparencyCard: React.FC = () => {
               <p className="font-bold text-[#3C3530]">
                 Distress Indicator + Trajectory + Priority Recommendation
               </p>
+              {/* Was "...and confidence intervals". Nothing here computes one;
+                  that phrase was the only occurrence of it in the codebase. */}
               <p className="text-[11px] text-[#7A726C] mt-1">
-                Transparent factor attribution and confidence intervals.
+                Every score opens to show the five answers and weights that produced it.
               </p>
             </div>
           </div>
@@ -168,7 +170,7 @@ export const ModelTransparencyCard: React.FC = () => {
               </li>
               <li className="flex items-start space-x-1.5">
                 <span className="text-[#A55D25] font-bold">•</span>
-                <span><strong>Synthetic training data:</strong> Evaluated entirely on anonymized synthetic vectors.</span>
+                <span><strong>Never evaluated against outcomes:</strong> The weights were chosen, not learned, and no study has checked them against how people actually fared.</span>
               </li>
               <li className="flex items-start space-x-1.5">
                 <span className="text-[#A55D25] font-bold">•</span>
@@ -176,7 +178,7 @@ export const ModelTransparencyCard: React.FC = () => {
               </li>
               <li className="flex items-start space-x-1.5">
                 <span className="text-[#A55D25] font-bold">•</span>
-                <span><strong>Consent-bound:</strong> Participants may withdraw consent or delete check-in histories anytime.</span>
+                <span><strong>Consent-bound:</strong> Participants can withdraw consent at any time, which stops their answers being used. It does not delete past check-ins; ask and a person will remove them.</span>
               </li>
             </ul>
           </div>
@@ -187,7 +189,32 @@ export const ModelTransparencyCard: React.FC = () => {
 };
 
 /**
- * Responsible AI & Bias Monitoring Card
+ * Fairness: what has been checked, and what has not been measured.
+ *
+ * This card used to read "AURA tracks algorithmic parity across synthetic
+ * cohorts" above four tiles asserting "Equal Heuristic Weighting" in green,
+ * "Fair Sensitivity Curve", "Non-Stigmatizing Tone" and "Human Oversight:
+ * 100% Cases", under the heading "Prototype Audit".
+ *
+ * Nothing was tracked. There was no computation behind any of it, and the
+ * green tick read as an audit result. That is the precise failure the
+ * fairness literature warns about: a dashboard that turns absence of evidence
+ * into evidence of fairness, read by exactly the people who would otherwise
+ * have gone and looked. It also directly contradicted AURA's own Fairness
+ * Slices tab, which reports, correctly, that there is not yet enough data.
+ *
+ * The rewrite separates two questions that the original conflated.
+ *
+ * Whether the model can see who you are is a property of the code, it is
+ * checkable today, and the answer is no: explainRawScore reads wellbeing,
+ * stress, sleep, safety, connection and the safety flag, and nothing else.
+ *
+ * Whether the model performs equally well for everyone is an empirical
+ * question that identical weights do not settle. The questions may read
+ * differently in a machine-translated interface than in a hand-written one,
+ * which is how a formula blind to language still ends up worse at Marathi.
+ * That is measured on the Fairness Slices tab or it is not known, and here it
+ * says so.
  */
 export const BiasMonitoringCard: React.FC = () => {
   return (
@@ -195,65 +222,84 @@ export const BiasMonitoringCard: React.FC = () => {
       <div className="flex items-center justify-between border-b border-[#EFE8E2] pb-3">
         <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] flex items-center">
           <Globe2 size={15} className="mr-1.5 text-[#5A5049]" />
-          Responsible AI & Demographic Bias Monitoring
+          Fairness: checked, and not yet measured
         </h4>
         <span className="text-[10px] font-mono font-bold text-[#7A726C]">
-          Prototype Audit
+          Two different questions
         </span>
       </div>
 
       <p className="text-xs text-[#7A726C] leading-relaxed">
-        Humanitarian AI models must not exhibit performance disparities across language, age, gender, or cultural contexts. AURA tracks algorithmic parity across synthetic cohorts:
+        Whether the model can see who you are is a property of the code, and we can show you the
+        answer. Whether it works equally well for everyone is a measurement, and we have not made
+        it yet. Treating the first as though it settled the second is the usual way these claims
+        go wrong.
       </p>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
           <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
-            Language Equity
+            Score inputs
           </span>
           <span className="text-xs font-black text-[#3C3530]">
-            EN / HI / MR
+            Five answers
           </span>
-          <span className="text-[10px] text-emerald-600 font-bold block mt-1">
-            Equal Heuristic Weighting
+          <span className="text-[10px] text-emerald-700 font-bold block mt-1">
+            Checked: no identity field
           </span>
         </div>
 
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
           <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
-            Age Cohorts
+            Human review
           </span>
           <span className="text-xs font-black text-[#3C3530]">
-            18–25 to 65+
+            Every alert
           </span>
-          <span className="text-[10px] text-[#5A5049] font-bold block mt-1">
-            Fair Sensitivity Curve
+          <span className="text-[10px] text-emerald-700 font-bold block mt-1">
+            Checked: nothing acts alone
           </span>
         </div>
 
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
           <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
-            Cultural Context
+            Missed-distress rate by group
           </span>
           <span className="text-xs font-black text-[#3C3530]">
-            Localized Phrasing
-          </span>
-          <span className="text-[10px] text-[#5A5049] font-bold block mt-1">
-            Non-Stigmatizing Tone
-          </span>
-        </div>
-
-        <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
-            Human Oversight
-          </span>
-          <span className="text-xs font-black text-[#3C3530]">
-            100% Cases
+            Not measured
           </span>
           <span className="text-[10px] text-[#A55D25] font-bold block mt-1">
-            Human Verification Gate
+            Needs paired questionnaires
           </span>
         </div>
+
+        <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
+          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
+            Caste
+          </span>
+          <span className="text-xs font-black text-[#3C3530]">
+            Not collected
+          </span>
+          <span className="text-[10px] text-[#A55D25] font-bold block mt-1">
+            So not measured either
+          </span>
+        </div>
+      </div>
+
+      <div className="p-3.5 rounded-2xl bg-[#F1EBE5] border border-[#E0D7CE] space-y-2">
+        <p className="text-[11px] text-[#3C3530] leading-relaxed">
+          <strong>Why identical weights are not enough.</strong> The formula reads only wellbeing,
+          stress, sleep, safety and connection, so it cannot treat two people differently for who
+          they are. That does not make it equally accurate for everyone: the questions themselves
+          may read differently in a machine-translated interface than in a hand-written one, which
+          is how a model blind to language still ends up worse in Marathi.
+        </p>
+        <p className="text-[11px] text-[#7A726C] leading-relaxed">
+          The real measurement is the missed-distress rate per group, against a validated
+          questionnaire, reported on the Fairness Slices screen. It is withheld until there are
+          enough answers for a rate to mean anything, and it says so rather than showing a
+          reassuring number.
+        </p>
       </div>
     </div>
   );
