@@ -177,10 +177,26 @@ class ApiService {
         method: "POST",
         body: JSON.stringify({ checkInData, transcript }),
       }),
-    chat: async (messages: { role: string; content: string }[]) =>
-      this.request<{ reply: string }>("/chat", {
+    /**
+     * `crisis` comes back when the server refused to let the model answer and
+     * returned crisis resources instead. `counsellorNotified` reports whether
+     * an alert was really written, so the UI never promises a follow-up that
+     * row-level security rejected.
+     */
+    chat: async (
+      messages: { role: string; content: string }[],
+      context?: { participantId?: string; language?: string }
+    ) =>
+      this.request<{
+        reply: string;
+        crisis?: { tier: "self_harm" | "imminent_danger"; counsellorNotified: boolean };
+      }>("/chat", {
         method: "POST",
-        body: JSON.stringify({ messages }),
+        body: JSON.stringify({
+          messages,
+          participantId: context?.participantId,
+          language: context?.language,
+        }),
       }),
   };
 

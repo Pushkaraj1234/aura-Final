@@ -1,0 +1,18 @@
+{
+  "name": "AURA — Atrocity Understanding & Recovery Assist",
+  "short_name": "AURA",
+  "description": "A short check-in tells a counsellor whose answers are drifting, and why.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7F4",
+  "theme_color": "#A55D25",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["health", "lifestyle"],
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

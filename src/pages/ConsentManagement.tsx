@@ -22,6 +22,41 @@ interface Props {
   onUpdateConsentStatus?: (active: boolean) => void;
 }
 
+/**
+ * The three things the old single voice switch was bundling.
+ *
+ * Ordered by how much each one asks for, so reading down the list is reading
+ * an escalating ask rather than three equivalent options. Transcription is
+ * first because without it the voice features cannot run at all; retention is
+ * last because it is the only one that leaves audio of a person's voice at
+ * rest, which for someone whose phone may be shared or taken is the part with
+ * the real consequences.
+ */
+const VOICE_CONSENTS: {
+  key: "voiceTranscription" | "voiceAcousticAnalysis" | "voiceAudioRetention";
+  title: string;
+  description: string;
+}[] = [
+  {
+    key: "voiceTranscription",
+    title: "Speak instead of typing",
+    description:
+      "Turns what you say into text so you can answer out loud. Without this the voice features can't work at all.",
+  },
+  {
+    key: "voiceAcousticAnalysis",
+    title: "Measure how it was said",
+    description:
+      "Measures pace, pauses and loudness on your own phone, and sends only those numbers. No audio leaves the device for this. Turn it off and you can still speak.",
+  },
+  {
+    key: "voiceAudioRetention",
+    title: "Keep the recording afterwards",
+    description:
+      "Stores the audio itself once the session ends. Turn this off and speaking and analysis both still work, and nothing is kept.",
+  },
+];
+
 export const ConsentManagement: React.FC<Props> = ({
   user,
   onBack,
@@ -32,6 +67,9 @@ export const ConsentManagement: React.FC<Props> = ({
     supportWorkerSharing: true,
     optionalFreeTextSharing: true,
     optionalVoiceFeature: true,
+    voiceTranscription: true,
+    voiceAcousticAnalysis: true,
+    voiceAudioRetention: true,
     communityAggregateAnalytics: true,
     updatedAt: new Date().toISOString()
   });
@@ -81,6 +119,9 @@ export const ConsentManagement: React.FC<Props> = ({
       supportWorkerSharing: false,
       optionalFreeTextSharing: false,
       optionalVoiceFeature: false,
+      voiceTranscription: false,
+      voiceAcousticAnalysis: false,
+      voiceAudioRetention: false,
       communityAggregateAnalytics: false,
       updatedAt: new Date().toISOString()
     });
@@ -253,34 +294,42 @@ export const ConsentManagement: React.FC<Props> = ({
             </button>
           </div>
 
-          {/* 4. Optional Voice Feature */}
-          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start justify-between gap-4">
-            <div className="flex items-start space-x-3">
-              <div className="w-8 h-8 rounded-xl bg-white border border-[#EFE8E2] flex items-center justify-center text-[#5A5049] shrink-0 mt-0.5">
-                <Mic size={16} />
-              </div>
-              <div>
-                <span className="text-sm font-black text-[#3C3530] block">
-                  Optional Voice Input Feature
-                </span>
-                <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
-                  Allows speaking reflections via microphone instead of typing.
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={() => handleToggle("optionalVoiceFeature")}
-              className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                preferences.optionalVoiceFeature ? "bg-[#5A5049]" : "bg-[#EFE8E2]"
-              }`}
+          {/* 4. Voice, as the three separate things it always was.
+               One switch covered turning speech into text, measuring how it
+               was said, and keeping the recording. Someone glad to speak but
+               unwilling to have their delivery analysed had no way to say so,
+               so the honest reading of that switch was all three or nothing. */}
+          {VOICE_CONSENTS.map(({ key, title, description }, position) => (
+            <div
+              key={key}
+              className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start justify-between gap-4"
             >
-              <div
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all shadow-xs ${
-                  preferences.optionalVoiceFeature ? "left-7" : "left-1"
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 rounded-xl bg-white border border-[#EFE8E2] flex items-center justify-center text-[#5A5049] shrink-0 mt-0.5">
+                  {position === 0 ? <Mic size={16} /> : <span className="w-4" aria-hidden="true" />}
+                </div>
+                <div>
+                  <span className="text-sm font-black text-[#3C3530] block">{title}</span>
+                  <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">{description}</p>
+                </div>
+              </div>
+              <button
+                onClick={() => handleToggle(key)}
+                role="switch"
+                aria-checked={Boolean(preferences[key])}
+                aria-label={title}
+                className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                  preferences[key] ? "bg-[#5A5049]" : "bg-[#EFE8E2]"
                 }`}
-              ></div>
-            </button>
-          </div>
+              >
+                <div
+                  className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-all shadow-xs ${
+                    preferences[key] ? "left-7" : "left-1"
+                  }`}
+                ></div>
+              </button>
+            </div>
+          ))}
 
           {/* 5. Community Aggregate Analytics */}
           <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start justify-between gap-4">

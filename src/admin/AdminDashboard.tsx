@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   ArrowLeft,
   ScanSearch,
+  Scale,
 } from "lucide-react";
 import { adminApiService } from "../services/adminApiService";
 import { OverviewTab } from "./tabs/OverviewTab";
@@ -19,8 +20,9 @@ import { AssignmentsTab } from "./tabs/AssignmentsTab";
 import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SettingsTab } from "./tabs/SettingsTab";
 import { FlagReviewTab } from "./tabs/FlagReviewTab";
+import { FairnessTab } from "./tabs/FairnessTab";
 
-type Tab = "overview" | "queue" | "workers" | "assignments" | "flagreview" | "audit" | "settings";
+type Tab = "overview" | "queue" | "workers" | "assignments" | "flagreview" | "fairness" | "audit" | "settings";
 
 const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "overview", label: "Oversight Dashboard", icon: LayoutDashboard },
@@ -28,6 +30,7 @@ const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "workers", label: "Counselors", icon: UserCog },
   { id: "assignments", label: "User Assignments", icon: Users2 },
   { id: "flagreview", label: "AI Flag Review", icon: ScanSearch },
+  { id: "fairness", label: "Fairness Slices", icon: Scale },
   { id: "audit", label: "Audit Log", icon: ScrollText },
   { id: "settings", label: "Settings", icon: Settings },
 ];
@@ -100,6 +103,7 @@ export const AdminDashboard: React.FC<Props> = ({ onLogout }) => {
         {tab === "workers" && <WorkersTab />}
         {tab === "assignments" && <AssignmentsTab />}
         {tab === "flagreview" && <FlagReviewTab />}
+        {tab === "fairness" && <FairnessTab />}
         {tab === "audit" && <AuditLogTab />}
         {tab === "settings" && <SettingsTab />}
       </main>

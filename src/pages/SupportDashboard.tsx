@@ -40,6 +40,8 @@ import { WorkerWellbeingCheck } from "../components/WorkerWellbeingCheck";
 import { WorkerProfileCard } from "../components/WorkerProfileCard";
 import { authService } from "../services/authService";
 import { apiService } from "../services/apiService";
+import { ResponseClockPanel } from "../components/ResponseClockPanel";
+import { summariseSla } from "../services/slaEngine";
 
 interface Props {
   participants: Participant[];
@@ -63,6 +65,11 @@ export const SupportDashboard: React.FC<Props> = ({
   onNavigateAlerts,
   onNavigateNotifications
 }) => {
+  // Response-time clocks over the alerts on this screen. Memoised because the
+  // summary walks every alert and this component re-renders on every keystroke
+  // in the search box.
+  const responseClocks = useMemo(() => summariseSla(alerts), [alerts]);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [sortBy, setSortBy] = useState<"score_desc" | "score_asc" | "change_desc" | "recent">("score_desc");
@@ -502,14 +509,33 @@ export const SupportDashboard: React.FC<Props> = ({
             <span className="font-serif text-xl text-[#3A2A1E]">96%</span>
           </div>
         </div>
+        {/* Was a hardcoded "18m". It described nothing, and it sat in the one
+            place a counsellor would read it as a fact about their own team.
+            This is the median time from an alert being raised to a human
+            opening it, computed from the alerts on this screen. */}
         <div className="card-elev rounded-2xl px-5 py-4 flex items-center gap-3 min-w-[160px]">
           <Clock size={16} className="text-[#B0713C]" />
           <div>
-            <span className="text-[12px] text-[#8A7A6B] block">Avg. response</span>
-            <span className="font-serif text-xl text-[#3A2A1E]">18m</span>
+            <span className="text-[12px] text-[#8A7A6B] block">Typical pick-up</span>
+            <span className="font-serif text-xl text-[#3A2A1E]">
+              {responseClocks.medianMinutesToAcknowledge === null
+                ? "no data yet"
+                : responseClocks.medianMinutesToAcknowledge < 60
+                  ? `${responseClocks.medianMinutesToAcknowledge}m`
+                  : `${Math.round(responseClocks.medianMinutesToAcknowledge / 60)}h`}
+            </span>
           </div>
         </div>
       </section>
+
+      {/* Response clocks. slaEngine has been computing these for a while with
+          nothing rendering them, which made it a metric nobody could see and
+          so a metric that changed nothing. */}
+      <ResponseClockPanel
+        alerts={alerts}
+        onSelectParticipant={onSelectParticipant}
+        onNavigateAlerts={onNavigateAlerts}
+      />
 
       {/* Second-look queue: divergence between the self-report and everything else */}
       {escalationQueue.length > 0 && (

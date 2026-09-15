@@ -7,6 +7,14 @@ import {
   handleChat,
   AcousticFeatures,
 } from './aiService.js';
+import {
+  crisisAlertAction,
+  crisisAlertReason,
+  crisisResponse,
+  detectCrisis,
+  screenAssistantReply,
+  type CrisisTier,
+} from './crisisDetection.js';
 import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
 import { getSupabaseForRequest } from './supabaseServer.js';
 import { runEscalationSweep } from './escalationSweep.js';
@@ -166,7 +174,8 @@ async function logAiAudit(
   req: Request,
   action: string,
   description: string,
-  participantId?: string
+  participantId?: string,
+  options: { category?: string; severity?: 'INFO' | 'WARNING' | 'HIGH' } = {}
 ) {
   try {
     const supabase = getSupabaseForRequest(req);
@@ -178,14 +187,61 @@ async function logAiAudit(
       actor_role: (user?.user_metadata as any)?.role || 'system',
       actor_name: (user?.user_metadata as any)?.name || 'AURA AI Engine',
       action,
-      category: 'ai_evaluation',
+      category: options.category || 'ai_evaluation',
       participant_id: participantId,
       description,
-      severity: 'INFO',
+      severity: options.severity || 'INFO',
     });
   } catch (err) {
     // Audit logging must never break the primary request.
     console.warn('[AURA] audit log write skipped:', (err as any)?.message);
+  }
+}
+
+/**
+ * Raises the alert behind a crisis reply, and reports whether it landed.
+ *
+ * The return value is load-bearing rather than informational: the person is
+ * only told a counsellor has been notified when a row was actually written.
+ * Row-level security is what decides that, not this code — the alerts insert
+ * policy allows a participant to raise an alert only about themselves, so a
+ * client sending someone else's id gets rejected by Postgres and the person
+ * correctly reads the copy that promises nothing.
+ */
+async function raiseCrisisAlert(
+  req: Request,
+  participantId: string | undefined,
+  tier: CrisisTier
+): Promise<boolean> {
+  if (!participantId) return false;
+  try {
+    const supabase = getSupabaseForRequest(req);
+    const { error } = await supabase.from('alerts').insert({
+      id: `ALT-CRISIS-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      participant_id: participantId,
+      category: 'SAFETY_CONCERN',
+      severity: 'RED',
+      title: 'Crisis language in the assistant chat',
+      reason: crisisAlertReason(tier),
+      // Deliberately not the person's words. Staff can read alert rows, and a
+      // verbatim crisis sentence stored here would be readable by everyone
+      // with caseload access forever. What they need to act is the tier.
+      description:
+        'The assistant stopped replying and showed crisis resources. The message itself is not stored.',
+      recommended_action: crisisAlertAction(tier),
+      status: 'NEW',
+      score: 100,
+      requires_human_review: true,
+      contributing_factors: [],
+    });
+    if (error) {
+      console.warn('[AURA] crisis alert insert rejected:', error.message);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.warn('[AURA] crisis alert insert failed:', (err as any)?.message);
+    return false;
   }
 }
 
@@ -284,14 +340,71 @@ router.post('/ai/summarize-case', async (req: Request, res: Response) => {
   }
 });
 
+/**
+ * The assistant chat, with a crisis gate in front of the model.
+ *
+ * Order matters here. The gate runs before the model is called, not after,
+ * so that a person disclosing suicidal intent is never answered by a
+ * generative model on a best-effort basis. Gemini's own guardrails may well
+ * handle it; they are not a safety layer this product controls, they fail
+ * silently, and they raise no alert and write no audit record.
+ *
+ * On a hit the endpoint still returns 200 with a reply. A 4xx would surface
+ * in the chat window as "Sorry, I encountered an error", which is the worst
+ * possible answer to what the person just said.
+ */
 router.post('/chat', async (req: Request, res: Response) => {
-  const { messages } = req.body || {};
+  const { messages, participantId, language } = req.body || {};
   if (!messages || !Array.isArray(messages)) {
     return res.status(400).json({ detail: 'Messages array is required' });
   }
 
+  // Only the newest message from the person. Rescanning the whole thread
+  // would re-fire on every subsequent turn of a conversation that already
+  // got resources, and would also scan the assistant's own crisis reply.
+  const lastUserMessage = [...messages]
+    .reverse()
+    .find((m: any) => m?.role === 'user' && typeof m?.content === 'string');
+  const inbound = detectCrisis(lastUserMessage?.content || '');
+
+  if (inbound.triggered && inbound.tier) {
+    const notified = await raiseCrisisAlert(req, participantId, inbound.tier);
+    await logAiAudit(
+      req,
+      'CHAT_CRISIS_INTERCEPT',
+      `Crisis language (${inbound.tier}) detected in assistant chat. Model call skipped, ` +
+        `crisis resources returned, alert ${notified ? 'raised' : 'not raised (no participant context)'}.`,
+      participantId,
+      { category: 'SAFETY', severity: 'HIGH' }
+    );
+    return res.json({
+      reply: crisisResponse(language, notified),
+      crisis: { tier: inbound.tier, counsellorNotified: notified },
+    });
+  }
+
   try {
     const reply = await handleChat(messages);
+
+    // Defence in depth. The gate above means a flagged message never reaches
+    // the model, so this only catches the model volunteering means or method
+    // in answer to something that read as ordinary.
+    const outbound = screenAssistantReply(reply);
+    if (outbound.triggered) {
+      const notified = await raiseCrisisAlert(req, participantId, 'self_harm');
+      await logAiAudit(
+        req,
+        'CHAT_UNSAFE_REPLY_SUPPRESSED',
+        'Model reply matched an unsafe-content pattern and was replaced with crisis resources.',
+        participantId,
+        { category: 'SAFETY', severity: 'HIGH' }
+      );
+      return res.json({
+        reply: crisisResponse(language, notified),
+        crisis: { tier: 'self_harm', counsellorNotified: notified },
+      });
+    }
+
     res.json({ reply });
   } catch (error: any) {
     console.error('Error generating chat reply:', error);

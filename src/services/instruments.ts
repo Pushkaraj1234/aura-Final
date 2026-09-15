@@ -194,3 +194,112 @@ export function administrationProgress(
 export function who5NeedsALook(score: InstrumentScore): boolean {
   return score.instrumentId === "who5" && score.complete && score.raw <= 13;
 }
+
+// ---------------------------------------------------------------------------
+// Administration records and scheduling
+// ---------------------------------------------------------------------------
+
+/** One completed administration, as stored. */
+export interface InstrumentAdministration {
+  id: string;
+  participantId: string;
+  instrumentId: InstrumentId;
+  instrumentVersion: number;
+  itemResponses: ItemResponses;
+  rawScore: number;
+  scaledScore: number;
+  administeredAt: string;
+}
+
+/**
+ * The schedule from EVALUATION_PROTOCOL.md: baseline, then day 7, then day 30.
+ *
+ * Those three points are not arbitrary spacing. Baseline anchors the AURA
+ * score against something external; day 7 is close enough to catch a person
+ * whose situation moved fast; day 30 is the interval the concurrent-validity
+ * study is powered for.
+ */
+export const WHO5_SCHEDULE_DAYS = [0, 7, 30] as const;
+
+export type InstrumentDueReason = "never_taken" | "next_window_open" | "not_due" | "schedule_complete";
+
+export interface InstrumentDue {
+  due: boolean;
+  reason: InstrumentDueReason;
+  /** Which scheduled point this would be. Null once the schedule is finished. */
+  nextDay: number | null;
+  /** Days until the next point opens. Zero or less when it is open now. */
+  daysUntilNext: number | null;
+  administeredCount: number;
+}
+
+const DAY_MS = 86_400_000;
+
+/**
+ * Whether to offer WHO-5 right now.
+ *
+ * Deliberately never nags. Being asked the same five questions repeatedly by
+ * an app is how people stop answering honestly, and an instrument answered
+ * carelessly is worse than one not answered at all: it would enter the
+ * validity study as real data and quietly wreck the correlation it exists to
+ * measure. So the schedule runs to its end and then stops asking.
+ *
+ * `enrolledAt` is the anchor for day 0. Everything after is measured from the
+ * FIRST administration, not from enrolment, because a person who took the
+ * baseline late should still get a real seven-day gap before the next one.
+ */
+export function who5Due(
+  administrations: InstrumentAdministration[],
+  enrolledAt: string,
+  now: number = Date.now()
+): InstrumentDue {
+  const who5 = administrations
+    .filter((a) => a.instrumentId === "who5")
+    .sort((a, b) => Date.parse(a.administeredAt) - Date.parse(b.administeredAt));
+
+  if (who5.length === 0) {
+    const enrolled = Date.parse(enrolledAt);
+    // An unparseable enrolment date must not hide the baseline. Offering it is
+    // the safe direction: the person can decline, and a baseline that never
+    // gets offered cannot be declined at all.
+    return {
+      due: true,
+      reason: "never_taken",
+      nextDay: 0,
+      daysUntilNext: Number.isFinite(enrolled) ? Math.max(0, Math.ceil((enrolled - now) / DAY_MS)) : 0,
+      administeredCount: 0,
+    };
+  }
+
+  if (who5.length >= WHO5_SCHEDULE_DAYS.length) {
+    return {
+      due: false,
+      reason: "schedule_complete",
+      nextDay: null,
+      daysUntilNext: null,
+      administeredCount: who5.length,
+    };
+  }
+
+  const baseline = Date.parse(who5[0]!.administeredAt);
+  const nextDay = WHO5_SCHEDULE_DAYS[who5.length]!;
+  if (!Number.isFinite(baseline)) {
+    return {
+      due: false,
+      reason: "not_due",
+      nextDay,
+      daysUntilNext: null,
+      administeredCount: who5.length,
+    };
+  }
+
+  const opensAt = baseline + nextDay * DAY_MS;
+  const daysUntilNext = Math.ceil((opensAt - now) / DAY_MS);
+  return {
+    due: now >= opensAt,
+    reason: now >= opensAt ? "next_window_open" : "not_due",
+    nextDay,
+    daysUntilNext,
+    administeredCount: who5.length,
+  };
+}

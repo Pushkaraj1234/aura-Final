@@ -11,6 +11,12 @@ import {
   ConsentPreferences,
   Message,
 } from "../types";
+import {
+  scoreInstrument,
+  type Instrument,
+  type InstrumentAdministration,
+  type ItemResponses,
+} from "./instruments";
 
 /**
  * Typed data-access layer over the real Supabase Postgres schema
@@ -397,6 +403,11 @@ function alertFromRow(row: any, name?: string, assignedWorker?: string | null): 
     actionTaken: row.action_taken,
     reviewedAt: row.reviewed_at,
     reviewedBy: row.reviewed_by,
+    // The two response clocks. These columns existed and were never read,
+    // which meant slaEngine saw every alert as unacknowledged and would have
+    // reported a queue of total breaches whatever the team actually did.
+    acknowledgedAt: row.acknowledged_at,
+    contactAttemptedAt: row.contact_attempted_at,
     changeDelta: row.change_delta,
     score: row.score,
     contributingFactors: row.contributing_factors,
@@ -483,6 +494,31 @@ export const alertsTable = {
     if (updates.reviewedBy !== undefined) {
       payload.reviewed_by = updates.reviewedBy;
       payload.reviewed_at = new Date().toISOString();
+    }
+    if (updates.contactAttemptedAt !== undefined) {
+      payload.contact_attempted_at = updates.contactAttemptedAt;
+    }
+    // The acknowledgement clock stops the first time a human takes the alert
+    // on, and never restarts. Two rules make the number worth reporting:
+    //
+    // It is set here rather than by the caller, so every path that acts on an
+    // alert stamps it and none can forget. And it is written with coalesce so
+    // a later edit cannot move it forward — an alert acknowledged after six
+    // hours and revisited next week must still read as six hours, or the
+    // breach rate improves every time someone reopens an old case.
+    const acknowledging =
+      updates.acknowledgedAt !== undefined ||
+      updates.reviewedBy !== undefined ||
+      updates.humanDecision !== undefined ||
+      (updates.status !== undefined && updates.status !== "NEW");
+    if (acknowledging) {
+      const stamp = updates.acknowledgedAt || new Date().toISOString();
+      const { data: existing } = await supabase
+        .from("alerts")
+        .select("acknowledged_at")
+        .eq("id", id)
+        .maybeSingle();
+      if (!existing?.acknowledged_at) payload.acknowledged_at = stamp;
     }
     const { error } = await supabase.from("alerts").update(payload).eq("id", id);
     warn("alerts.update", error);
@@ -679,11 +715,18 @@ export const consentsTable = {
       if (error) warn("consents.get", error);
       return null;
     }
+    // The three voice columns were backfilled from optional_voice_feature, so
+    // they are authoritative. The fallback to the old column covers a row
+    // written by an older client that has not been through the split.
+    const legacyVoice = Boolean(data.optional_voice_feature);
     return {
       wellbeingCheckIns: data.wellbeing_check_ins,
       supportWorkerSharing: data.support_worker_sharing,
       optionalFreeTextSharing: data.optional_free_text_sharing,
-      optionalVoiceFeature: data.optional_voice_feature,
+      optionalVoiceFeature: legacyVoice,
+      voiceTranscription: data.voice_transcription ?? legacyVoice,
+      voiceAcousticAnalysis: data.voice_acoustic_analysis ?? legacyVoice,
+      voiceAudioRetention: data.voice_audio_retention ?? legacyVoice,
       communityAggregateAnalytics: data.community_aggregate_analytics,
       updatedAt: data.updated_at,
     };
@@ -701,7 +744,19 @@ export const consentsTable = {
     if (prefs.wellbeingCheckIns !== undefined) payload.wellbeing_check_ins = prefs.wellbeingCheckIns;
     if (prefs.supportWorkerSharing !== undefined) payload.support_worker_sharing = prefs.supportWorkerSharing;
     if (prefs.optionalFreeTextSharing !== undefined) payload.optional_free_text_sharing = prefs.optionalFreeTextSharing;
-    if (prefs.optionalVoiceFeature !== undefined) payload.optional_voice_feature = prefs.optionalVoiceFeature;
+    if (prefs.voiceTranscription !== undefined) payload.voice_transcription = prefs.voiceTranscription;
+    if (prefs.voiceAcousticAnalysis !== undefined) payload.voice_acoustic_analysis = prefs.voiceAcousticAnalysis;
+    if (prefs.voiceAudioRetention !== undefined) payload.voice_audio_retention = prefs.voiceAudioRetention;
+    // The deprecated column is kept in step rather than frozen, so anything
+    // still reading it sees something true rather than a stale snapshot. It
+    // is true only when all three parts are permitted, which is what it
+    // originally meant.
+    const voiceParts = [prefs.voiceTranscription, prefs.voiceAcousticAnalysis, prefs.voiceAudioRetention];
+    if (voiceParts.some((p) => p !== undefined)) {
+      payload.optional_voice_feature = voiceParts.every((p) => p === true);
+    } else if (prefs.optionalVoiceFeature !== undefined) {
+      payload.optional_voice_feature = prefs.optionalVoiceFeature;
+    }
     if (prefs.communityAggregateAnalytics !== undefined) payload.community_aggregate_analytics = prefs.communityAggregateAnalytics;
 
     const { error } = await supabase.from("consents").upsert(payload);
@@ -1050,8 +1105,87 @@ export const profilesTable = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// VALIDATED INSTRUMENT ADMINISTRATIONS
+// ---------------------------------------------------------------------------
+
+function administrationFromRow(row: any): InstrumentAdministration {
+  return {
+    id: row.id,
+    participantId: row.participant_id,
+    instrumentId: row.instrument_id,
+    instrumentVersion: row.instrument_version,
+    itemResponses: row.item_responses || {},
+    rawScore: row.raw_score,
+    scaledScore: row.scaled_score,
+    administeredAt: row.administered_at,
+  };
+}
+
+/**
+ * There is no update here, matching the table, which has no UPDATE policy.
+ * An administration is a measurement taken at a moment. It can be superseded
+ * by a later one; it cannot be edited into a different answer.
+ */
+export const instrumentAdministrationsTable = {
+  async getAll(participantId?: string): Promise<InstrumentAdministration[]> {
+    let query = supabase
+      .from("instrument_administrations")
+      .select("*")
+      .order("administered_at", { ascending: true });
+    if (participantId) query = query.eq("participant_id", participantId);
+    const { data, error } = await query;
+    if (error) {
+      warn("instrumentAdministrations.getAll", error);
+      return [];
+    }
+    return (data || []).map(administrationFromRow);
+  },
+
+  /**
+   * Writes one completed administration.
+   *
+   * Scoring happens here rather than being accepted from the caller, so a
+   * stored raw/scaled pair always agrees with the stored item responses. A
+   * screen that computed its own total and sent it could drift from the
+   * scoring rule, and the resulting row would be unfalsifiable: the responses
+   * would say one thing and the total another, with no way to know which was
+   * wrong. scoreInstrument throws on an incomplete set, which is the correct
+   * outcome; a partial instrument is not a measurement.
+   */
+  async create(
+    participantId: string,
+    instrument: Instrument,
+    responses: ItemResponses,
+    administeredAt?: string
+  ): Promise<InstrumentAdministration | null> {
+    const score = scoreInstrument(instrument, responses);
+    const payload = {
+      id: `ins-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      participant_id: participantId,
+      instrument_id: instrument.id,
+      instrument_version: instrument.version,
+      item_responses: responses,
+      raw_score: score.raw,
+      scaled_score: score.scaled,
+      administered_at: administeredAt || new Date().toISOString(),
+    };
+    const { data, error } = await supabase
+      .from("instrument_administrations")
+      .insert(payload)
+      .select()
+      .maybeSingle();
+    if (error) {
+      warn("instrumentAdministrations.create", error);
+      return null;
+    }
+    return data ? administrationFromRow(data) : null;
+  },
+};
+
 export const supabaseService = {
   getActiveUserId,
+  instrumentAdministrations: instrumentAdministrationsTable,
   participants: participantsTable,
   checkIns: checkInsTable,
   reflections: reflectionsTable,

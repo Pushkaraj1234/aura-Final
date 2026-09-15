@@ -22,7 +22,9 @@ import {
   Download,
   Phone,
   Pencil,
+  BookOpen,
   CalendarClock,
+  ClipboardList,
   Mic
 } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
@@ -34,6 +36,8 @@ import { notificationService } from "../services/notificationService";
 import { EmptyWellbeingState } from "../components/EmptyWellbeingState";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { ParticipantTestCard } from "../components/ParticipantTestCard";
+import { supabaseService } from "../services/supabaseService";
+import { who5Due, type InstrumentAdministration, type InstrumentDue } from "../services/instruments";
 
 interface Props {
   user: User;
@@ -44,6 +48,8 @@ interface Props {
   onOpenPrivacy: () => void;
   onOpenChooseCounsellor?: () => void;
   onOpenVoiceCompanion?: () => void;
+  onOpenWellbeingIndex?: () => void;
+  onOpenWhatToExpect?: () => void;
   onLogout: () => void;
   onUpdateConsent: (status: boolean) => void;
   onDataReset?: () => void;
@@ -62,6 +68,8 @@ export const ParticipantProfile: React.FC<Props> = ({
   onOpenPrivacy,
   onOpenChooseCounsellor,
   onOpenVoiceCompanion,
+  onOpenWellbeingIndex,
+  onOpenWhatToExpect,
   onLogout,
   onUpdateConsent,
   onDataReset,
@@ -72,6 +80,33 @@ export const ParticipantProfile: React.FC<Props> = ({
   );
   const [prefSaved, setPrefSaved] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+
+  // Whether the WHO-5 is worth offering right now. Null while it loads, so the
+  // card never flashes in and out on every render of this page.
+  const participantId = participantRecord?.id;
+  const enrolledAt = participantRecord?.createdAt;
+  const [who5Status, setWho5Status] = useState<InstrumentDue | null>(null);
+  useEffect(() => {
+    let cancelled = false;
+    if (!participantId) {
+      setWho5Status(null);
+      return;
+    }
+    supabaseService.instrumentAdministrations
+      .getAll(participantId)
+      .then((rows: InstrumentAdministration[]) => {
+        if (!cancelled) {
+          setWho5Status(who5Due(rows, enrolledAt || new Date().toISOString()));
+        }
+      })
+      .catch(() => {
+        // A read that fails should not offer the questionnaire on a guess.
+        if (!cancelled) setWho5Status(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [participantId, enrolledAt]);
 
   // participants.assigned_worker holds an id, so the card said "Your
   // Counsellor" and left the person to guess who that was. Resolve it to the
@@ -216,7 +251,9 @@ ${
   <dt>Wellbeing check-ins</dt><dd>${cp.wellbeingCheckIns ? "On" : "Off"}</dd>
   <dt>Sharing with counsellor</dt><dd>${cp.supportWorkerSharing ? "On" : "Off"}</dd>
   <dt>Free-text sharing</dt><dd>${cp.optionalFreeTextSharing ? "On" : "Off"}</dd>
-  <dt>Voice feature</dt><dd>${cp.optionalVoiceFeature ? "On" : "Off"}</dd>
+  <dt>Speak instead of typing</dt><dd>${cp.voiceTranscription ? "On" : "Off"}</dd>
+  <dt>Measure how it was said</dt><dd>${cp.voiceAcousticAnalysis ? "On" : "Off"}</dd>
+  <dt>Keep the recording afterwards</dt><dd>${cp.voiceAudioRetention ? "On" : "Off"}</dd>
   <dt>Anonymous community analytics</dt><dd>${cp.communityAggregateAnalytics ? "On" : "Off"}</dd>
 </dl>`
     : `<p class="muted">Using default consent settings.</p>`
@@ -614,6 +651,72 @@ ${
                 className="shrink-0 px-6 py-3.5 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer shadow-sm"
               >
                 Start talking
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* The WHO-5, offered only on the days the evaluation protocol asks
+            for: baseline, day 7, day 30. It is not shown otherwise and there
+            is no way to open it early, which is the point rather than an
+            omission. Five questions that arrive whenever someone feels like
+            tapping them get answered carelessly, and a carelessly answered
+            instrument still enters the validity study as real data, where it
+            quietly wrecks the correlation it was collected to measure. */}
+        {onOpenWellbeingIndex && who5Status?.due && (
+          <section className="rounded-3xl border border-[#E0D7CE] bg-white p-6 sm:p-7 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <span className="flex items-center justify-center h-14 w-14 rounded-2xl bg-[#FBF3EC] text-[#A55D25] shrink-0">
+                <ClipboardList size={24} aria-hidden="true" />
+              </span>
+
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="text-lg font-bold text-[#3C3530]">
+                  {who5Status.administeredCount === 0
+                    ? "Five questions, once, to check our work"
+                    : "Time for those five questions again"}
+                </h3>
+                <p className="text-sm text-[#6B5B4C] leading-relaxed max-w-xl">
+                  {who5Status.administeredCount === 0
+                    ? "They come from the World Health Organization, not from us. Answering them lets us check our own wellbeing number against something that has actually been tested. About a minute, and it doesn't change your score."
+                    : "Same five as before. Answering them a second time is what turns one reading into something we can compare, which is the only way to tell whether our number tracks anything real."}
+                </p>
+              </div>
+
+              <button
+                onClick={onOpenWellbeingIndex}
+                className="shrink-0 px-6 py-3 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer"
+              >
+                {who5Status.administeredCount === 0 ? "Answer them" : "Answer again"}
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* Reading. Offered without a prompt or a nudge, because the person
+            most likely to open it is not in a state to be led anywhere, and
+            because nothing about what someone reads is recorded. */}
+        {onOpenWhatToExpect && (
+          <section className="rounded-3xl border border-[#E0D7CE] bg-white p-6 sm:p-7 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <span className="flex items-center justify-center h-14 w-14 rounded-2xl bg-[#F1EBE5] text-[#7A6A5A] shrink-0">
+                <BookOpen size={24} aria-hidden="true" />
+              </span>
+
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="text-lg font-bold text-[#3C3530]">What to expect</h3>
+                <p className="text-sm text-[#6B5B4C] leading-relaxed max-w-xl">
+                  Four short pieces: why you might be feeling like this, what a counsellor here can
+                  and can't do, how the court process usually goes, and what we do with what you
+                  tell us. Nobody is told what you read.
+                </p>
+              </div>
+
+              <button
+                onClick={onOpenWhatToExpect}
+                className="shrink-0 px-6 py-3 rounded-2xl border border-[#E0D7CE] text-[#5A5049] font-semibold text-sm hover:bg-[#FAF7F4] transition-colors cursor-pointer"
+              >
+                Have a read
               </button>
             </div>
           </section>

@@ -1,12 +1,29 @@
 import React, { useState, useRef, useEffect } from "react";
-import { MessageSquare, X, Send, Bot, User, Loader2 } from "lucide-react";
+import { MessageSquare, X, Send, Bot, User, Loader2, LifeBuoy } from "lucide-react";
+import { apiService } from "../services/apiService";
+import { useLanguage } from "../context/LanguageContext";
 
 interface Message {
   role: "user" | "model";
   content: string;
+  /**
+   * Set when the server refused to let the model answer and returned crisis
+   * resources. Carried on the message rather than held as one flag for the
+   * whole thread, so the resource card stays attached to the moment it
+   * belongs to when the conversation carries on afterwards.
+   */
+  crisis?: boolean;
 }
 
-export const GeminiChatbot: React.FC = () => {
+interface Props {
+  /** Present only for a signed-in participant. Decides whether an alert can be raised. */
+  participantId?: string;
+  /** Opens AURA's emergency resource panel. */
+  onOpenEmergencyResources?: () => void;
+}
+
+export const GeminiChatbot: React.FC<Props> = ({ participantId, onOpenEmergencyResources }) => {
+  const { lang } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: "model", content: "Hello! I am your AURA assistant. How can I help you today?" }
@@ -33,21 +50,32 @@ export const GeminiChatbot: React.FC = () => {
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: newMessages })
-      });
-      
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      
-      const data = await response.json();
-      setMessages((prev) => [...prev, { role: "model", content: data.reply }]);
+      // Through apiService rather than a bare fetch, because it attaches the
+      // Supabase bearer token. Without it the server cannot raise the alert
+      // that makes a crisis reply mean anything.
+      const data = await apiService.ai.chat(
+        newMessages.map(({ role, content }) => ({ role, content })),
+        { participantId, language: lang }
+      );
+      setMessages((prev) => [
+        ...prev,
+        { role: "model", content: data.reply, crisis: Boolean(data.crisis) },
+      ]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages((prev) => [...prev, { role: "model", content: "Sorry, I encountered an error. Please try again later." }]);
+      // The crisis gate lives on the server, so a request that never arrives
+      // is also a safety check that never ran. Someone may have just typed the
+      // most important thing they will type here and got a network error.
+      // Carrying the numbers on the failure costs nothing and covers that.
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "model",
+          content:
+            "I couldn't reach the server, so I haven't seen your message. It's worth trying again in a moment.\n\nIf you need someone now, these don't need the app:\nEmergency: 112\nKIRAN, free, 24 hours: 1800-599-0019\nAASRA, 24 hours: +91 98204 66726",
+          crisis: true,
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -97,10 +125,22 @@ export const GeminiChatbot: React.FC = () => {
                   className={`px-4 py-2 text-sm max-w-[75%] rounded-2xl ${
                     msg.role === "user"
                       ? "bg-[#A55D25] text-white rounded-tr-none"
-                      : "bg-white text-slate-700 border border-slate-200 rounded-tl-none shadow-sm"
+                      : msg.crisis
+                        ? "bg-[#FBF3EC] text-[#3C3530] border border-[#A55D25]/40 rounded-tl-none shadow-sm"
+                        : "bg-white text-slate-700 border border-slate-200 rounded-tl-none shadow-sm"
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                  {msg.crisis && onOpenEmergencyResources && (
+                    <button
+                      type="button"
+                      onClick={onOpenEmergencyResources}
+                      className="mt-3 inline-flex items-center gap-2 px-3 py-2 bg-[#A55D25] text-white rounded-xl text-xs font-semibold hover:bg-[#C06A4A] transition-colors"
+                    >
+                      <LifeBuoy size={14} aria-hidden="true" />
+                      See all support lines
+                    </button>
+                  )}
                 </div>
               </div>
             ))}

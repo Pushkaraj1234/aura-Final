@@ -739,7 +739,25 @@ export interface ConsentPreferences {
   wellbeingCheckIns: boolean;
   supportWorkerSharing: boolean;
   optionalFreeTextSharing: boolean;
+  /**
+   * DEPRECATED. One switch that covered three different things: turning
+   * speech into text, measuring how it was said, and keeping the recording.
+   * Someone willing to speak but unwilling to have their delivery analysed
+   * had no way to say so, which made the honest reading of it "all three or
+   * nothing".
+   *
+   * Kept because it is the record of what pre-split participants actually
+   * agreed to, and because the three fields below were backfilled from it.
+   * Read those instead. `voiceConsent()` derives it for anything still
+   * asking the old question.
+   */
   optionalVoiceFeature: boolean;
+  /** Speech may be turned into text. Without this the voice features cannot run. */
+  voiceTranscription: boolean;
+  /** How something was said may be measured on-device and summarised as numbers. */
+  voiceAcousticAnalysis: boolean;
+  /** The recording itself may be kept after the session ends. */
+  voiceAudioRetention: boolean;
   communityAggregateAnalytics: boolean;
   updatedAt: string;
 }

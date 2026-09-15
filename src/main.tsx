@@ -5,6 +5,7 @@ import {AdminApp} from './admin/AdminApp.tsx';
 import {GuardianForm} from './pages/GuardianForm.tsx';
 import {LanguageProvider} from './context/LanguageContext.tsx';
 import './index.css';
+import {registerOfflineShell} from './services/offlineShell.ts';
 
 // Path-based bootstrap for the isolated Admin module (/admin). This is the
 // only thing that decides between the two apps; App.tsx's own currentView
@@ -29,6 +30,11 @@ window.addEventListener('unhandledrejection', (event) => {
   }
 });
 
+
+// Makes the app itself openable without a connection. Nothing personal is
+// cached: the worker refuses /api and Supabase outright, and the encrypted
+// IndexedDB queue stays the only place anything about a person rests.
+registerOfflineShell();
 
 // The language choice wraps both apps so a participant's selection survives
 // navigation and reloads. The admin console is English-only by design, but it

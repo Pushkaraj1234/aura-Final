@@ -21,6 +21,8 @@ import { CheckInResults } from "./pages/CheckInResults";
 import { ParticipantProfile } from "./pages/ParticipantProfile";
 import { ChooseCounsellor } from "./pages/ChooseCounsellor";
 import { VoiceCompanion } from "./pages/VoiceCompanion";
+import { WellbeingIndex } from "./pages/WellbeingIndex";
+import { WhatToExpect } from "./pages/WhatToExpect";
 import { CounsellorProfileEditor } from "./pages/CounsellorProfileEditor";
 import { SupportDashboard } from "./pages/SupportDashboard";
 import { ParticipantDetail } from "./pages/ParticipantDetail";
@@ -338,6 +340,22 @@ export const App: React.FC = () => {
           />
         )}
 
+        {currentView === "wellbeing_index" && currentUser && participantRecordForUser && (
+          <WellbeingIndex
+            participantId={participantRecordForUser.id}
+            onDone={() => setCurrentView("participant_home")}
+            onCancel={() => setCurrentView("participant_home")}
+          />
+        )}
+
+        {currentView === "what_to_expect" && currentUser && (
+          <WhatToExpect
+            onBack={() => setCurrentView("participant_home")}
+            onOpenEmergency={() => setEmergencyModalOpen(true)}
+            onOpenMessages={() => setCurrentView("messages")}
+          />
+        )}
+
         {currentView === "participant_home" && currentUser && (
           <ParticipantProfile
             user={currentUser}
@@ -348,6 +366,8 @@ export const App: React.FC = () => {
             onOpenPrivacy={() => setCurrentView("privacy")}
             onOpenChooseCounsellor={() => setCurrentView("choose_counsellor")}
             onOpenVoiceCompanion={() => setCurrentView("voice_companion")}
+            onOpenWellbeingIndex={() => setCurrentView("wellbeing_index")}
+            onOpenWhatToExpect={() => setCurrentView("what_to_expect")}
             onLogout={handleLogout}
             onUpdateConsent={handleUpdateConsent}
             onDataReset={() => {
@@ -518,7 +538,16 @@ export const App: React.FC = () => {
         onClose={() => setEmergencyModalOpen(false)}
       />
 
-      <GeminiChatbot />
+      {/*
+        The participant id is what lets the server raise a counsellor alert
+        when someone types something that needs a person rather than a model.
+        Without it the assistant still shows crisis lines, but it says plainly
+        that nobody here was told.
+      */}
+      <GeminiChatbot
+        participantId={participantRecordForUser?.id}
+        onOpenEmergencyResources={() => setEmergencyModalOpen(true)}
+      />
     </div>
   );
 };
