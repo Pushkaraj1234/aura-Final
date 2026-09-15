@@ -46,6 +46,7 @@ import { SuggestedSupportPlanCard } from "../components/SuggestedSupportPlanCard
 import { InterventionTimeline } from "../components/InterventionTimeline";
 import { SignalStrengthVsHumanCard } from "../components/ResponsibleAIBadges";
 import { AICaseSummaryCard } from "../components/AICaseSummaryCard";
+import { AtrocityExposureCard } from "../components/AtrocityExposureCard";
 import { PredictiveMLCard } from "../components/PredictiveMLCard";
 import { CounsellorTestPanel } from "../components/CounsellorTestPanel";
 import { GuardianAssessmentPanel } from "../components/GuardianAssessmentPanel";
@@ -720,6 +721,11 @@ export const ParticipantDetail: React.FC<Props> = ({
           <PredictiveMLCard participantId={participant.id} />
           {/* AI Case Summary (Phase 3) */}
           <AICaseSummaryCard participantId={participant.id} />
+          {/* What this person has described happening to them, read from the
+              reflections they chose to share. Counsellor-facing only: a
+              category shown back to the survivor is the humiliation-injury
+              hazard, not a feature. */}
+          <AtrocityExposureCard participantId={participant.id} />
           {/* Support and Outcome Timeline (Requirement #7) */}
           <InterventionTimeline
             participant={participant}

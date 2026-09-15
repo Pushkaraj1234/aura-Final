@@ -381,12 +381,23 @@ export const ConsentManagement: React.FC<Props> = ({
 
       {/* Production Architecture Clarification Note */}
       <div className="p-5 rounded-3xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2 text-xs text-[#7A726C]">
+        {/* Was: "In full production deployment, selecting Withdraw Consent
+            triggers an automated cryptographic erasure pipeline: all
+            historical check-in vectors are deleted from active databases,
+            cached aggregates are recomputed..." No such pipeline exists.
+            Withdrawing marks the consent record revoked; it deletes nothing.
+            Hedging it as a future deployment did not stop it reading as a
+            description of what the button does, and this is the one screen
+            where a person decides what to trust us with. */}
         <div className="flex items-center space-x-2 font-bold text-[#3C3530]">
           <Lock size={15} className="text-[#5A5049]" />
-          <span>Production Consent Revocation Architecture</span>
+          <span>What withdrawing actually does today</span>
         </div>
         <p className="leading-relaxed">
-          In full production deployment, selecting "Withdraw Consent" triggers an automated cryptographic erasure pipeline: all historical check-in vectors are deleted from active databases, cached aggregates are recomputed, and all support notifications are immediately halted.
+          It stops your answers being used and stops staff being alerted about you. It does not
+          delete the check-ins you have already submitted. If you want those removed, ask and a
+          person will do it. We would rather tell you that than describe a deletion process we
+          have not built.
         </p>
       </div>
 

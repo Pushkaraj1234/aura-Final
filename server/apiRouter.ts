@@ -15,6 +15,7 @@ import {
   screenAssistantReply,
   type CrisisTier,
 } from './crisisDetection.js';
+import { detectAtrocityExposure } from '../src/services/atrocityLexicon.js';
 import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
 import { getSupabaseForRequest } from './supabaseServer.js';
 import { runEscalationSweep } from './escalationSweep.js';
@@ -268,13 +269,29 @@ router.post('/ai/analyze-reflection', async (req: Request, res: Response) => {
 
   try {
     const analysis = await analyzeReflection(text);
+
+    // Described atrocity exposure, read deterministically rather than asked of
+    // the model. Two reasons it is not left to Gemini: a lexicon cannot be
+    // unavailable, rate-limited or differently-moody between two check-ins,
+    // and a counsellor can read the phrase that matched and disagree with it.
+    //
+    // It is returned alongside the analysis, never merged into it, because
+    // exposure and symptom state are different quantities. Folding what
+    // happened to someone into how distressed they are would mean a survivor
+    // who mentions a boycott calmly scores worse than one who does not
+    // mention it, which measures nothing.
+    const exposure = detectAtrocityExposure(text);
+
     await logAiAudit(
       req,
       'ANALYZE_REFLECTION',
-      'Used Gemini to screen a text reflection for trauma indicators and distress signals.',
+      'Used Gemini to screen a text reflection for trauma indicators and distress signals.' +
+        (exposure.signals.length > 0
+          ? ` Lexicon additionally described ${exposure.signals.length} atrocity exposure categor${exposure.signals.length === 1 ? 'y' : 'ies'}.`
+          : ''),
       participantId
     );
-    res.json(analysis);
+    res.json({ ...analysis, atrocityExposure: exposure });
   } catch (error: any) {
     console.error('Error analyzing reflection:', error);
     res.status(500).json({ detail: error.message || 'Failed to analyze text' });

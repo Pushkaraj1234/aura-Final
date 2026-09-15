@@ -16,6 +16,8 @@
     "test:score": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recEngine.js --log-level=error && node tests/score-integrity.test.mjs",
     "test:guardian": "npx esbuild src/services/guardianQuestions.ts --bundle --format=esm --outfile=dist-test/guardianQuestions.js --log-level=error && node tests/guardian.test.mjs",
     "test:crisis": "npx esbuild server/crisisDetection.ts --bundle --format=esm --outfile=dist-test/crisisDetection.js --log-level=error && node tests/crisis-detection.test.mjs",
+    "test:safety-exit": "npx esbuild src/services/safetyExit.ts --bundle --format=esm --outfile=dist-test/safetyExit.js --log-level=error && node tests/safety-exit.test.mjs",
+    "test:atrocity-lexicon": "npx esbuild src/services/atrocityLexicon.ts --bundle --format=esm --outfile=dist-test/atrocityLexicon.js --log-level=error && node tests/atrocity-lexicon.test.mjs",
     "test:voice-greeting": "npx esbuild src/voice/lib/audioPlayer.ts --bundle --format=esm --outfile=dist-test/audioPlayer.js --log-level=error && node tests/voice-greeting.test.mjs",
     "test:sla": "npx esbuild src/services/slaEngine.ts --bundle --format=esm --outfile=dist-test/slaEngine.js --log-level=error && node tests/sla.test.mjs",
     "test:instruments": "npx esbuild src/services/instruments.ts --bundle --format=esm --outfile=dist-test/instruments.js --log-level=error && node tests/instruments.test.mjs",

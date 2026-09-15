@@ -3,6 +3,7 @@ import { normalizeKit } from "./firstAidKit";
 import { participantStore } from "./participantStore";
 import { auditService } from "./auditService";
 import { supabase } from "./supabaseClient";
+import { wipeLocalTraces } from "./safetyExit";
 
 const AUTH_KEY = "aura_auth_session";
 const TOKEN_KEY = "aura_auth_token";
@@ -534,8 +535,16 @@ export const authService = {
     } catch (e) {
       console.warn("[AuthService] Supabase signOut notice:", e);
     }
-    localStorage.removeItem(AUTH_KEY);
-    localStorage.removeItem(TOKEN_KEY);
+    // Everything AURA cached, not just the session.
+    //
+    // This used to remove AUTH_KEY and TOKEN_KEY alone, which left
+    // aura_participants_v2 holding every check-in, note and alert in plain
+    // localStorage after sign-out. On a shared or borrowed phone that is the
+    // whole threat model of this product realised: the next person to open
+    // the browser could read a survivor's full history without signing in as
+    // anybody. Signing out now means what a person signing out believes it
+    // means.
+    wipeLocalTraces();
     if (typeof window !== "undefined") {
       window.dispatchEvent(new Event("aura_auth_updated"));
     }

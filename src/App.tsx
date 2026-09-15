@@ -36,6 +36,7 @@ import { NotificationsPage } from "./pages/NotificationsPage";
 import { Messages } from "./pages/Messages";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GeminiChatbot } from "./components/GeminiChatbot";
+import { SafetyExitButton } from "./components/SafetyExitButton";
 
 export const App: React.FC = () => {
   // Ensure store initialization
@@ -549,6 +550,11 @@ export const App: React.FC = () => {
         participantId={participantRecordForUser?.id}
         onOpenEmergencyResources={() => setEmergencyModalOpen(true)}
       />
+
+      {/* The way out, for the person whose phone may not be their own. Shown
+          to participants only: a counsellor at a desk is not the threat model,
+          and an extra control on every staff screen would be noise. */}
+      <SafetyExitButton visible={currentUser?.role === "participant"} />
     </div>
   );
 };
