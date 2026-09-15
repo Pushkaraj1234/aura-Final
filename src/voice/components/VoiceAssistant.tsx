@@ -48,7 +48,11 @@ export function VoiceAssistant() {
   const [reachable, setReachable] = useState<"checking" | "yes" | "no">("checking");
 
   const strings = getStrings(language);
-  const voice = useVoiceAssistant({ language, storeTranscript: consent?.storeTranscript ?? false });
+  const voice = useVoiceAssistant({
+    language,
+    storeTranscript: consent?.storeTranscript ?? false,
+    greeting: strings.greeting,
+  });
   const active = voice.status !== "idle" && voice.status !== "error";
 
   useEffect(() => {

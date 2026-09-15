@@ -62,6 +62,38 @@ export class AudioPlayer {
     speechSynthesis.speak(utterance);
   }
 
+  /**
+   * Says something the server did not say: the opening greeting.
+   *
+   * Deliberately outside the turn system. speakText() sets `playingTurn`, and
+   * `stop()` then pushes `droppedUpTo` up to that id, so giving the greeting a
+   * turn number means a barge-in during the greeting can discard the server's
+   * first real turn as well. It also means no `playback_done` is ever reported
+   * for a turn the server has no record of.
+   *
+   * It still counts towards `speechPending`, which is what makes `isPlaying`
+   * true, so barge-in interrupts the greeting and `stop()` cancels it like any
+   * other speech.
+   */
+  announce(text: string, language: string, onDone?: () => void): void {
+    if (typeof speechSynthesis === "undefined") {
+      onDone?.();
+      return;
+    }
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = language;
+    utterance.rate = 0.95;
+    this.speechPending += 1;
+    const finish = () => {
+      this.speechPending = Math.max(0, this.speechPending - 1);
+      onDone?.();
+      this.checkFinished();
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+    speechSynthesis.speak(utterance);
+  }
+
   /** The server finished sending this turn; report playback end once audio drains. */
   markResponseDone(turnId: number): void {
     this.doneTurns.add(turnId);

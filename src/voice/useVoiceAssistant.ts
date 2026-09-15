@@ -32,6 +32,7 @@ export interface PlayerLike {
   unlock(): Promise<void>;
   enqueue(turnId: number, sampleRate: number, samples: Float32Array): void;
   speakText(turnId: number, text: string, language: string): void;
+  announce(text: string, language: string, onDone?: () => void): void;
   markResponseDone(turnId: number): void;
   stop(turnId?: number): void;
   close(): void;
@@ -60,6 +61,13 @@ const defaultDeps: VoiceDeps = {
 export interface VoiceOptions {
   language: string;
   storeTranscript: boolean;
+  /**
+   * Spoken once when the conversation opens, so pressing the button is
+   * answered by a voice rather than by silence and a status line. Passed in
+   * rather than read from the string table here, so the hook stays free of the
+   * translation layer and a test can supply its own.
+   */
+  greeting?: string;
 }
 
 export type SessionEndReason = "time_limit" | "idle" | null;
@@ -90,12 +98,20 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
   // Read inside onMicFrame, which is memoised and would otherwise close over a
   // stale value and keep streaming after the button said it had stopped.
   const mutedRef = useRef(false);
+  /**
+   * Whether this conversation has already been greeted. A ref rather than
+   * state because the check happens inside `handleMessage`, and because
+   * `ready` arrives again after every reconnect -- being greeted afresh each
+   * time the socket blips would be worse than not being greeted at all.
+   */
+  const greeted = useRef(false);
   const optionsRef = useRef(options);
   optionsRef.current = options;
 
   const teardown = useCallback(() => {
     active.current = false;
     mutedRef.current = false;
+    greeted.current = false;
     setMuted(false);
     clearTimeout(reconnectTimer.current);
     client.current?.disconnect();
@@ -135,11 +151,36 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
   const handleMessage = useCallback(
     (message: ServerMessage) => {
       switch (message.type) {
-        case "ready":
+        case "ready": {
           reconnectAttempt.current = 0;
           setError(null);
           setStatus("listening");
+
+          // Say hello, once, at the start of the conversation. `ready` also
+          // arrives after a reconnect, which is why this is guarded: someone
+          // mid-sentence when the socket blips should not be greeted again.
+          const greeting = optionsRef.current.greeting;
+          if (!greeted.current && greeting) {
+            greeted.current = true;
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `greeting-${Date.now()}`,
+                role: "assistant",
+                text: greeting,
+                final: true,
+                timestamp: Date.now(),
+              },
+            ]);
+            setStatus("speaking");
+            player.current?.announce(greeting, optionsRef.current.language, () => {
+              // Back to listening only if nothing else has taken over in the
+              // meantime -- the person may already have spoken over it.
+              setStatus((current) => (current === "speaking" ? "listening" : current));
+            });
+          }
           break;
+        }
         case "status":
           // Local playback may outlast the server's view of the turn.
           if (message.status === "listening" && player.current?.isPlaying) break;
@@ -254,6 +295,15 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
     setSafety(null);
     setEndReason(null);
     setStatus("connecting");
+    // Every other piece of session-scoped state is cleared here; mute was not,
+    // and was only reset by teardown(). Any path that left a session without
+    // running teardown therefore carried a stale `true` into the next one, and
+    // the result is silent rather than obvious: the new microphone opens fine,
+    // the status says "listening", and onMicFrame drops every frame, so the
+    // assistant simply never hears anything. Reset it with the rest.
+    mutedRef.current = false;
+    greeted.current = false;
+    setMuted(false);
 
     const audioOut = deps.createPlayer((turnId) => {
       client.current?.send({ type: "playback_done", turnId });
@@ -267,6 +317,10 @@ export function useVoiceAssistant(options: VoiceOptions, deps: VoiceDeps = defau
     mic.current = microphone;
     try {
       await microphone.startMicrophone(onMicFrame);
+      // The track and the ref must agree. onMicFrame gates on mutedRef, so a
+      // disagreement here is exactly the failure above: a live microphone
+      // whose frames are thrown away.
+      microphone.setMuted(mutedRef.current);
     } catch (e) {
       fail(micErrorCode(e));
       return;

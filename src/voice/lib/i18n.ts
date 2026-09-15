@@ -16,6 +16,12 @@ export interface Strings {
   mute: string;
   unmute: string;
   mutedNotice: string;
+  /**
+   * Spoken aloud, once, the moment the conversation opens. Short on purpose:
+   * it is the first thing someone hears after pressing the button, and a long
+   * welcome is a wall to get through before they can say anything.
+   */
+  greeting: string;
   language: string;
   captionsShow: string;
   captionsHide: string;
@@ -59,6 +65,7 @@ const en: Strings = {
   mute: "Turn my microphone off",
   unmute: "Turn my microphone back on",
   mutedNotice: "Your microphone is off. Nothing is being heard or sent. The conversation is still here when you want it.",
+  greeting: "Hello. I'm here whenever you're ready. Take your time.",
   language: "Language",
   captionsShow: "Show captions",
   captionsHide: "Hide captions",
@@ -115,6 +122,7 @@ const hi: Strings = {
   mute: "मेरा माइक्रोफ़ोन बंद करें",
   unmute: "मेरा माइक्रोफ़ोन फिर चालू करें",
   mutedNotice: "आपका माइक्रोफ़ोन बंद है। कुछ भी सुना या भेजा नहीं जा रहा। बातचीत यहीं है, जब आप चाहें।",
+  greeting: "नमस्ते। जब आप तैयार हों, मैं यहीं हूँ। आराम से।",
   language: "भाषा",
   captionsShow: "कैप्शन दिखाएँ",
   captionsHide: "कैप्शन छिपाएँ",
@@ -164,6 +172,7 @@ const mr: Strings = {
   mute: "माझा मायक्रोफोन बंद करा",
   unmute: "माझा मायक्रोफोन पुन्हा चालू करा",
   mutedNotice: "तुमचा मायक्रोफोन बंद आहे. काहीही ऐकले किंवा पाठवले जात नाही. संभाषण इथेच आहे, तुम्हाला हवे तेव्हा.",
+  greeting: "नमस्कार. तुम्ही तयार असाल तेव्हा मी इथेच आहे. सावकाश.",
   language: "भाषा",
   captionsShow: "कॅप्शन दाखवा",
   captionsHide: "कॅप्शन लपवा",
