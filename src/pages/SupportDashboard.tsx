@@ -42,6 +42,7 @@ import { authService } from "../services/authService";
 import { apiService } from "../services/apiService";
 import { ResponseClockPanel } from "../components/ResponseClockPanel";
 import { summariseSla } from "../services/slaEngine";
+import { computeConsentCoverage, computeCohortChange } from "../services/communityAggregates";
 
 interface Props {
   participants: Participant[];
@@ -69,6 +70,8 @@ export const SupportDashboard: React.FC<Props> = ({
   // summary walks every alert and this component re-renders on every keystroke
   // in the search box.
   const responseClocks = useMemo(() => summariseSla(alerts), [alerts]);
+  const consentCoverage = useMemo(() => computeConsentCoverage(participants), [participants]);
+  const cohortChange = useMemo(() => computeCohortChange(participants), [participants]);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -453,13 +456,32 @@ export const SupportDashboard: React.FC<Props> = ({
           </div>
         </div>
 
+        {/* Was a hardcoded "+12%" under a green upward arrow. Two problems:
+            it measured nothing, and on a scale where 100 is worst a rising
+            number next to an upward arrow read as good news while meaning the
+            opposite. This is the real change in mean distress over a week,
+            in points, with the direction named in words. */}
         <div className="card-elev rounded-3xl p-6 sm:p-7 flex flex-col gap-6 min-h-[168px]">
           <div className="w-10 h-10 rounded-2xl bg-[#F5E8D6] text-[#B07A3C] flex items-center justify-center">
-            <TrendingUp size={18} />
+            {cohortChange.deltaPoints !== null && cohortChange.deltaPoints > 0
+              ? <TrendingUp size={18} />
+              : <TrendingDown size={18} />}
           </div>
           <div className="space-y-1">
-            <div className="font-serif text-4xl text-[#3A2A1E]">+12%</div>
-            <p className="text-[13px] text-[#8A7A6B]">Early wellbeing change · 7 days</p>
+            <div className="font-serif text-4xl text-[#3A2A1E]">
+              {cohortChange.deltaPoints === null
+                ? <span className="text-xl text-[#8A7A6B]">not enough yet</span>
+                : `${cohortChange.deltaPoints > 0 ? "+" : ""}${cohortChange.deltaPoints}`}
+            </div>
+            <p className="text-[13px] text-[#8A7A6B]">
+              {cohortChange.deltaPoints === null
+                ? `Needs check-ins in both of the last two ${cohortChange.windowDays}-day windows`
+                : cohortChange.deltaPoints > 0
+                  ? `Mean distress up over ${cohortChange.windowDays} days`
+                  : cohortChange.deltaPoints < 0
+                    ? `Mean distress down over ${cohortChange.windowDays} days`
+                    : `Mean distress unchanged over ${cohortChange.windowDays} days`}
+            </p>
           </div>
         </div>
 
@@ -502,11 +524,21 @@ export const SupportDashboard: React.FC<Props> = ({
 
       {/* Quiet secondary stats */}
       <section className="flex flex-wrap gap-4">
+        {/* Was a hardcoded "96%". */}
         <div className="card-elev rounded-2xl px-5 py-4 flex items-center gap-3 min-w-[160px]">
           <Shield size={16} className="text-[#B0713C]" />
           <div>
             <span className="text-[12px] text-[#8A7A6B] block">Consent coverage</span>
-            <span className="font-serif text-xl text-[#3A2A1E]">96%</span>
+            <span className="font-serif text-xl text-[#3A2A1E]">
+              {consentCoverage.percent === null
+                ? "too few to report"
+                : `${consentCoverage.percent}%`}
+            </span>
+            {consentCoverage.percent !== null && (
+              <span className="text-[11px] text-[#8A7A6B] block">
+                {consentCoverage.consented} of {consentCoverage.total}
+              </span>
+            )}
           </div>
         </div>
         {/* Was a hardcoded "18m". It described nothing, and it sat in the one

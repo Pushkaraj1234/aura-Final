@@ -22,6 +22,7 @@
     "test:who5-schedule": "npx esbuild src/services/instruments.ts --bundle --format=esm --outfile=dist-test/instruments.js --log-level=error && node tests/who5-schedule.test.mjs",
     "test:concordance-policy": "npx esbuild src/services/concordanceEngine.ts --bundle --format=esm --outfile=dist-test/concordanceEngine.js --log-level=error && npx esbuild src/services/riskEngine.ts --bundle --format=esm --outfile=dist-test/riskEngine.js --log-level=error && node tests/concordance-policy.test.mjs",
     "test:community": "npx esbuild src/services/communityAggregates.ts --bundle --format=esm --outfile=dist-test/communityAggregates.js --log-level=error && node tests/community-aggregates.test.mjs",
+    "test:cohort-stats": "npx esbuild src/services/communityAggregates.ts --bundle --format=esm --outfile=dist-test/communityAggregates.js --log-level=error && npx esbuild src/services/overrideStats.ts --bundle --format=esm --outfile=dist-test/overrideStats.js --log-level=error && node tests/cohort-stats.test.mjs",
     "test:offline-shell": "node tests/offline-shell.test.mjs",
     "test:fairness": "npx esbuild src/services/fairnessReport.ts --bundle --format=esm --outfile=dist-test/fairnessReport.js --log-level=error && node tests/fairness-report.test.mjs",
     "test:score-version": "npx esbuild src/services/riskEngine.ts --bundle --format=esm --outfile=dist-test/riskEngine.js --log-level=error && node tests/score-version.test.mjs",

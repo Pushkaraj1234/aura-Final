@@ -199,3 +199,299 @@ export function computeCommonSignals(participants: Participant[]): CommonSignals
     suppressed: false,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Cohort-level figures
+// ---------------------------------------------------------------------------
+
+/**
+ * The headline counts, computed rather than asserted.
+ *
+ * These replaced a hardcoded block reading "128 participants monitored",
+ * "46% improving (59)", "31% stable (40)", "18% increasing (23)", "5% urgent
+ * (6)" and "across 4 humanitarian zones". Not one of those numbers came from
+ * anywhere. A badge above them said "Synthetic Demonstration Aggregates",
+ * which is honest labelling of a dashboard that still reads, at a glance, as
+ * a report on real people in real districts.
+ *
+ * The same suppression rule as everything else on this page: below
+ * MIN_GROUP_SIZE nothing is published, because a trend breakdown over four
+ * people is a description of those four people.
+ */
+export interface CohortTrend {
+  /** Participants with at least one check-in. The denominator, stated. */
+  basis: number;
+  totalParticipants: number;
+  improving: number;
+  stable: number;
+  increasing: number;
+  /** Most recent check-in reported an immediate safety concern. */
+  urgent: number;
+  /** Participants with only one check-in, who have no direction yet. */
+  tooEarly: number;
+  regionsReported: number;
+  suppressed: boolean;
+}
+
+/** Change between the two most recent check-ins that counts as a direction. */
+const TREND_DELTA = 5;
+
+/**
+ * Direction of travel for one person, from their two most recent check-ins.
+ *
+ * Two points rather than a fitted line, deliberately. A slope across a whole
+ * history is dominated by where someone started, so a person who arrived in
+ * crisis and has been slowly improving for months still reads as "high", and
+ * a person who was fine for a year and collapsed last week still reads as
+ * "stable". The question this page asks is which way someone is moving now.
+ */
+const directionFor = (checkIns: CheckIn[]): "improving" | "stable" | "increasing" | "too_early" => {
+  const ordered = [...checkIns].sort(
+    (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+  );
+  if (ordered.length < 2) return "too_early";
+  const previous = calculateRawScore(ordered[ordered.length - 2]!);
+  const latest = calculateRawScore(ordered[ordered.length - 1]!);
+  const delta = latest - previous;
+  if (delta <= -TREND_DELTA) return "improving";
+  if (delta >= TREND_DELTA) return "increasing";
+  return "stable";
+};
+
+export function computeCohortTrend(participants: Participant[]): CohortTrend {
+  const withHistory = participants.filter((p) => (p.checkIns || []).length > 0);
+  const regionsReported = new Set(
+    participants.map((p) => (p.region || "").trim()).filter((r) => r !== "")
+  ).size;
+
+  if (withHistory.length < MIN_GROUP_SIZE) {
+    return {
+      basis: withHistory.length,
+      totalParticipants: participants.length,
+      improving: 0,
+      stable: 0,
+      increasing: 0,
+      urgent: 0,
+      tooEarly: 0,
+      regionsReported,
+      suppressed: true,
+    };
+  }
+
+  let improving = 0;
+  let stable = 0;
+  let increasing = 0;
+  let urgent = 0;
+  let tooEarly = 0;
+
+  for (const p of withHistory) {
+    const checkIns = p.checkIns || [];
+    const latest = latestCheckIn(checkIns);
+    // Counted separately and first: an immediate safety concern is not a
+    // direction of travel, and folding it into "increasing" would hide it.
+    if (latest?.immediateSafetyConcern) urgent++;
+
+    switch (directionFor(checkIns)) {
+      case "improving":
+        improving++;
+        break;
+      case "increasing":
+        increasing++;
+        break;
+      case "stable":
+        stable++;
+        break;
+      default:
+        tooEarly++;
+    }
+  }
+
+  return {
+    basis: withHistory.length,
+    totalParticipants: participants.length,
+    improving,
+    stable,
+    increasing,
+    urgent,
+    tooEarly,
+    regionsReported,
+    suppressed: false,
+  };
+}
+
+/**
+ * Share of participants who have given consent, for the counsellor dashboard.
+ *
+ * Replaced a hardcoded "96%". Reported as a fraction as well as a percentage,
+ * because "96%" over twenty-five people and "96%" over a thousand are
+ * different claims and the dashboard should not flatten them.
+ */
+export interface ConsentCoverage {
+  consented: number;
+  total: number;
+  percent: number | null;
+  suppressed: boolean;
+}
+
+export function computeConsentCoverage(participants: Participant[]): ConsentCoverage {
+  const total = participants.length;
+  if (total < MIN_GROUP_SIZE) {
+    return { consented: 0, total, percent: null, suppressed: true };
+  }
+  const consented = participants.filter((p) => p.consentGiven).length;
+  return {
+    consented,
+    total,
+    percent: Math.round((consented / total) * 100),
+    suppressed: false,
+  };
+}
+
+/**
+ * Mean distress change across the cohort over a window, against the window
+ * before it.
+ *
+ * Replaced a hardcoded "+12% Early wellbeing change - 7 days", which had the
+ * additional problem of a sign nobody could interpret: on a scale where 100 is
+ * worst, "+12%" next to a green upward arrow read as good news and would have
+ * meant the opposite. This returns points on the distress scale, not a
+ * percentage, and says which direction is which.
+ */
+export interface CohortChange {
+  /** Mean score in the recent window, or null when there is nothing to average. */
+  recentMean: number | null;
+  priorMean: number | null;
+  /** recentMean - priorMean. Negative is an improvement, because 100 is worst. */
+  deltaPoints: number | null;
+  /** Check-ins in the recent window. The basis for the mean. */
+  recentCount: number;
+  priorCount: number;
+  windowDays: number;
+  suppressed: boolean;
+}
+
+export function computeCohortChange(
+  participants: Participant[],
+  windowDays = 7,
+  now: number = Date.now()
+): CohortChange {
+  const windowMs = windowDays * DAY;
+  const recent: number[] = [];
+  const prior: number[] = [];
+
+  for (const p of participants) {
+    for (const checkIn of p.checkIns || []) {
+      const at = new Date(checkIn.timestamp).getTime();
+      if (!Number.isFinite(at)) continue;
+      const age = now - at;
+      if (age < 0) continue;
+      if (age <= windowMs) recent.push(calculateRawScore(checkIn));
+      else if (age <= windowMs * 2) prior.push(calculateRawScore(checkIn));
+    }
+  }
+
+  const mean = (values: number[]): number | null =>
+    values.length === 0
+      ? null
+      : Math.round((values.reduce((a, b) => a + b, 0) / values.length) * 10) / 10;
+
+  // Both windows must clear the floor. A delta against three check-ins is a
+  // statement about those three check-ins.
+  const suppressed = recent.length < MIN_GROUP_SIZE || prior.length < MIN_GROUP_SIZE;
+  const recentMean = mean(recent);
+  const priorMean = mean(prior);
+
+  return {
+    recentMean: suppressed ? null : recentMean,
+    priorMean: suppressed ? null : priorMean,
+    deltaPoints:
+      suppressed || recentMean === null || priorMean === null
+        ? null
+        : Math.round((recentMean - priorMean) * 10) / 10,
+    recentCount: recent.length,
+    priorCount: prior.length,
+    windowDays,
+    suppressed,
+  };
+}
+
+/**
+ * Daily mean distress over a window, for the community trend chart.
+ *
+ * That chart was an SVG path drawn by hand: a fixed `d` attribute with five
+ * labelled nodes reading 52, 58, 54, 44, 38, under a caption claiming it
+ * averaged 128 participants. It described a recovery that never happened to
+ * anybody.
+ *
+ * Days below MIN_GROUP_SIZE are returned as gaps rather than points, and a
+ * gap is not interpolated across. A line drawn smoothly through a day when
+ * two people checked in is a picture of those two people, and joining it to
+ * the days either side hides that it happened.
+ */
+export interface TrendPoint {
+  /** Midnight of the day, ISO. */
+  date: string;
+  /** Days before `now`, with 0 being today. */
+  daysAgo: number;
+  /** Mean score that day, or null when too few check-ins to report. */
+  mean: number | null;
+  checkIns: number;
+}
+
+export interface DailyTrend {
+  points: TrendPoint[];
+  /** Days inside the window that had check-ins but too few to report. */
+  suppressedDays: number;
+  /** Days with a reportable mean. */
+  reportedDays: number;
+  /** True when no day in the window clears the floor. */
+  suppressed: boolean;
+  windowDays: number;
+}
+
+export function computeDailyTrend(
+  participants: Participant[],
+  windowDays = 14,
+  now: number = Date.now()
+): DailyTrend {
+  const buckets = new Map<number, number[]>();
+  for (let d = 0; d < windowDays; d++) buckets.set(d, []);
+
+  for (const p of participants) {
+    for (const checkIn of p.checkIns || []) {
+      const at = new Date(checkIn.timestamp).getTime();
+      if (!Number.isFinite(at)) continue;
+      const daysAgo = Math.floor((now - at) / DAY);
+      if (daysAgo < 0 || daysAgo >= windowDays) continue;
+      buckets.get(daysAgo)!.push(calculateRawScore(checkIn));
+    }
+  }
+
+  const points: TrendPoint[] = [];
+  let suppressedDays = 0;
+  let reportedDays = 0;
+
+  // Oldest first, so the chart reads left to right like a timeline.
+  for (let daysAgo = windowDays - 1; daysAgo >= 0; daysAgo--) {
+    const scores = buckets.get(daysAgo)!;
+    const reportable = scores.length >= MIN_GROUP_SIZE;
+    if (scores.length > 0 && !reportable) suppressedDays++;
+    if (reportable) reportedDays++;
+    points.push({
+      date: new Date(now - daysAgo * DAY).toISOString(),
+      daysAgo,
+      mean: reportable
+        ? Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 10) / 10
+        : null,
+      checkIns: scores.length,
+    });
+  }
+
+  return {
+    points,
+    suppressedDays,
+    reportedDays,
+    suppressed: reportedDays === 0,
+    windowDays,
+  };
+}
