@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import {
   Users,
   TrendingUp,
@@ -13,70 +13,30 @@ import {
   HelpCircle,
   Info
 } from "lucide-react";
-import { RegionPlanningData } from "../types";
+import { Participant } from "../types";
+import {
+  computeCommunityAggregates,
+  computeCommonSignals,
+  MIN_GROUP_SIZE,
+} from "../services/communityAggregates";
 
-export const MOCK_REGIONS: RegionPlanningData[] = [
-  {
-    regionId: "reg-b",
-    name: "Region B, central relief hub and transit camp",
-    code: "REG-B",
-    activeParticipants: 48,
-    demandTrend: "increasing",
-    demandScore: 82,
-    supportRequestsCount: 19,
-    currentCounselors: 3,
-    recommendedCounselors: 6,
-    signalNote: "Potential resource planning signal: Rapid rise in relocation stress and sleep disruption. Deploy additional humanitarian counselors."
-  },
-  {
-    regionId: "reg-a",
-    name: "Region A, northern district housing",
-    code: "REG-A",
-    activeParticipants: 36,
-    demandTrend: "stable",
-    demandScore: 42,
-    supportRequestsCount: 6,
-    currentCounselors: 3,
-    recommendedCounselors: 3,
-    signalNote: "Stable wellbeing indicators. Adequate staffing levels for routine voluntary reflections."
-  },
-  {
-    regionId: "reg-c",
-    name: "Region C, eastern shelter complex",
-    code: "REG-C",
-    activeParticipants: 28,
-    demandTrend: "decreasing",
-    demandScore: 35,
-    supportRequestsCount: 4,
-    currentCounselors: 2,
-    recommendedCounselors: 2,
-    signalNote: "Positive recovery trajectory following community center peer circle rollout."
-  },
-  {
-    regionId: "reg-d",
-    name: "Region D, western logistics outpost",
-    code: "REG-D",
-    activeParticipants: 16,
-    demandTrend: "increasing",
-    demandScore: 68,
-    supportRequestsCount: 7,
-    currentCounselors: 1,
-    recommendedCounselors: 3,
-    signalNote: "Moderate increase in isolation indicators. Recommend expanding peer group outreach."
-  }
-];
+interface Props {
+  onOpenEmergency: () => void;
+  /**
+   * The real participant records. This page used to render a MOCK_REGIONS
+   * constant -- four hardcoded rows, a fabricated counsellor recommendation
+   * and invented advice -- beneath the headings "Anonymous Macro Analytics"
+   * and "Privacy-Preserving Aggregations". Everything below now comes from
+   * these, or is withheld and says so.
+   */
+  participants: Participant[];
+}
 
-export const CommunityInsights: React.FC = () => {
-  const [regions, setRegions] = useState<RegionPlanningData[]>(MOCK_REGIONS);
-
-  // Common signals aggregate breakdown
-  const commonSignals = [
-    { name: "Reported Stress / Tension", count: 72, percent: 56, impact: "high" },
-    { name: "Sleep Quality Disruption", count: 54, percent: 42, impact: "high" },
-    { name: "Social Disconnection / Isolation", count: 39, percent: 30, impact: "medium" },
-    { name: "Environmental Safety Uncertainty", count: 23, percent: 18, impact: "medium" },
-    { name: "Explicit Support Counselor Requests", count: 18, percent: 14, impact: "high" }
-  ];
+export const CommunityInsights: React.FC<Props> = ({ participants }) => {
+  const aggregates = useMemo(() => computeCommunityAggregates(participants), [participants]);
+  const common = useMemo(() => computeCommonSignals(participants), [participants]);
+  const regions = aggregates.regions;
+  const commonSignals = common.signals;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -188,19 +148,27 @@ export const CommunityInsights: React.FC = () => {
                   Most Common Community Signals
                 </h3>
                 <p className="text-xs text-[#7F8C8D]">
-                  Frequency of self-reported indicators across all cohorts
+                  {common.suppressed
+                    ? "Withheld until the cohort is larger"
+                    : `Counted once per person, on their most recent check-in (${common.basis} ${common.basis === 1 ? "person" : "people"})`}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="space-y-4">
+            {common.suppressed && (
+              <p className="text-xs text-[#7F8C8D] leading-relaxed">
+                Fewer than {MIN_GROUP_SIZE} people have completed a check-in, so a breakdown here
+                would describe them individually rather than a group.
+              </p>
+            )}
             {commonSignals.map((sig, idx) => (
               <div key={idx} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-[#3C3530]">{sig.name}</span>
                   <span className="font-mono text-[#7A726C] font-bold">
-                    {sig.percent}% ({sig.count} participants)
+                    {sig.percent}% ({sig.count} of {common.basis})
                   </span>
                 </div>
                 <div className="w-full bg-[#EFE8E2] h-2.5 rounded-full overflow-hidden">
@@ -387,12 +355,16 @@ export const CommunityInsights: React.FC = () => {
         {/* Regional Cards Grid */}
         <div className="grid md:grid-cols-2 gap-5">
           {regions.map((reg) => {
-            const isHighDemand = reg.demandTrend === "increasing";
+            // "Needs attention" is a count of people, not a judgement about a
+            // district, and there is deliberately no recommended-staffing
+            // figure: the old card printed one, and nothing in this data
+            // supports telling a coordinator how many counsellors to send.
+            const needsAttention = reg.elevated > 0;
             return (
               <div
-                key={reg.regionId}
+                key={reg.region}
                 className={`p-5 rounded-2xl border transition-all space-y-4 ${
-                  isHighDemand
+                  needsAttention
                     ? "bg-[#A55D25]/5 border-[#A55D25]/30 shadow-xs"
                     : "bg-[#FDF9F5] border-[#EFE8E2]"
                 }`}
@@ -400,53 +372,79 @@ export const CommunityInsights: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div>
                     <span className="font-mono text-xs font-black text-[#7F8C8D]">
-                      {reg.code}
+                      {reg.checkIns} check-ins
                     </span>
                     <h4 className="text-base font-black text-[#3C3530] mt-0.5">
-                      {reg.name}
+                      {reg.region}
                     </h4>
                   </div>
 
                   <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center space-x-1 ${
-                    isHighDemand
-                      ? "bg-[#A55D25] text-white"
-                      : reg.demandTrend === "decreasing"
-                      ? "bg-emerald-600 text-white"
-                      : "bg-[#5A5049] text-white"
+                    needsAttention ? "bg-[#A55D25] text-white" : "bg-[#5A5049] text-white"
                   }`}>
-                    {isHighDemand ? <TrendingUp size={12} className="mr-1" /> : <TrendingDown size={12} className="mr-1" />}
-                    <span>{reg.demandTrend} demand</span>
+                    {needsAttention
+                      ? <TrendingUp size={12} className="mr-1" />
+                      : <TrendingDown size={12} className="mr-1" />}
+                    <span>{needsAttention ? "someone is high" : "none high"}</span>
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
                     <span className="text-[10px] text-[#7F8C8D] uppercase block">Participants</span>
-                    <span className="font-black text-sm text-[#3C3530]">{reg.activeParticipants}</span>
+                    <span className="font-black text-sm text-[#3C3530]">{reg.participants}</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
-                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Support Asks</span>
-                    <span className="font-black text-sm text-[#3C3530]">{reg.supportRequestsCount}</span>
+                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Mean score</span>
+                    <span className="font-black text-sm text-[#3C3530]">
+                      {reg.meanScore === null ? "no data" : reg.meanScore}
+                    </span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
-                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Counselors</span>
-                    <span className={`font-black text-sm ${reg.currentCounselors < reg.recommendedCounselors ? "text-[#A55D25]" : "text-[#5A5049]"}`}>
-                      {reg.currentCounselors} / {reg.recommendedCounselors} rec.
+                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Gone quiet</span>
+                    <span className={`font-black text-sm ${reg.quiet > 0 ? "text-[#A55D25]" : "text-[#5A5049]"}`}>
+                      {reg.quiet}
                     </span>
                   </div>
                 </div>
 
-                {/* Resource Planning Signal Callout */}
                 <div className="p-3 rounded-xl bg-white border border-[#EFE8E2] text-xs text-[#3C3530] flex items-start space-x-2">
-                  <AlertTriangle size={15} className={`shrink-0 mt-0.5 ${isHighDemand ? "text-[#A55D25]" : "text-[#5A5049]"}`} />
+                  <AlertTriangle size={15} className={`shrink-0 mt-0.5 ${needsAttention ? "text-[#A55D25]" : "text-[#5A5049]"}`} />
                   <p className="leading-relaxed">
-                    {reg.signalNote}
+                    {reg.elevated} of {reg.participants} scored 60 or above on their most recent
+                    check-in. {reg.quiet} have not checked in for two weeks.
                   </p>
                 </div>
               </div>
             );
           })}
         </div>
+
+        {/* What is not on this page, and why. A dashboard that silently drops
+            five of eight regions reads as a complete picture of three. */}
+        {(aggregates.suppressedRegions > 0 || aggregates.unassigned > 0 || regions.length === 0) && (
+          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#5A5049] leading-relaxed">
+            {regions.length === 0 ? (
+              <>
+                <strong>Nothing to show yet.</strong> No area has {MIN_GROUP_SIZE} or more
+                participants, so publishing any of it would describe individuals rather than a
+                population.
+              </>
+            ) : (
+              <>
+                <strong>Showing {regions.length} of {regions.length + aggregates.suppressedRegions} areas.</strong>{" "}
+                {aggregates.suppressedRegions} withheld, covering {aggregates.suppressedParticipants}{" "}
+                {aggregates.suppressedParticipants === 1 ? "person" : "people"}, because an area with
+                fewer than {MIN_GROUP_SIZE} participants cannot be summarised without describing
+                them.
+              </>
+            )}
+            {aggregates.unassigned > 0 && (
+              <> {aggregates.unassigned} {aggregates.unassigned === 1 ? "participant has" : "participants have"} no
+              area recorded and {aggregates.unassigned === 1 ? "is" : "are"} counted nowhere above.</>
+            )}
+          </div>
+        )}
 
         {/* Privacy Note */}
         <div className="p-4 rounded-2xl bg-[#DBC3B2]/15 border border-[#DBC3B2]/30 flex items-start space-x-3 text-xs text-[#3C3530]">

@@ -453,6 +453,7 @@ export const App: React.FC = () => {
         {currentView === "community" && (
           <CommunityInsights
             onOpenEmergency={() => setEmergencyModalOpen(true)}
+            participants={participants}
           />
         )}
         {currentView === "support_resources" && (
