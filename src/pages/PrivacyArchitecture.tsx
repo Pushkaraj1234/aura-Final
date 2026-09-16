@@ -33,7 +33,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
       <div className="bg-[#3C3530] text-white rounded-3xl p-6 sm:p-10 shadow-xs space-y-3 border border-[#3F4E4E]">
         <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-[#DBC3B2]/20 text-[#DBC3B2] text-xs font-bold">
           <Shield size={13} />
-          <span>Smart India Hackathon • Responsible AI & Enterprise Architecture</span>
+          <span>Responsible AI &amp; system architecture</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-white">
           System Architecture & Ethical Governance

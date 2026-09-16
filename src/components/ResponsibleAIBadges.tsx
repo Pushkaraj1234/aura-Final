@@ -105,7 +105,7 @@ export const ModelTransparencyCard: React.FC = () => {
               About the AI Architecture & Model Transparency
             </h4>
             <p className="text-[11px] text-[#7F8C8D]">
-              Full open-box algorithmic documentation for judges & auditors
+              How the score is produced, in full, for anyone who wants to check it
             </p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export const ModelTransparencyCard: React.FC = () => {
             <ul className="grid sm:grid-cols-2 gap-2 text-[11px] text-[#3C3530]">
               <li className="flex items-start space-x-1.5">
                 <span className="text-[#A55D25] font-bold">•</span>
-                <span><strong>Not clinically validated:</strong> Designed as a demonstration prototype for hackathon evaluation.</span>
+                <span><strong>Not clinically validated:</strong> No study has tested this against clinical assessment, in this population or any other.</span>
               </li>
               <li className="flex items-start space-x-1.5">
                 <span className="text-[#A55D25] font-bold">•</span>
@@ -306,16 +306,13 @@ export const BiasMonitoringCard: React.FC = () => {
 };
 
 /**
- * Judge-Facing "Why AURA?" Comparison Panel
+ * "Why AURA?" comparison panel.
  */
 export const WhyAuraPanel: React.FC = () => {
   return (
     <div className="bg-gradient-to-br from-[#3C3530] to-[#5A5049] rounded-3xl p-6 sm:p-8 text-white shadow-md space-y-6">
       <div className="border-b border-white/15 pb-4">
-        <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#DBC3B2]/20 text-[#DBC3B2] border border-[#DBC3B2]/30">
-          SIH Judge Presentation
-        </span>
-        <h3 className="text-2xl sm:text-3xl font-black text-white mt-2 tracking-tight">
+        <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           Why AURA?
         </h3>
         <p className="text-sm font-bold text-[#DBC3B2] mt-1">

@@ -53,7 +53,7 @@ export const LandingAuth: React.FC<Props> = ({ onChoice, onBack }) => {
               <ArrowLeft size={14} />
               <span>Back to Home</span>
             </button>
-            <span className="text-[11px] text-[#DBC3B2] font-mono">v1.0 Hackathon Demo</span>
+            <span className="text-[11px] text-[#DBC3B2] font-mono">v1.0</span>
           </div>
         </div>
 
