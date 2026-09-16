@@ -58,6 +58,28 @@ interface Props {
    * that suits a page someone opened deliberately.
    */
   layout?: "split" | "stacked";
+  /**
+   * Which pieces to show, in which order.
+   *
+   * Undefined means all four in their usual order, which is what the landing
+   * page passes and therefore what it keeps: this prop exists so the signed-in
+   * page can lead with whichever piece matches what somebody has said about
+   * where they are, without the public page changing at all.
+   *
+   * Nothing is ever removed from the library by this. A shorter list is a
+   * different order of the same four, and the page offers the rest.
+   */
+  only?: LiteracyModuleId[];
+  /**
+   * The small label above the list.
+   *
+   * Defaults to the question the landing page asks, which is where that
+   * question belongs: there the list is the only thing on the page, so it can
+   * ask. The signed-in page asks a fuller version of it higher up, and two
+   * near-identical questions a screen apart read as a mistake, so that page
+   * passes a label that names the list instead.
+   */
+  listLabel?: string;
 }
 
 export const LiteracyLibrary: React.FC<Props> = ({
@@ -65,6 +87,8 @@ export const LiteracyLibrary: React.FC<Props> = ({
   showHeader = true,
   headingLevel = 2,
   layout = "stacked",
+  only,
+  listLabel = "What feels closest today?",
 }) => {
   const [open, setOpen] = useState<LiteracyModuleId | null>(null);
   const uid = useId();
@@ -98,19 +122,29 @@ export const LiteracyLibrary: React.FC<Props> = ({
     </header>
   ) : null;
 
+  // Ordered by `only` when it is given, so the piece that matches what somebody
+  // said leads. Unknown ids are dropped rather than throwing: a stale id in a
+  // mapping should reorder the list, never blank the page.
+  const modules = only
+    ? only
+        .map((id) => LITERACY_MODULES.find((m) => m.id === id))
+        .filter((m): m is (typeof LITERACY_MODULES)[number] => Boolean(m))
+    : LITERACY_MODULES;
+
   const list = (
     <div className="space-y-6">
-      {/* #756553 rather than a lighter grey: this sits on the opaque #F7EFE3
-          band, where it measures 4.92:1. At 11px it is small text and needs
-          4.5:1, which the #8A7A6B used elsewhere on lighter card surfaces does
-          not reach here (3.63:1). */}
-      <span className="block text-[11px] uppercase tracking-[0.18em] text-[#756553]">
-        What feels closest today?
+      {/* At 11px this is small text and needs 4.5:1. #756553 cleared that on
+          the landing page's opaque #F7EFE3 band (4.92:1) but not on the
+          signed-in page, which renders on the body gradient (4.34:1). #6B5B4C
+          clears both, at 5.71:1 and 5.03:1, so the label is legible wherever
+          the library is used rather than only where it was first measured. */}
+      <span className="block text-[11px] uppercase tracking-[0.18em] text-[#6B5B4C]">
+        {listLabel}
       </span>
 
       {/* One container, hairline rules inside. A contents page, not a grid. */}
       <div className="rounded-2xl border border-[#E4D7C6] bg-[#FDFAF4] overflow-hidden">
-        {LITERACY_MODULES.map((module, index) => {
+        {modules.map((module, index) => {
           const isOpen = open === module.id;
           const buttonId = `${uid}-trigger-${module.id}`;
           const panelId = `${uid}-panel-${module.id}`;

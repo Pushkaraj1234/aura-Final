@@ -368,6 +368,7 @@ export const App: React.FC = () => {
             onBack={() => setCurrentView("participant_home")}
             onOpenEmergency={() => setEmergencyModalOpen(true)}
             onOpenMessages={() => setCurrentView("messages")}
+            onOpenRecoveryHub={() => setCurrentView("recovery_hub")}
           />
         )}
 

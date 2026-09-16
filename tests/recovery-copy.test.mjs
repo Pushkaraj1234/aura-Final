@@ -394,6 +394,91 @@ t('every surfaced resource can say why it is there', () => {
   ok(reasons.length >= 2, `both resource groups must show reasons; found ${reasons.length}`);
 });
 
+// ---- the two "What to expect" surfaces stay separate -----------------------
+
+t('the check-in is on the signed-in page only, never the landing page', () => {
+  // A visitor who has not signed up must not be asked where they are before
+  // they are allowed to read. Both pages render the same four pieces through
+  // the same component, so this separation is the whole risk of the feature.
+  const landing = read('src/pages/LandingPage.tsx');
+  const inApp = read('src/pages/WhatToExpect.tsx');
+  ok(/recoveryNeeds|NEED_OPTIONS/.test(inApp), 'the signed-in page runs the check-in');
+  ok(!/recoveryNeeds|NEED_OPTIONS|What feels closest to where you are today/.test(landing),
+     'the landing page must not have gained the check-in');
+});
+
+t('the landing page keeps the list label it always had', () => {
+  // Both new props default to the landing page's existing behaviour, so
+  // "unchanged" is the default rather than something the caller has to ask for.
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  ok(/listLabel = "What feels closest today\?"/.test(lib),
+     'the default label must be the landing page wording');
+  const landing = read('src/pages/LandingPage.tsx');
+  ok(!/listLabel/.test(landing), 'and the landing page must not have to pass it');
+});
+
+t('the landing page still gets all four pieces in their usual order', () => {
+  // `only` is undefined there, and undefined must keep meaning "all four".
+  const landing = read('src/pages/LandingPage.tsx');
+  ok(!/\bonly=/.test(landing), 'the landing page must not pass an ordering');
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  ok(/only\s*\?[\s\S]{0,400}:\s*LITERACY_MODULES/.test(lib),
+     'no ordering must fall back to the full list');
+});
+
+t('an unknown id reorders the list rather than blanking the page', () => {
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  ok(/\.filter\(/.test(lib.slice(lib.indexOf('const modules = only'), lib.indexOf('const list ='))),
+     'unknown ids must be dropped, not rendered as undefined');
+});
+
+t('the check-in never asks what happened', () => {
+  // The promise the option list either keeps or breaks: help without first
+  // producing an account of the worst thing that has happened to you.
+  const needs = visibleText(read('src/services/recoveryNeeds.ts'));
+  const inApp = visibleText(read('src/pages/WhatToExpect.tsx'));
+  const interrogations =
+    /what happened to you|what crime|are you a victim|describe (your )?(trauma|the incident)/i;
+  for (const [name, text] of [['recoveryNeeds', needs], ['WhatToExpect', inApp]]) {
+    const hit = text.match(interrogations);
+    if (hit) throw new Error(`${name} interrogates the reader: "${hit[0]}"`);
+  }
+});
+
+t('"I\'d rather not say" exists and leads somewhere', () => {
+  // An opt-out that dead-ends is not an opt-out.
+  const needs = read('src/services/recoveryNeeds.ts');
+  ok(/rather_not_say/.test(needs), 'the opt-out must exist');
+  const block = needs.slice(needs.indexOf('id: "rather_not_say"'));
+  ok(/hubHighlights: \[\s*\n\s*"/.test(block),
+     'and it must still offer somewhere to go');
+});
+
+t('the privacy sentence matches what the page actually does', () => {
+  // The page asks a question now. If the answer were ever stored, this copy
+  // would be a lie, so the two are pinned together.
+  const inApp = read('src/pages/WhatToExpect.tsx');
+  ok(/Nothing you choose here is\s+saved/.test(visibleText(inApp)),
+     'the page must say what becomes of the answer');
+  ok(!/localStorage|sessionStorage/.test(inApp) && !/recoveryService/.test(inApp),
+     'and it must not be storing it');
+  ok(/showHeader=\{false\}/.test(inApp),
+     'the shared header is bypassed so the landing page keeps its own wording');
+});
+
+t('opening the Recovery Hub is offered, never required', () => {
+  const inApp = visibleText(read('src/pages/WhatToExpect.tsx'));
+  ok(/Open Recovery Hub/.test(inApp), 'the bridge must exist');
+  ok(/don&rsquo;t have to open a case/.test(inApp),
+     'and must say a case is not required to keep reading or to talk to someone');
+});
+
+t('the counsellor and emergency routes survived the rewrite', () => {
+  const inApp = visibleText(read('src/pages/WhatToExpect.tsx'));
+  ok(/Message your counsellor/.test(inApp), 'the counsellor button must remain');
+  ok(/Numbers that answer now/.test(inApp), 'the emergency route must remain');
+});
+
 t('the negation guard itself works, so the rules above can still fail', () => {
   // A guard that swallowed everything would quietly disable every rule it
   // protects. These two prove it distinguishes the cases.
