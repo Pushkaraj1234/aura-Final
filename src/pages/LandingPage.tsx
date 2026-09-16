@@ -1,4 +1,5 @@
 import React from "react";
+import { LiteracyLibrary } from "../components/LiteracyLibrary";
 import {
   Activity,
   Shield,
@@ -192,6 +193,37 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* The same four pieces a signed-in participant gets, in front of the
+          sign-up wall rather than behind it.
+
+          Someone deciding whether to hand their situation to a wellbeing app
+          is exactly the person who benefits from reading what a counsellor
+          here can and cannot do, and what happens to what they type, before
+          they decide. Requiring an account first gets that backwards.
+
+          Rendered through the shared component, so this copy and the one
+          inside the app cannot say different things. */}
+      <section className="py-16 bg-white border-t border-[#EFE8E2]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <LiteracyLibrary>
+            <section className="rounded-3xl border border-[#E0D7CE] bg-[#FDFAF7] p-6 sm:p-7 space-y-4">
+              <h3 className="text-lg font-bold text-[#3C3530]">When you're ready</h3>
+              <p className="text-[15px] text-[#5A5049] leading-relaxed">
+                Reading costs nothing and nobody is told you were here. If you want to start
+                checking in, that takes about a minute.
+              </p>
+              <button
+                onClick={() => onStart("participant")}
+                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer"
+              >
+                <span>Start a check-in</span>
+                <ArrowRight size={16} aria-hidden="true" />
+              </button>
+            </section>
+          </LiteracyLibrary>
         </div>
       </section>
 

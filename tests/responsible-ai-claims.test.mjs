@@ -124,6 +124,36 @@ t('the consent screen says what withdrawal actually does', () => {
   ok(/does not\s+delete/i.test(CONSENT), 'must state that past check-ins remain');
 });
 
+// ---- the reading library is shared, not duplicated -------------------------
+
+t('both places that show the reading library use the shared component', () => {
+  // It appears on the landing page, in front of the sign-up wall, and inside
+  // the app for signed-in participants. If either ever inlines its own
+  // accordion the two will drift, and the copy a person reads BEFORE deciding
+  // to trust us is the one that would go stale.
+  const landing = read('src/pages/LandingPage.tsx');
+  const inApp = read('src/pages/WhatToExpect.tsx');
+
+  for (const [name, source] of [['LandingPage', landing], ['WhatToExpect', inApp]]) {
+    ok(/<LiteracyLibrary/.test(source), `${name} must render the shared library`);
+    ok(!/LITERACY_MODULES/.test(source),
+       `${name} must not read the module list itself; that is the library's job`);
+  }
+});
+
+t('the library reads its content from the one module list', () => {
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  ok(/LITERACY_MODULES/.test(lib), 'content comes from literacyModules, never inlined');
+  ok(!/minute read".*?>\s*\d/.test(lib), 'reading times come from the data, not the markup');
+});
+
+t('the library still tracks nothing about what was read', () => {
+  // A progress flag here would end up in a counsellor's view of a survivor.
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  ok(!/localStorage|sessionStorage|apiService|supabase/i.test(lib),
+     'the reading library must not persist or report anything');
+});
+
 t('the explanatory comments naming removed claims are still present', () => {
   // The stripping above must not be hiding a regression: these notes live in
   // comments and record what was removed and why. If they vanish, someone has
