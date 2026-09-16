@@ -163,7 +163,7 @@ t('a missing commonly-asked-for document is named specifically', () => {
 
 t('a complete file says so rather than going blank', () => {
   const b = mkBundle({
-    case: { financialImpacts: ['medical_expenses'] },
+    case: { financialImpacts: ['medical_expenses'], priorAssistance: 'no' },
     incident: { category: 'other', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['emotional_impact'] },
     fir: { hasFir: true, firNumber: '1/2026' },
     documents: [{ docType: 'identity' }],
@@ -259,6 +259,36 @@ t('holding a document marks it present', () => {
   });
   eq(c.items.find((i) => i.docType === 'fir').present, true);
   eq(c.missing.some((m) => m.docType === 'identity'), false);
+});
+
+t('saying assistance already came through adds a document to the checklist', () => {
+  // Schemes routinely ask what has already been paid, and under the atrocity
+  // provisions relief is released in stages, so the earlier sanction shows
+  // which stage a person is at.
+  const base = { impacts: [], financialImpacts: ['medical_expenses'],
+                 hasFir: true, heldDocTypes: [] };
+  const no = buildChecklist({ ...base, priorAssistance: 'no' });
+  const yes = buildChecklist({ ...base, priorAssistance: 'yes' });
+  eq(no.items.some((i) => i.docType === 'prior_assistance_record'), false);
+  eq(yes.items.some((i) => i.docType === 'prior_assistance_record'), true);
+  eq(yes.total, no.total + 1, 'and it counts towards the checklist');
+});
+
+t('an unanswered assistance question is asked, not skipped', () => {
+  const b = mkBundle({
+    case: { financialImpacts: ['medical_expenses'] },
+    incident: { category: 'other', occurredOn: '2026-07-01', district: 'Pune',
+                account: 'x', impacts: ['emotional_impact'] },
+    fir: { hasFir: true, firNumber: '1/2026' },
+    documents: [{ docType: 'identity' }],
+    legalAid: [{ id: 'a', applicationNumber: 'LA1', status: 'SUBMITTED' }],
+  });
+  const checklist = buildChecklist({
+    category: 'other', impacts: ['emotional_impact'],
+    financialImpacts: ['medical_expenses'], hasFir: true,
+    heldDocTypes: ['identity', 'fir', 'bank_details', 'medical_report'],
+  });
+  eq(nextStep({ bundle: b, checklist }).id, 'financial_prior_assistance');
 });
 
 // ---- progress --------------------------------------------------------------

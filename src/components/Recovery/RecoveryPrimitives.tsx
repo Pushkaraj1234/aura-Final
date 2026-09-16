@@ -83,7 +83,16 @@ export const OfficialLink: React.FC<{
   resource: OfficialResource;
   language?: string;
   compact?: boolean;
-}> = ({ resource, language = "en", compact = false }) => {
+  /**
+   * Why this one was surfaced for this person.
+   *
+   * Shown because a list that looks identical after changing an answer reads
+   * as a control that does nothing. Several of these genuinely do apply to
+   * everybody, and saying so is better than inventing gating that would hide a
+   * route somebody is entitled to.
+   */
+  reason?: string;
+}> = ({ resource, language = "en", compact = false, reason }) => {
   const href = localisedUrl(resource.url, language);
   return (
     <a
@@ -103,6 +112,11 @@ export const OfficialLink: React.FC<{
           {!compact && (
             <span className="mt-2 block text-[0.9375rem] leading-[1.6] text-[#6B5B4C]">
               {resource.description}
+            </span>
+          )}
+          {reason && (
+            <span className="mt-2.5 block border-l-2 border-[#E0D0BB] pl-3 text-[0.8125rem] leading-[1.6] text-[#6B5B4C]">
+              {reason}
             </span>
           )}
           <span className="mt-2 block text-[0.75rem] text-[#7A6A5A]">

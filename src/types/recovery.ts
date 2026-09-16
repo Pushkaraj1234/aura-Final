@@ -131,6 +131,7 @@ export type DocumentType =
   | "death_certificate"
   | "court_document"
   | "bank_details"
+  | "prior_assistance_record"
   | "photo"
   | "video"
   | "other";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import {
   ChoiceList,
@@ -7,10 +7,16 @@ import {
   OfficialSiteNotice,
   SaveButton,
 } from "../../components/Recovery/RecoveryPrimitives";
-import { matchResources } from "../../services/officialResources";
-import { FINANCIAL_IMPACT_LABELS } from "../../services/recoveryHub";
+import { explainMatch, matchResources, officialResource } from "../../services/officialResources";
+import {
+  buildChecklist,
+  DOCUMENT_LABELS,
+  FINANCIAL_IMPACT_LABELS,
+} from "../../services/recoveryHub";
 import type {
+  DocumentType,
   FinancialImpactType,
+  ImpactType,
   IncidentCategory,
   PriorAssistance,
 } from "../../types/recovery";
@@ -37,6 +43,11 @@ interface Props {
   financialImpacts: FinancialImpactType[];
   priorAssistance?: PriorAssistance;
   incidentCategory?: IncidentCategory;
+  /** What the checklist already knows, so this screen can show what changes. */
+  incidentImpacts: ImpactType[];
+  district?: string;
+  hasFir?: boolean | null;
+  heldDocTypes: DocumentType[];
   state?: string;
   language: string;
   busy: boolean;
@@ -52,6 +63,10 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
   financialImpacts,
   priorAssistance,
   incidentCategory,
+  incidentImpacts,
+  district,
+  hasFir,
+  heldDocTypes,
   state,
   language,
   busy,
@@ -64,10 +79,35 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
     priorAssistance ? [priorAssistance] : []
   );
 
+  const trackResource = officialResource("nalsa_track_application")!;
   const ctx = { state, category: incidentCategory, financialImpacts: impacts };
   const compensation = matchResources(ctx, "compensation");
   const stateSchemes = matchResources(ctx, "state_scheme");
   const anyMatched = compensation.length + stateSchemes.length > 0;
+
+  /**
+   * What ticking these boxes actually changes in the document checklist.
+   *
+   * Computed by running the real checklist twice, with and without the current
+   * selection, and diffing. Not a hand-maintained list, which would drift from
+   * the rule it is describing the moment either changed.
+   */
+  const addedDocs = useMemo(() => {
+    const base = {
+      category: incidentCategory,
+      impacts: incidentImpacts,
+      hasFir,
+      heldDocTypes,
+    };
+    const without = buildChecklist({ ...base, financialImpacts: [] }).items.map((i) => i.docType);
+    return buildChecklist({
+      ...base,
+      financialImpacts: impacts,
+      priorAssistance: prior[0],
+    })
+      .items.map((i) => i.docType)
+      .filter((d) => !without.includes(d));
+  }, [impacts, prior, incidentCategory, incidentImpacts, hasFir, heldDocTypes]);
 
   return (
     <div className="space-y-7">
@@ -116,6 +156,92 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
         />
       </section>
 
+      {/* What the answers above just changed. Directly under the questions,
+          not below the resource list: an answer whose consequence renders
+          two thousand pixels further down is an answer that looks like it
+          did nothing, which is exactly how this read before. */}
+      {/* Each of the three answers has to lead somewhere different, or the
+          question is decoration. Yes adds a document an office will ask for;
+          not sure gets a way to find out; no says plainly that nothing
+          further is needed, rather than going silent. */}
+      {prior[0] === "yes" && (
+        <div className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-4 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
+          <p className="font-semibold text-[#3A2A1E]">
+            We&rsquo;ve added one thing to your document checklist
+          </p>
+          <p className="mt-1.5">
+            A record of what you already received. Applications usually ask,
+            and under the atrocity provisions relief is released in stages, so
+            the earlier sanction order shows which stage you are at. The
+            office that paid it can give you a copy, and a bank statement
+            showing the credit also works.
+          </p>
+          <p className="mt-2">
+            Whether an earlier payment affects a new application is decided by
+            the authority handling it, not here. Mention it when you apply.
+          </p>
+        </div>
+      )}
+
+      {prior[0] === "unsure" && (
+        <div className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-4 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
+          <p className="font-semibold text-[#3A2A1E]">How to find out</p>
+          <p className="mt-1.5">
+            Money is sometimes sanctioned to a family without the person it
+            concerns being told directly, so not knowing is common. Two places
+            can tell you: the District Legal Services Authority, if any victim
+            compensation was ordered; and, for an atrocity
+            case, the Assistant Commissioner of Social Welfare for{" "}
+            {district || "your district"}. Your FIR number is what they will
+            ask for.
+          </p>
+          <p className="mt-2">
+            Once you know, change this answer and we&rsquo;ll update your
+            checklist.
+          </p>
+          <div className="mt-3">
+            <OfficialLink resource={trackResource} language={language} compact />
+          </div>
+        </div>
+      )}
+
+      {prior[0] === "no" && (
+        <p className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-3.5 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
+          Nothing further needed on that, then. If something comes through
+          later, change this answer and we&rsquo;ll add the record to your
+          checklist.
+        </p>
+      )}
+
+      {addedDocs.length > 0 && (
+        <div className="rounded-2xl border border-[#E6D3BC] bg-[#F3E7D8] px-4 py-4 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
+          <p className="font-semibold text-[#3A2A1E]">
+            What your answers changed
+          </p>
+          <p className="mt-1.5">
+            Because of what you&rsquo;ve selected, your document checklist now
+            asks for:
+          </p>
+          <ul className="mt-2 space-y-1">
+            {addedDocs.map((d) => (
+              <li key={d} className="text-[#3A2A1E]">
+                {DOCUMENT_LABELS[d]}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {state && state !== "Maharashtra" && (
+        <p className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-3.5 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
+          The national routes above apply across India. {state} also runs its
+          own schemes, and we don&rsquo;t yet have checked links for them.
+          Rather than send you to an address we haven&rsquo;t verified, we
+          would rather say so: your State Legal Services Authority can point
+          you to them.
+        </p>
+      )}
+
       {/* Matching ----------------------------------------------------------- */}
       <section className="space-y-4">
         <h2 className="font-serif text-[1.3125rem] leading-[1.3] text-[#3A2A1E]">
@@ -146,7 +272,12 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {compensation.map((r) => (
-                    <OfficialLink key={r.key} resource={r} language={language} />
+                    <OfficialLink
+                      key={r.key}
+                      resource={r}
+                      language={language}
+                      reason={explainMatch(r, ctx)}
+                    />
                   ))}
                 </div>
               </div>
@@ -158,7 +289,12 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
                 </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {stateSchemes.map((r) => (
-                    <OfficialLink key={r.key} resource={r} language={language} />
+                    <OfficialLink
+                      key={r.key}
+                      resource={r}
+                      language={language}
+                      reason={explainMatch(r, ctx)}
+                    />
                   ))}
                 </div>
               </div>
@@ -166,24 +302,6 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
           </>
         )}
 
-        {prior[0] === "yes" && (
-          <p className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-3.5 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
-            You said you&rsquo;ve already received some assistance. Some schemes
-            take earlier payments into account and some do not, and the
-            authority handling your application is the one who can tell you how
-            it works in your case. It is worth mentioning when you apply.
-          </p>
-        )}
-
-        {state && state !== "Maharashtra" && (
-          <p className="rounded-2xl border border-[#E8DFD2] bg-[#F7F2E9] px-4 py-3.5 text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
-            The national routes above apply across India. {state} also runs its
-            own schemes, and we don&rsquo;t yet have checked links for them.
-            Rather than send you to an address we haven&rsquo;t verified, we
-            would rather say so: your State Legal Services Authority can point
-            you to them.
-          </p>
-        )}
       </section>
 
       <button onClick={onBack} className="btn-ghost px-5 py-3 text-[0.9375rem]">

@@ -67,6 +67,15 @@ export interface OfficialResource {
    * returning true means "may be relevant", never "you qualify".
    */
   relevantWhen?: (ctx: ResourceContext) => boolean;
+  /**
+   * Why this one appeared, in the person's own terms.
+   *
+   * Without it, a list that looks identical after changing an answer reads as
+   * a control that does nothing. Several of these resources genuinely do apply
+   * to everybody, and the honest fix is to say so rather than to invent
+   * gating that would hide a route somebody is entitled to.
+   */
+  whyShown?: (ctx: ResourceContext) => string;
 }
 
 export interface ResourceContext {
@@ -157,6 +166,8 @@ export const OFFICIAL_RESOURCES: OfficialResource[] = [
   // -------------------------------------------------------------------------
   {
     key: "nalsa_victim_compensation",
+    whyShown: () =>
+      "Shown to everyone. Victim compensation is for victims of crime generally, whether or not you have had a financial loss.",
     category: "compensation",
     name: "Victim compensation",
     authority: "National Legal Services Authority (NALSA)",
@@ -167,6 +178,8 @@ export const OFFICIAL_RESOURCES: OfficialResource[] = [
   },
   {
     key: "nalsa_victim_compensation_apply",
+    whyShown: () =>
+      "Shown to everyone. This is the form the route above is applied for on.",
     category: "compensation",
     name: "Victim compensation application",
     authority: "NALSA, via the Legal Services Management System (NIC)",
@@ -177,6 +190,12 @@ export const OFFICIAL_RESOURCES: OfficialResource[] = [
   },
   {
     key: "csacv",
+    whyShown: (ctx) =>
+      ctx.category === "communal_violence"
+        ? "Because your file records religious or communal violence."
+        : ctx.financialImpacts.includes("death_of_family_member")
+          ? "Because you said a family member died."
+          : "Because you said a disability resulted.",
     category: "compensation",
     name: "Central Scheme for Assistance to Civilian Victims",
     authority: "Ministry of Home Affairs",
@@ -195,6 +214,8 @@ export const OFFICIAL_RESOURCES: OfficialResource[] = [
   // -------------------------------------------------------------------------
   {
     key: "mh_scst_atrocity_assistance",
+    whyShown: () =>
+      "Because your file records a caste-based atrocity in Maharashtra.",
     category: "state_scheme",
     name: "Financial assistance for SC/ST victims of atrocities",
     authority: "Commissionerate of Social Welfare, Government of Maharashtra",
@@ -208,6 +229,8 @@ export const OFFICIAL_RESOURCES: OfficialResource[] = [
   },
   {
     key: "mh_sjsa_atrocity_assistance",
+    whyShown: () =>
+      "Because your file records a caste-based atrocity in Maharashtra. This is the department that administers it.",
     category: "state_scheme",
     name: "Assistance to SC/ST victims (Social Justice Department)",
     authority: "Social Justice & Special Assistance Department, Government of Maharashtra",
@@ -272,6 +295,18 @@ export function matchResources(
     if (r.relevantWhen && !r.relevantWhen(ctx)) return false;
     return true;
   });
+}
+
+/**
+ * Why a resource was surfaced for this person.
+ *
+ * Falls back to a plain statement rather than silence: a card with no reason
+ * beside the ones that have them reads as an oversight.
+ */
+export function explainMatch(r: OfficialResource, ctx: ResourceContext): string {
+  if (r.whyShown) return r.whyShown(ctx);
+  if (r.state) return `Because your file says ${r.state}.`;
+  return "Shown to everyone.";
 }
 
 /**

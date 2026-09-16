@@ -101,6 +101,7 @@ export const RecoveryHub: React.FC<Props> = ({
         impacts: bundle?.incident?.impacts ?? [],
         financialImpacts: bundle?.case.financialImpacts ?? [],
         hasFir: bundle?.fir?.hasFir,
+        priorAssistance: bundle?.case.priorAssistance,
         heldDocTypes: bundle?.documents.map((d) => d.docType) ?? [],
       }),
     [bundle]
@@ -500,6 +501,10 @@ export const RecoveryHub: React.FC<Props> = ({
           financialImpacts={bundle.case.financialImpacts}
           priorAssistance={bundle.case.priorAssistance}
           incidentCategory={bundle.incident?.category}
+          incidentImpacts={bundle.incident?.impacts ?? []}
+          district={bundle.case.district}
+          hasFir={bundle.fir?.hasFir}
+          heldDocTypes={bundle.documents.map((d) => d.docType)}
           state={bundle.case.state}
           language={language}
           busy={busy}

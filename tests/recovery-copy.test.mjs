@@ -342,6 +342,58 @@ t('no screen still promises that anything can be left blank', () => {
   }
 });
 
+t('every answer on the financial screen changes something', () => {
+  // priorAssistance was written to the database and never read: the only
+  // consumer was one paragraph on "yes", so "no" and "I'm not sure" did
+  // literally nothing. A question with no consequence is decoration.
+  const engine = read('src/services/recoveryHub.ts');
+  ok(/priorAssistance/.test(engine),
+     'the checklist must read the answer, not just the database');
+  ok(/prior_assistance_record/.test(engine),
+     '"yes" must change what the checklist asks for');
+
+  const screen = visibleText(read(`${SCREEN_DIR}/RecoveryFinancial.tsx`));
+  for (const [answer, marker] of [
+    ['yes', /added one thing to your document checklist/i],
+    ['unsure', /How to find out/i],
+    ['no', /Nothing further needed/i],
+  ]) {
+    ok(marker.test(screen), `the "${answer}" answer must lead somewhere`);
+  }
+});
+
+t('the impact boxes visibly change the checklist', () => {
+  const screen = read(`${SCREEN_DIR}/RecoveryFinancial.tsx`);
+  ok(/addedDocs/.test(screen) && /buildChecklist/.test(screen),
+     'the consequence must be computed from the real checklist, not hand-listed');
+  // \s+ because this sentence wraps across source lines; an exact-phrase match
+  // would make the test a check on line width rather than on what is said.
+  ok(/checklist\s+now\s+asks\s+for/i.test(visibleText(screen)),
+     'and it must be stated on the screen where the boxes are');
+});
+
+t('a response sits with its question, not below the resource list', () => {
+  // An answer whose consequence renders two thousand pixels further down is an
+  // answer that looks like it did nothing.
+  const screen = read(`${SCREEN_DIR}/RecoveryFinancial.tsx`);
+  const consequences = screen.indexOf('added one thing to your document checklist');
+  const resources = screen.indexOf('Potential support resources');
+  ok(consequences > 0 && resources > 0 && consequences < resources,
+     'the consequence panels must render before the resource list');
+});
+
+t('every surfaced resource can say why it is there', () => {
+  // Several of these genuinely apply to everybody. Saying so beats inventing
+  // gating that would hide a route somebody is entitled to, and beats silence,
+  // which reads as a control that does nothing.
+  const res = read('src/services/officialResources.ts');
+  ok(/export function explainMatch/.test(res), 'there must be a reason for each match');
+  ok(/Shown to everyone/.test(res), 'universal resources must say they are universal');
+  const financial = read(`${SCREEN_DIR}/RecoveryFinancial.tsx`);
+  const reasons = financial.match(/reason=\{explainMatch/g) || [];
+  ok(reasons.length >= 2, `both resource groups must show reasons; found ${reasons.length}`);
+});
+
 t('the negation guard itself works, so the rules above can still fail', () => {
   // A guard that swallowed everything would quietly disable every rule it
   // protects. These two prove it distinguishes the cases.

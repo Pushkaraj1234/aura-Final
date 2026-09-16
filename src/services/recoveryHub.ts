@@ -29,6 +29,7 @@ import type {
   ImpactType,
   FinancialImpactType,
   LegalAidApplication,
+  PriorAssistance,
   RecoveryCaseBundle,
   TimelineStage,
 } from "../types/recovery";
@@ -85,6 +86,7 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   death_certificate: "Death certificate",
   court_document: "Court document",
   bank_details: "Bank details",
+  prior_assistance_record: "Record of assistance already received",
   photo: "Photo",
   video: "Video",
   other: "Other document",
@@ -129,6 +131,15 @@ interface ChecklistInput {
   impacts: ImpactType[];
   financialImpacts: FinancialImpactType[];
   hasFir?: boolean | null;
+  /**
+   * Whether the person has already received assistance.
+   *
+   * Read here rather than merely stored, because it changes what an office
+   * will ask for: schemes routinely want to know what has already been paid,
+   * and interim relief under the atrocity provisions is released in stages, so
+   * the earlier sanction is the document that shows which stage you are at.
+   */
+  priorAssistance?: PriorAssistance;
   heldDocTypes: DocumentType[];
 }
 
@@ -227,6 +238,16 @@ export function buildChecklist(input: ChecklistInput): ChecklistSummary {
       "commonly_asked_for",
       "Assistance to a family after a death is generally tied to the death certificate.",
       "Issued by the municipal corporation or gram panchayat where the death was registered."
+    );
+  }
+
+  if (input.priorAssistance === "yes") {
+    add(
+      "prior_assistance_record",
+      "Financial",
+      "commonly_asked_for",
+      "You said some assistance has already come through. Applications usually ask what that was, and the sanction or payment record is what answers it.",
+      "The office that paid it can give you a copy of the sanction order. Your bank statement showing the credit also works."
     );
   }
 
@@ -457,6 +478,16 @@ export function nextStep({ bundle, checklist }: NextStepInput): NextStep {
       title: "Look at what financial support might apply",
       detail: "A few questions about costs, and we'll show what may be worth reading.",
       actionLabel: "Explore support",
+      destination: "recovery_financial",
+    };
+  }
+
+  if (!bundle.case.priorAssistance) {
+    return {
+      id: "financial_prior_assistance",
+      title: "Tell us whether any assistance has already come through",
+      detail: "It changes what an application will ask you for, so it is worth answering either way.",
+      actionLabel: "Answer this",
       destination: "recovery_financial",
     };
   }
