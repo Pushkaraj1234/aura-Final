@@ -144,7 +144,21 @@ t('both places that show the reading library use the shared component', () => {
 t('the library reads its content from the one module list', () => {
   const lib = read('src/components/LiteracyLibrary.tsx');
   ok(/LITERACY_MODULES/.test(lib), 'content comes from literacyModules, never inlined');
-  ok(!/minute read".*?>\s*\d/.test(lib), 'reading times come from the data, not the markup');
+  ok(/\{module\.minutes\}\s*min read/.test(lib),
+     'reading times come from the data, not typed into the markup');
+});
+
+t('a row is labelled by the reader\'s own sentence, not by the article title', () => {
+  // The whole reason this is not a list of article cards. Somebody who cannot
+  // name what is happening to them can still recognise "I don't understand
+  // what I'm feeling"; they cannot reliably pick "What distress is, and what
+  // it isn't" out of four headlines. If a refactor ever puts the title back in
+  // the trigger, the section has quietly become a menu again.
+  const lib = read('src/components/LiteracyLibrary.tsx');
+  const trigger = lib.slice(lib.indexOf('<button'), lib.indexOf('</button>'));
+  ok(/\{module\.prompt\}/.test(trigger), 'the trigger must render the prompt');
+  ok(!/\{module\.title\}/.test(trigger),
+     'the article title belongs in the opened panel, not in the closed row');
 });
 
 t('the library still tracks nothing about what was read', () => {

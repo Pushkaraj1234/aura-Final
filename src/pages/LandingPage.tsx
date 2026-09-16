@@ -204,39 +204,56 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
           here can and cannot do, and what happens to what they type, before
           they decide. Requiring an account first gets that backwards.
 
+          Laid out across the full editorial width rather than in the narrow
+          centred column this used to sit in, which stranded the section in a
+          field of empty background and made it read as a footnote instead of
+          a part of the page.
+
           Rendered through the shared component, so this copy and the one
           inside the app cannot say different things. */}
       <section className="py-20 sm:py-28 bg-[#F7EFE3] border-t border-[#E8DACA]">
-        <div className="max-w-[1140px] mx-auto px-5 sm:px-8">
-          <div className="max-w-[720px] mx-auto">
-            <LiteracyLibrary>
-              {/* A door held open, not a call to action. Warmer ground than the
-                  cards so it reads as a change of register, and the button is
-                  sized to the sentence rather than to the section. */}
-              <section className="rounded-2xl border border-[#E6D3BC] bg-[#F3E7D8] px-6 sm:px-8 py-8 sm:py-9 space-y-4">
-                <h3 className="font-serif text-[1.375rem] leading-[1.3] text-[#3A2A1E]">
-                  When you&rsquo;re ready
-                </h3>
-                <p className="max-w-[58ch] text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
-                  Reading costs nothing and nobody is told you were here. If you want to start
-                  checking in, that takes about a minute.
-                </p>
-                <div className="pt-1">
-                  <button
-                    onClick={() => onStart("participant")}
-                    className="group/cta btn-primary px-6 py-3.5 text-[0.9375rem]"
-                  >
-                    <span>Start a check-in</span>
-                    <ArrowRight
-                      size={16}
-                      aria-hidden="true"
-                      className="transition-transform duration-200 ease-out group-hover/cta:translate-x-[3px]"
-                    />
-                  </button>
+        {/* Held to the page's own container (max-w-7xl) and gutters, plus the
+            32px the pillars above sit inside theirs by way of their card
+            padding. The section previously used a container of its own and
+            landed 4px left of the text directly above it at desktop and 16px
+            at 1024, which read as a mistake rather than as a different rhythm.
+            Mobile stays tighter on purpose: a 48px gutter on a 360px screen
+            costs the statements a line each. */}
+        <div className="max-w-7xl mx-auto px-5 sm:px-14 lg:px-16">
+          <LiteracyLibrary layout="split">
+            {/* A door held open, not a call to action. Below the reading
+                rather than beside it, so it reads as what comes next instead
+                of as a banner competing with them. Warmer ground than the
+                list, and the button sized to the sentence. */}
+            {/* Text and action on one line at desktop. Stacked in the left
+                third of a full-width band, this read as a marketing banner
+                with a large empty right side; side by side it reads as a
+                quiet closing bar and uses the width honestly. */}
+            <div className="rounded-2xl border border-[#E6D3BC] bg-[#F3E7D8] px-6 sm:px-10 py-9 sm:py-10">
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-7 lg:gap-14">
+                <div className="max-w-[56ch] space-y-3">
+                  <h3 className="font-serif text-[1.375rem] leading-[1.3] text-[#3A2A1E]">
+                    When you&rsquo;re ready
+                  </h3>
+                  <p className="text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
+                    Reading costs nothing and nobody is told you were here. If you want to start
+                    checking in, that takes about a minute.
+                  </p>
                 </div>
-              </section>
-            </LiteracyLibrary>
-          </div>
+                <button
+                  onClick={() => onStart("participant")}
+                  className="group/cta btn-primary shrink-0 self-start lg:self-auto px-6 py-3.5 text-[0.9375rem]"
+                >
+                  <span>Start a check-in</span>
+                  <ArrowRight
+                    size={16}
+                    aria-hidden="true"
+                    className="transition-transform duration-200 ease-out group-hover/cta:translate-x-[3px]"
+                  />
+                </button>
+              </div>
+            </div>
+          </LiteracyLibrary>
         </div>
       </section>
 

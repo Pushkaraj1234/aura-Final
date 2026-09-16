@@ -40,6 +40,18 @@ export interface LiteracySection {
 
 export interface LiteracyModule {
   id: LiteracyModuleId;
+  /**
+   * How a person might describe their own situation, in their words.
+   *
+   * This leads on the landing page and the article title follows it, because
+   * someone arriving here is not browsing a library. They have a question and
+   * no vocabulary for it yet, and "I don't understand what I'm feeling" is
+   * findable in a way that "What distress is, and what it isn't" is not.
+   *
+   * Written in the first person, present tense, with no urgency and no
+   * instruction: a sentence the reader could have said, not one aimed at them.
+   */
+  prompt: string;
   title: string;
   /** One line, shown before it is opened. */
   summary: string;
@@ -53,6 +65,7 @@ export interface LiteracyModule {
 export const LITERACY_MODULES: LiteracyModule[] = [
   {
     id: "distress",
+    prompt: "I don't understand what I'm feeling",
     title: "What distress is, and what it isn't",
     summary: "Why you feel like this, and why it isn't a fault in you.",
     minutes: 3,
@@ -82,6 +95,7 @@ export const LITERACY_MODULES: LiteracyModule[] = [
   },
   {
     id: "counsellor",
+    prompt: "I want to know what happens if I ask for help",
     title: "What a counsellor here can and can't do",
     summary: "What actually happens if you ask to talk to someone.",
     minutes: 3,
@@ -111,6 +125,7 @@ export const LITERACY_MODULES: LiteracyModule[] = [
   },
   {
     id: "court",
+    prompt: "I'm trying to understand the court process",
     title: "What the court process usually looks like",
     summary: "Why it takes so long, and what the long gaps mean.",
     minutes: 4,
@@ -145,6 +160,7 @@ export const LITERACY_MODULES: LiteracyModule[] = [
   },
   {
     id: "aura",
+    prompt: "I want to understand what happens to what I share",
     title: "What AURA does with what you tell it",
     summary: "What the score means, who sees what, and what we can't do.",
     minutes: 3,

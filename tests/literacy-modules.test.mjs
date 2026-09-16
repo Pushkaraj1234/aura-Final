@@ -24,7 +24,7 @@ const eq = (a, b, m) => { if (a !== b) throw new Error(`${m || ''} got ${JSON.st
 const ok = (c, m) => { if (!c) throw new Error(m || 'expected true'); };
 
 const allText = LITERACY_MODULES.flatMap((m) => [
-  m.title, m.summary, m.takeaway,
+  m.prompt, m.title, m.summary, m.takeaway,
   ...m.sections.flatMap((s) => [s.heading, s.body]),
 ]);
 const corpus = allText.join('\n');
@@ -34,7 +34,7 @@ const corpus = allText.join('\n');
 t('every module is complete and readable', () => {
   ok(LITERACY_MODULES.length >= 4, 'at least four modules');
   for (const m of LITERACY_MODULES) {
-    ok(m.id && m.title && m.summary && m.takeaway, `${m.id}: missing a field`);
+    ok(m.id && m.prompt && m.title && m.summary && m.takeaway, `${m.id}: missing a field`);
     ok(m.minutes > 0 && m.minutes <= 10, `${m.id}: implausible reading time`);
     ok(m.sections.length >= 3, `${m.id}: too thin to be worth opening`);
     for (const s of m.sections) {
@@ -42,6 +42,27 @@ t('every module is complete and readable', () => {
       ok(s.body.length > 80, `${m.id}/${s.heading}: a section too short to say anything`);
     }
   }
+});
+
+t('every module leads with a sentence the reader could have said', () => {
+  // The landing page shows the prompt and hides the title until the row opens,
+  // because somebody who cannot yet name what is happening to them can still
+  // recognise their own sentence. That only works if the prompt is written as
+  // self-description. An imperative ("Learn about distress") or a second-person
+  // line ("Understand what you are feeling") turns the section back into a
+  // menu of tasks, which is the thing it exists not to be.
+  for (const m of LITERACY_MODULES) {
+    ok(typeof m.prompt === 'string' && m.prompt.length > 0, `${m.id}: no prompt`);
+    ok(/^I(\b|')/.test(m.prompt), `${m.id}: prompt is not first person: ${m.prompt}`);
+    ok(!/\byou(r|rs|rself)?\b/i.test(m.prompt), `${m.id}: prompt addresses the reader: ${m.prompt}`);
+    ok(!/[.!?]$/.test(m.prompt), `${m.id}: prompt is punctuated as a sentence: ${m.prompt}`);
+    ok(m.prompt.length <= 60, `${m.id}: prompt too long to scan in a row: ${m.prompt}`);
+  }
+});
+
+t('prompts are distinct, so no two rows read as the same situation', () => {
+  const prompts = LITERACY_MODULES.map((m) => m.prompt.toLowerCase());
+  eq(new Set(prompts).size, prompts.length);
 });
 
 t('module ids are unique, so lookup and the open/closed state cannot collide', () => {
