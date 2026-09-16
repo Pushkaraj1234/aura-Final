@@ -125,3 +125,81 @@ Recorded rather than hidden.
   more than this.
 - No independent ethics oversight body exists for this project, with or
   without survivor membership.
+
+## The Victim Recovery Hub
+
+Added later than the rest of this document, and deliberately outside the access
+model everything above describes.
+
+### Why it is not staff-readable
+
+Every other table in this schema is clinical and readable by `is_staff()`:
+check-ins, alerts, scores, the things a counsellor is meant to act on. The
+Recovery Hub is not that. An FIR number, a caste certificate, a medical report
+and a survivor's own account of what was done to them are their legal and
+administrative records, and they do not become staff-readable because the same
+person also uses the check-in.
+
+So `recovery_*` tables are owned by `auth.uid()` and every policy reads
+`owner_id = auth.uid()`. `is_staff()` appears nowhere in
+`20260916120000_recovery_hub.sql`. A counsellor with a full staff session sees
+nothing. Sharing a case would have to be built as an explicit, per-case,
+revocable grant, and the absence of a staff policy is what forces that decision
+to be made openly rather than arrived at by a later edit.
+
+Verified against the live database rather than assumed: a probe created two
+auth users, gave one a case and an incident, then switched JWT claims. User B
+saw zero cases, zero incidents, and failed `recovery_owns_case`; user A saw
+exactly one of each and passed. The probe was dropped afterwards and its rows
+cascaded clean.
+
+### What is defended
+
+- **Another user reading a case.** Row level security, keyed on the session's
+  own uid, with no staff branch and no service-role convenience policy.
+- **Another user reading an uploaded document.** The storage policy keys on the
+  first path segment, which is always the owner's uid. Objects live in a
+  private bucket and are served only through signed URLs that expire in five
+  minutes, so a forwarded or screenshotted link stops working.
+- **A device being searched.** Nothing in this feature writes to
+  `localStorage`, `sessionStorage` or IndexedDB, and no case identifier is put
+  in a URL, so none of it appears in browser history or on a shared screen. A
+  test over the sources enforces this, because it is the kind of thing a later
+  convenience commit would undo without noticing.
+- **An oversized or wrong-typed upload.** The 15 MB limit and the PDF/image
+  allowlist are set on the bucket itself, so the storage service enforces them
+  and a modified client cannot talk its way past.
+- **A rewritten history.** `recovery_audit_log` has SELECT and INSERT policies
+  and no UPDATE or DELETE. A log its subject can edit is not a log.
+
+### What is not defended, and is not claimed to be
+
+- **Malware in an uploaded file.** There is no scanning. The document centre
+  says so in as many words rather than letting a private bucket imply it.
+- **A compromised account.** Anyone holding the session holds the case. There
+  is no second factor on this feature beyond whatever protects the account.
+- **A coerced disclosure.** Someone forced to open the app can be forced to
+  open this. Quick Exit remains reachable throughout, which is mitigation, not
+  protection.
+- **Database-level encryption beyond the platform's.** Supabase encrypts
+  Postgres and Storage at rest. There is no application-level field encryption,
+  because against the realistic threat here, device seizure rather than
+  database theft, it would cost RLS ergonomics and buy very little.
+
+### Honesty commitments specific to this feature
+
+- No status originates anywhere but the user. AURA has no authorised feed from
+  any police, court or compensation system. Every row carrying a status also
+  carries a verification column that defaults to `USER_REPORTED`, and nothing
+  in the codebase writes `OFFICIALLY_VERIFIED`. A test enforces that.
+- Nothing asserts eligibility. Resources are surfaced as "may be relevant", and
+  the authority decides. A test enforces the wording.
+- Nothing claims AURA registered an FIR or submitted an application, and the
+  FIR screen says outright that it cannot. Someone who believed otherwise might
+  not go to the police, which is the most serious harm this feature could do.
+- The survivor's account is stored verbatim and is never summarised,
+  reclassified, or turned into a legal characterisation by software.
+- Official links are code constants on a government/UN host allowlist, not rows
+  in the app-editable `support_resources` table. A mistyped NALSA address sends
+  someone to a clone of a government portal at the moment they are about to
+  type an FIR number into it.

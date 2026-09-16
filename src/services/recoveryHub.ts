@@ -551,7 +551,11 @@ export function pendingReminders(
     out.push({
       kind: "documents_incomplete",
       title: "Something is waiting in your recovery file",
-      body: `Your document checklist is at ${checklist.completed} of ${checklist.total}.`,
+      // No count here on purpose. An unread reminder of a given kind is never
+      // replaced, so a number written into this body freezes while the real
+      // checklist moves on, and the two then disagree on screen. The document
+      // centre shows the live figure.
+      body: "Your document checklist isn't complete yet.",
     });
   }
 

@@ -143,9 +143,9 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
           <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
             Preparing an application
           </span>
-          <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+          <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
             Everything in one place, before you apply
-          </h2>
+          </h1>
           <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
             We&rsquo;ve filled in what you already told us. Check it, change
             anything that isn&rsquo;t right, and then you&rsquo;ll have it all
@@ -324,9 +324,9 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
           <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
             Compensation status
           </span>
-          <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+          <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
             Where your application stands
-          </h2>
+          </h1>
         </header>
 
         {/* The ladder. Drawn from what the person has told us, and labelled as
@@ -443,9 +443,9 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
         </SectionCard>
 
         <section className="space-y-3">
-          <h3 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
+          <h2 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
             Track on the official portal
-          </h3>
+          </h2>
           <OfficialSiteNotice />
           <OfficialLink resource={trackResource} language={language} />
           <a
@@ -476,9 +476,9 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           Compensation
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           Applications you&rsquo;ve prepared
-        </h2>
+        </h1>
       </header>
 
       <SectionCard
@@ -486,7 +486,7 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
         action={
           <button
             onClick={() => setMode("prepare")}
-            className="btn-ghost px-4 py-2.5 text-[0.8125rem]"
+            className="btn-ghost px-4 py-2.5 min-h-[44px] text-[0.8125rem]"
           >
             <Plus size={14} aria-hidden="true" />
             Prepare one
@@ -516,13 +516,13 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => openTracker(a)}
-                    className="btn-ghost px-4 py-2 text-[0.8125rem]"
+                    className="btn-ghost min-h-[44px] px-4 py-2 text-[0.8125rem]"
                   >
                     Update status
                   </button>
                   <button
                     onClick={() => onDelete(a.id)}
-                    className="px-3 py-2 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#8A3F20]"
+                    className="min-h-[44px] px-3 py-2 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#8A3F20]"
                   >
                     Remove
                   </button>

@@ -75,9 +75,9 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           Financial recovery
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           What support may apply
-        </h2>
+        </h1>
         <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
           Let&rsquo;s explore financial assistance and compensation pathways
           that may be relevant to your situation.
@@ -118,9 +118,9 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
 
       {/* Matching ----------------------------------------------------------- */}
       <section className="space-y-4">
-        <h3 className="font-serif text-[1.3125rem] leading-[1.3] text-[#3A2A1E]">
+        <h2 className="font-serif text-[1.3125rem] leading-[1.3] text-[#3A2A1E]">
           Potential support resources
-        </h3>
+        </h2>
 
         {/* The qualification, placed above the list rather than below it. A
             person who reads three scheme names and then a caveat has already
@@ -141,9 +141,9 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
             <OfficialSiteNotice />
             {compensation.length > 0 && (
               <div className="space-y-3">
-                <h4 className="text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
+                <h3 className="text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
                   Victim compensation
-                </h4>
+                </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {compensation.map((r) => (
                     <OfficialLink key={r.key} resource={r} language={language} />
@@ -153,9 +153,9 @@ export const RecoveryFinancialScreen: React.FC<Props> = ({
             )}
             {stateSchemes.length > 0 && (
               <div className="space-y-3">
-                <h4 className="text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
+                <h3 className="text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
                   {state} schemes
-                </h4>
+                </h3>
                 <div className="grid gap-3 sm:grid-cols-2">
                   {stateSchemes.map((r) => (
                     <OfficialLink key={r.key} resource={r} language={language} />

@@ -70,10 +70,13 @@ export const RecoveryDashboard: React.FC<Props> = ({
           My recovery
         </span>
         <div className="flex flex-wrap items-baseline justify-between gap-3">
-          <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+          <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
             {kase.displayName ? `Hello, ${kase.displayName}` : "Your recovery file"}
-          </h2>
-          <span className="font-mono text-[0.8125rem] font-normal text-[#7A6A5A]">
+          </h1>
+          {/* #6B5B4C, not the lighter grey used on cards: this one sits on the
+              body gradient rather than on an opaque surface, where the
+              lighter value measured 4.02:1 against 13px text. */}
+          <span className="font-mono text-[0.8125rem] font-normal text-[#6B5B4C]">
             {kase.id}
           </span>
         </div>
@@ -88,9 +91,9 @@ export const RecoveryDashboard: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           Your next step
         </span>
-        <h3 className="mt-2.5 font-serif text-[1.375rem] leading-[1.3] text-[#3A2A1E] sm:text-[1.5rem]">
+        <h2 className="mt-2.5 font-serif text-[1.375rem] leading-[1.3] text-[#3A2A1E] sm:text-[1.5rem]">
           {step.title}
-        </h3>
+        </h2>
         {step.detail && (
           <p className="mt-2.5 max-w-[56ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
             {step.detail}
@@ -124,7 +127,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
               </div>
               <button
                 onClick={() => onDismissNotification(n.id)}
-                className="shrink-0 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#3A2A1E]"
+                className="shrink-0 min-h-[44px] px-2 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#3A2A1E]"
               >
                 Dismiss
               </button>
@@ -162,14 +165,17 @@ export const RecoveryDashboard: React.FC<Props> = ({
         </p>
         <button
           onClick={() => onGo("recovery_timeline")}
-          className="btn-ghost mt-4 px-5 py-2.5 text-[0.875rem]"
+          className="btn-ghost mt-4 px-5 py-2.5 min-h-[44px] text-[0.875rem]"
         >
           View the full timeline
         </button>
       </SectionCard>
 
       {/* CARDS ------------------------------------------------------------ */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      {/* items-start: without it the grid stretches every card to the
+          tallest in the row, and the Documents card ended up a third
+          full beside the FIR card. Let each one be its own height. */}
+      <div className="grid gap-4 sm:grid-cols-2 items-start">
         <SectionCard
           title="FIR and case"
           action={fir ? <VerificationBadge verification={fir.verification} /> : undefined}
@@ -191,7 +197,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
           )}
           <button
             onClick={() => onGo("recovery_fir")}
-            className="btn-ghost mt-4 px-5 py-2.5 text-[0.875rem]"
+            className="btn-ghost mt-4 px-5 py-2.5 min-h-[44px] text-[0.875rem]"
           >
             <Gavel size={15} aria-hidden="true" />
             {fir?.hasFir ? "Update FIR details" : "Add FIR"}
@@ -212,7 +218,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
           </p>
           <button
             onClick={() => onGo("recovery_documents")}
-            className="btn-ghost mt-4 px-5 py-2.5 text-[0.875rem]"
+            className="btn-ghost mt-4 px-5 py-2.5 min-h-[44px] text-[0.875rem]"
           >
             <FileText size={15} aria-hidden="true" />
             Open document centre
@@ -236,7 +242,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
           )}
           <button
             onClick={() => onGo("recovery_legal_aid")}
-            className="btn-ghost mt-4 px-5 py-2.5 text-[0.875rem]"
+            className="btn-ghost mt-4 px-5 py-2.5 min-h-[44px] text-[0.875rem]"
           >
             <Scale size={15} aria-hidden="true" />
             {legalAid.length === 0 ? "Explore legal aid" : "Open legal aid"}
@@ -266,14 +272,14 @@ export const RecoveryDashboard: React.FC<Props> = ({
           <div className="mt-4 flex flex-wrap gap-2">
             <button
               onClick={() => onGo("recovery_financial")}
-              className="btn-ghost px-5 py-2.5 text-[0.875rem]"
+              className="btn-ghost px-5 py-2.5 min-h-[44px] text-[0.875rem]"
             >
               <Banknote size={15} aria-hidden="true" />
               Explore support
             </button>
             <button
               onClick={() => onGo("recovery_compensation")}
-              className="btn-ghost px-5 py-2.5 text-[0.875rem]"
+              className="btn-ghost px-5 py-2.5 min-h-[44px] text-[0.875rem]"
             >
               <ListChecks size={15} aria-hidden="true" />
               Applications
@@ -284,9 +290,9 @@ export const RecoveryDashboard: React.FC<Props> = ({
 
       {/* §21: the person can delete their own file. Plain, not hidden. */}
       <section className="rounded-2xl border border-[#ECE1D3] bg-[#FDFAF4] p-5">
-        <h3 className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
+        <h2 className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
           Deleting this file
-        </h3>
+        </h2>
         <p className="mt-2 max-w-[62ch] text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
           You can remove this file and everything in it, including the documents
           you uploaded. It cannot be undone, and it does not affect anything
@@ -294,7 +300,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
         </p>
         <button
           onClick={onDeleteCase}
-          className="mt-4 inline-flex items-center gap-2 rounded-xl border border-[#E4C3B4] bg-white px-4 py-2.5 text-[0.875rem] font-semibold text-[#8A3F20] transition-colors hover:bg-[#FBEFE9]"
+          className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#E4C3B4] bg-white px-4 py-2.5 text-[0.875rem] font-semibold text-[#8A3F20] transition-colors hover:bg-[#FBEFE9]"
         >
           <Trash2 size={15} aria-hidden="true" />
           Delete my recovery file

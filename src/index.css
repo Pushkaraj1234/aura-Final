@@ -130,7 +130,12 @@ h4, h5, h6 {
 .btn-primary:hover { background: #8A4A20; }
 .btn-ghost { background: #FFFFFF; color: #3A2A1E; border: 1px solid #ECE1D3; }
 .btn-ghost:hover { background: #F5EDE1; }
-.btn-soft { background: #F3E7D8; color: #9A5B33; }
+/* Label deepened from #9A5B33, which measured 4.40:1 on this background and
+   3.92:1 on the hover background — both below AA for the 13-14px text these
+   buttons usually carry. #8A4A20 is the existing accent-deep token and gives
+   5.59:1 and 4.99:1, so nothing about the design changes except that the
+   words are legible. */
+.btn-soft { background: #F3E7D8; color: #8A4A20; }
 .btn-soft:hover { background: #EBDAC6; }
 
 /* Visible, warm focus ring everywhere for keyboard users.

@@ -67,9 +67,9 @@ export const RecoveryTimelineScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           My case timeline
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           What has happened so far
-        </h2>
+        </h1>
         <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
           Everything you or a document has told us, in order. Stages you
           haven&rsquo;t reached are shown too, so you can see the shape of what
@@ -153,9 +153,9 @@ export const RecoveryTimelineScreen: React.FC<Props> = ({
         </button>
       ) : (
         <section className="card-elev space-y-5 rounded-2xl p-5 sm:p-6">
-          <h3 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
+          <h2 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
             Add to your timeline
-          </h3>
+          </h2>
 
           <ChoiceList<TimelineStage>
             legend="Which part of the case is this?"

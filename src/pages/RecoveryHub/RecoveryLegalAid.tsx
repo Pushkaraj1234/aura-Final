@@ -96,9 +96,9 @@ export const RecoveryLegalAidScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           Legal assistance
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           Getting a lawyer
-        </h2>
+        </h1>
         <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
           You may be able to access legal assistance through legal services
           authorities. It is free, it runs from the lowest court up to the
@@ -125,7 +125,7 @@ export const RecoveryLegalAidScreen: React.FC<Props> = ({
           editing === null && (
             <button
               onClick={() => openEditor()}
-              className="btn-ghost px-4 py-2.5 text-[0.8125rem]"
+              className="btn-ghost px-4 py-2.5 min-h-[44px] text-[0.8125rem]"
             >
               <Plus size={14} aria-hidden="true" />
               Add
@@ -162,13 +162,13 @@ export const RecoveryLegalAidScreen: React.FC<Props> = ({
                 <div className="mt-3 flex gap-2">
                   <button
                     onClick={() => openEditor(a)}
-                    className="btn-ghost px-4 py-2 text-[0.8125rem]"
+                    className="btn-ghost min-h-[44px] px-4 py-2 text-[0.8125rem]"
                   >
                     Update
                   </button>
                   <button
                     onClick={() => onDelete(a.id)}
-                    className="px-3 py-2 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#8A3F20]"
+                    className="min-h-[44px] px-3 py-2 text-[0.8125rem] font-semibold text-[#7A6A5A] hover:text-[#8A3F20]"
                   >
                     Remove
                   </button>
@@ -180,9 +180,9 @@ export const RecoveryLegalAidScreen: React.FC<Props> = ({
 
         {editing !== null && (
           <div className="mt-5 space-y-5 border-t border-[#F1E7DA] pt-5">
-            <h4 className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
+            <h3 className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
               {current ? "Update this application" : "Add an application"}
-            </h4>
+            </h3>
 
             <TextField
               label="Application number"

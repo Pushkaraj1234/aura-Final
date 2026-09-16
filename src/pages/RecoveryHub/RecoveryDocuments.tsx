@@ -72,9 +72,9 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           Document centre
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           Your documents, in one place
-        </h2>
+        </h1>
         <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">
           Whatever you already have. You can add the rest later, and nothing
           here has to be complete for your file to be useful.
@@ -98,9 +98,9 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
       {/* Checklist ---------------------------------------------------------- */}
       <section className="card-elev rounded-2xl p-5 sm:p-6">
         <header className="mb-1 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
+          <h2 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
             What applications usually ask for
-          </h3>
+          </h2>
           <span className="text-[0.875rem] font-semibold text-[#8A4A20]">
             {checklist.completed} of {checklist.total} added
           </span>
@@ -130,9 +130,9 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
         <div className="space-y-6">
           {[...grouped.entries()].map(([group, items]) => (
             <div key={group}>
-              <h4 className="mb-2.5 text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
+              <h3 className="mb-2.5 text-[0.75rem] uppercase tracking-[0.12em] text-[#7A6A5A]">
                 {group}
-              </h4>
+              </h3>
               <ul className="space-y-2.5">
                 {items.map((item) => (
                   <li
@@ -167,7 +167,7 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
                         <button
                           onClick={() => pick(item.docType)}
                           disabled={busy}
-                          className="btn-soft shrink-0 px-4 py-2.5 text-[0.8125rem] disabled:opacity-60"
+                          className="btn-soft shrink-0 min-h-[44px] px-4 py-2.5 text-[0.8125rem] disabled:opacity-60"
                         >
                           <Upload size={14} aria-hidden="true" />
                           Add
@@ -185,13 +185,13 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
       {/* Uploaded ----------------------------------------------------------- */}
       <section className="card-elev rounded-2xl p-5 sm:p-6">
         <header className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
+          <h2 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">
             What you&rsquo;ve added
-          </h3>
+          </h2>
           <button
             onClick={() => pick("other")}
             disabled={busy}
-            className="btn-ghost px-4 py-2.5 text-[0.8125rem] disabled:opacity-60"
+            className="btn-ghost min-h-[44px] px-4 py-2.5 text-[0.8125rem] disabled:opacity-60"
           >
             <Upload size={14} aria-hidden="true" />
             Add something else
@@ -227,14 +227,14 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
                   <VerificationBadge verification={doc.verification} />
                   <button
                     onClick={() => onOpen(doc)}
-                    className="btn-ghost px-3.5 py-2 text-[0.8125rem]"
+                    className="btn-ghost min-h-[44px] px-3.5 py-2 text-[0.8125rem]"
                   >
                     Open
                   </button>
                   <button
                     onClick={() => onDelete(doc)}
                     aria-label={`Remove ${doc.label || DOCUMENT_LABELS[doc.docType]}`}
-                    className="rounded-xl border border-[#ECE1D3] bg-white p-2 text-[#8A7A6B] transition-colors hover:border-[#E4C3B4] hover:text-[#8A3F20]"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#ECE1D3] bg-white p-2 text-[#8A7A6B] transition-colors hover:border-[#E4C3B4] hover:text-[#8A3F20]"
                   >
                     <Trash2 size={15} aria-hidden="true" />
                   </button>

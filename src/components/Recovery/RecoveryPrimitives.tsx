@@ -151,7 +151,7 @@ export const EmptyState: React.FC<{
   <div className="rounded-2xl border border-dashed border-[#E0D4C3] bg-[#FDFAF4] px-5 py-8 text-center">
     <p className="text-[0.9375rem] leading-[1.6] text-[#6B5B4C]">{message}</p>
     {actionLabel && onAction && (
-      <button onClick={onAction} className="btn-soft mt-4 px-5 py-2.5 text-[0.875rem]">
+      <button onClick={onAction} className="btn-soft mt-4 px-5 py-2.5 min-h-[44px] text-[0.875rem]">
         {actionLabel}
       </button>
     )}
@@ -230,12 +230,12 @@ export const StepShell: React.FC<{
             {eyebrow}
           </span>
         )}
-        <h2
+        <h1
           id={headingId}
           className="text-[1.5rem] sm:text-[1.875rem] leading-[1.2] text-[#3A2A1E]"
         >
           {title}
-        </h2>
+        </h1>
         {help && (
           <p className="max-w-[58ch] text-[1rem] leading-[1.7] text-[#6B5B4C]">{help}</p>
         )}
@@ -266,7 +266,7 @@ export const StepShell: React.FC<{
             <button
               onClick={onSaveAndExit}
               disabled={busy}
-              className="text-[0.875rem] font-semibold text-[#7A6A5A] underline-offset-4 hover:text-[#3A2A1E] hover:underline disabled:opacity-60"
+              className="min-h-[44px] px-1 text-[0.875rem] font-semibold text-[#7A6A5A] underline-offset-4 hover:text-[#3A2A1E] hover:underline disabled:opacity-60"
             >
               Save and come back later
             </button>
@@ -456,7 +456,7 @@ export const SectionCard: React.FC<{
 }> = ({ title, action, children }) => (
   <section className="card-elev rounded-2xl p-5 sm:p-6">
     <header className="mb-4 flex items-center justify-between gap-4">
-      <h3 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">{title}</h3>
+      <h2 className="font-serif text-[1.125rem] leading-[1.3] text-[#3A2A1E]">{title}</h2>
       {action}
     </header>
     {children}
@@ -471,7 +471,7 @@ export const FactRow: React.FC<{ label: string; value?: string | null }> = ({
   <div className="flex items-baseline justify-between gap-4 border-b border-[#F1E7DA] py-2.5 last:border-b-0">
     <span className="text-[0.875rem] text-[#6B5B4C]">{label}</span>
     <span className="text-right text-[0.9375rem] font-semibold text-[#3A2A1E]">
-      {value || <span className="font-normal text-[#A99A8A]">Not added yet</span>}
+      {value || <span className="font-normal text-[#7A6A5A]">Not added yet</span>}
     </span>
   </div>
 );

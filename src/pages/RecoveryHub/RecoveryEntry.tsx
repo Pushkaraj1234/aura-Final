@@ -56,9 +56,9 @@ export const RecoveryEntry: React.FC<Props> = ({
     return (
       <div className="space-y-7">
         <section className="rounded-2xl border border-[#E4C3B4] bg-[#FBEFE9] p-6 sm:p-8">
-          <h2 className="font-serif text-[1.5rem] leading-[1.25] text-[#8A3F20]">
+          <h1 className="font-serif text-[1.5rem] leading-[1.25] text-[#8A3F20]">
             Your immediate safety comes first.
-          </h2>
+          </h1>
           <p className="mt-3 max-w-[54ch] text-[1rem] leading-[1.7] text-[#6B4636]">
             Nothing here matters more than that. The rest of this can wait, and
             it will still be here when you come back.
@@ -128,9 +128,9 @@ export const RecoveryEntry: React.FC<Props> = ({
           <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
             Your rights
           </span>
-          <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+          <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
             What exists, and who runs it
-          </h2>
+          </h1>
           <p className="max-w-[58ch] text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
             You don&rsquo;t need an account or a case to read any of this. Every
             link goes to the body that actually runs the service, never to a
@@ -147,9 +147,9 @@ export const RecoveryEntry: React.FC<Props> = ({
           if (items.length === 0) return null;
           return (
             <section key={g.heading} className="space-y-3">
-              <h3 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
+              <h2 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
                 {g.heading}
-              </h3>
+              </h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {items.map((r) => (
                   <OfficialLink key={r.key} resource={r} language={language} />
@@ -178,9 +178,9 @@ export const RecoveryEntry: React.FC<Props> = ({
           <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
             Before anything else
           </span>
-          <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+          <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
             Are you currently safe?
-          </h2>
+          </h1>
           <p className="max-w-[54ch] text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
             We ask before anything else, because nothing on the next screens is
             worth your time if you&rsquo;re in danger right now.

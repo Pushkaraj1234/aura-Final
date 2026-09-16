@@ -86,9 +86,9 @@ export const RecoveryFirScreen: React.FC<Props> = ({
         <span className="block text-[11px] uppercase tracking-[0.18em] text-[#8A4A20]">
           FIR and case
         </span>
-        <h2 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
+        <h1 className="text-[1.75rem] sm:text-[2.125rem] leading-[1.15] text-[#3A2A1E]">
           Where the police side stands
-        </h2>
+        </h1>
       </header>
 
       <SectionCard title="Do you already have an FIR?">
@@ -243,9 +243,9 @@ export const RecoveryFirScreen: React.FC<Props> = ({
 
       {policeResources.length > 0 && (
         <section className="space-y-3">
-          <h3 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
+          <h2 className="font-serif text-[1.1875rem] leading-[1.3] text-[#3A2A1E]">
             Official FIR information
-          </h3>
+          </h2>
           <OfficialSiteNotice />
           <div className="grid gap-3 sm:grid-cols-2">
             {policeResources.map((r) => (
