@@ -1,5 +1,5 @@
 import React from "react";
-import { LiteracyLibrary } from "../components/LiteracyLibrary";
+import { LiteracyCards } from "../components/LiteracyCards";
 import {
   Activity,
   Shield,
@@ -220,7 +220,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
             Mobile stays tighter on purpose: a 48px gutter on a 360px screen
             costs the statements a line each. */}
         <div className="max-w-7xl mx-auto px-5 sm:px-14 lg:px-16">
-          <LiteracyLibrary layout="split">
+          <LiteracyCards>
             {/* A door held open, not a call to action. Below the reading
                 rather than beside it, so it reads as what comes next instead
                 of as a banner competing with them. Warmer ground than the
@@ -253,7 +253,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 </button>
               </div>
             </div>
-          </LiteracyLibrary>
+          </LiteracyCards>
         </div>
       </section>
 

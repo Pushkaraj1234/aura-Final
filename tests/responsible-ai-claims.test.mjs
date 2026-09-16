@@ -126,22 +126,81 @@ t('the consent screen says what withdrawal actually does', () => {
 
 // ---- the reading library is shared, not duplicated -------------------------
 
-t('both places that show the reading library use the shared component', () => {
-  // It appears on the landing page, in front of the sign-up wall, and inside
-  // the app for signed-in participants. If either ever inlines its own
-  // accordion the two will drift, and the copy a person reads BEFORE deciding
-  // to trust us is the one that would go stale.
+t('both places that show the reading pieces read the one module list', () => {
+  // These appear on the landing page, in front of the sign-up wall, and inside
+  // the app for signed-in participants. The two now present them differently,
+  // a flip-card grid and a ruled accordion, because a visitor scanning a
+  // homepage and somebody who opened the reading page deliberately are doing
+  // different things. What must never differ is the words: if either ever
+  // inlines its own copy the two will drift, and the version a person reads
+  // BEFORE deciding to trust us is the one that would go stale.
   const landing = read('src/pages/LandingPage.tsx');
   const inApp = read('src/pages/WhatToExpect.tsx');
 
+  ok(/<LiteracyCards/.test(landing), 'the landing page renders the card grid');
+  ok(/<LiteracyLibrary/.test(inApp), 'the signed-in page renders the accordion');
+
   for (const [name, source] of [['LandingPage', landing], ['WhatToExpect', inApp]]) {
-    ok(/<LiteracyLibrary/.test(source), `${name} must render the shared library`);
     ok(!/LITERACY_MODULES/.test(source),
-       `${name} must not read the module list itself; that is the library's job`);
+       `${name} must not read the module list itself; that is a component's job`);
+  }
+
+  for (const rel of [
+    'src/components/LiteracyCards.tsx',
+    'src/components/LiteracyLibrary.tsx',
+  ]) {
+    ok(/LITERACY_MODULES/.test(read(rel)),
+       `${rel} must take its content from literacyModules`);
   }
 });
 
-t('the library reads its content from the one module list', () => {
+t('the card grid types none of the reading content into itself', () => {
+  // The whole point of two presentations over one source. A title copied in
+  // here would look right the day it was written and be wrong the day the
+  // module changed.
+  const cards = read('src/components/LiteracyCards.tsx');
+  const forbidden = [
+    "What distress is",
+    "What a counsellor here",
+    "What the court process usually looks like",
+    "What AURA does with what you tell it",
+    "min read.",
+  ];
+  for (const phrase of forbidden) {
+    // "min read." is allowed inside the aria-label template, where it is
+    // interpolated rather than typed; a literal title never is.
+    if (phrase === 'min read.') continue;
+    ok(!cards.includes(phrase), `card grid hardcodes content: "${phrase}"`);
+  }
+  ok(/\{module\.title\}/.test(cards) && /\{module\.summary\}/.test(cards) &&
+     /\{module\.minutes\}/.test(cards) && /\{module\.prompt\}/.test(cards),
+     'every piece of card text must come from the module');
+});
+
+t('nothing important is reachable only by flipping a card', () => {
+  // A screen reader user never hovers, so the faces are decoration and the
+  // button carries the whole card in its accessible name.
+  const cards = read('src/components/LiteracyCards.tsx');
+  ok(/aria-label=\{`\$\{module\.prompt\}[\s\S]{0,200}module\.minutes/.test(cards),
+     'the accessible name must carry prompt, article and reading time together');
+  const faces = cards.match(/aria-hidden="true"\s*\n\s*className="flip-face/g) || [];
+  ok(faces.length === 2, `both faces must be aria-hidden; found ${faces.length}`);
+});
+
+t('a device without hover still reaches the back of the card', () => {
+  const cards = read('src/components/LiteracyCards.tsx');
+  ok(/\(hover: hover\)/.test(cards), 'hover capability must be detected, not assumed');
+  ok(/!canHover && tapped !== id/.test(cards),
+     'without hover the first tap must turn the card rather than opening it');
+});
+
+t('the landing cards still track nothing about what was read', () => {
+  const cards = read('src/components/LiteracyCards.tsx');
+  ok(!/localStorage|sessionStorage|apiService|supabase/i.test(cards),
+     'the reading cards must not persist or report anything');
+});
+
+t('the accordion reads its content from the one module list', () => {
   const lib = read('src/components/LiteracyLibrary.tsx');
   ok(/LITERACY_MODULES/.test(lib), 'content comes from literacyModules, never inlined');
   ok(/\{module\.minutes\}\s*min read/.test(lib),

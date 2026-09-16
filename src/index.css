@@ -138,6 +138,46 @@ h4, h5, h6 {
 .btn-soft { background: #F3E7D8; color: #8A4A20; }
 .btn-soft:hover { background: #EBDAC6; }
 
+/* Reading cards on the landing page: a genuine 3D flip.
+   Scoped to these class names, which only LiteracyCards uses, so nothing else
+   on the site is affected.
+
+   The two faces sit in the same grid cell rather than being absolutely
+   positioned, so the card sizes itself to whichever face is taller and the
+   layout cannot jump mid-flip.
+
+   The flip is purely visual. Both faces are aria-hidden and the button carries
+   the whole of the card's information in its accessible name, because a screen
+   reader user never hovers and information that only exists on the far side of
+   an animation is information they do not have. The global
+   prefers-reduced-motion rule below collapses the transition to near zero,
+   which leaves the state change instant rather than absent. */
+.flip-card {
+  perspective: 1400px;
+}
+
+.flip-card-inner {
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.flip-card:hover .flip-card-inner,
+.flip-card:focus-within .flip-card-inner,
+.flip-card[data-flipped="true"] .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-face {
+  grid-area: 1 / 1;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.flip-face-back {
+  transform: rotateY(180deg);
+}
+
 /* Visible, warm focus ring everywhere for keyboard users.
    No border-radius here on purpose. It used to force 4px, which squared off
    every rounded button and card the instant it took keyboard focus — and
