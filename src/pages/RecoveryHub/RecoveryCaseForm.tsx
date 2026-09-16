@@ -5,17 +5,33 @@ import { INDIAN_STATES } from "../../services/indianStates";
 /**
  * Opening a file.
  *
- * ASKS FOR LITTLE, REQUIRES LESS
+ * WHAT IS REQUIRED, AND WHY IT IS NOT "NOTHING"
  *
- * Every field here is optional except the state, and the state is asked for
- * only because it decides which schemes and which police portal are worth
- * showing: getting it wrong sends someone to the wrong government. Name and
- * contact are collected because applications ask for them later and nobody
- * should type their own name four times, not because the file needs them.
+ * An earlier version of this screen made everything optional except the state,
+ * on the reasoning that a survivor should never be blocked by a form. That was
+ * the wrong conclusion from a right instinct, and it produced a file that could
+ * not pre-fill a single official application, which is the entire reason those
+ * details are collected here rather than typed again on every portal.
  *
- * A person may want a record before they are ready to put their name on
- * anything, and a form that refuses to proceed without one turns the first
- * screen into a checkpoint.
+ * So each required field earns it by pointing at something concrete:
+ *
+ *   - Name, because every compensation and legal-aid application asks for it.
+ *   - One way to be reached, because an application with no contact route is
+ *     one the office cannot progress. Both blank is the case that cannot be
+ *     right; either one alone is fine.
+ *   - State, because it decides which schemes and which police portal we show,
+ *     and getting it wrong sends someone to the wrong government.
+ *   - District, because the SC/ST atrocity assistance is administered by the
+ *     district Assistant Commissioner of Social Welfare. Without it we cannot
+ *     tell anyone which office is theirs.
+ *
+ * REQUIRED TO CONTINUE IS NOT REQUIRED TO EXIST
+ *
+ * Nothing here is a wall. The account already knows the name and email, so
+ * three of the four arrive filled in, and every later screen keeps "save and
+ * come back later", which stores whatever has been typed. What is prevented is
+ * sleepwalking to the end of the intake with an empty file and discovering it
+ * at the compensation office.
  */
 
 interface Props {
@@ -54,7 +70,7 @@ export const RecoveryCaseForm: React.FC<Props> = ({
     <StepShell
       eyebrow="Your file"
       title="Let's open a file for you"
-      help="Only what's useful later. You can leave anything blank and add it whenever you want."
+      help="A few things applications will ask for, so you only type them once. Most of it is already filled in from your account."
       onBack={onBack}
       onNext={() =>
         onCreate({
@@ -67,33 +83,51 @@ export const RecoveryCaseForm: React.FC<Props> = ({
         })
       }
       nextLabel="Open my file"
-      nextDisabled={!state}
+      // Both contact fields blank is the case that cannot be right: either one
+      // alone is enough, and the account email means this is usually already
+      // satisfied before the screen is read.
+      nextDisabled={
+        !displayName.trim() ||
+        !state ||
+        !district.trim() ||
+        (!contactPhone.trim() && !contactEmail.trim())
+      }
       busy={busy}
       error={error}
     >
       <TextField
-        label="What should we call you?"
-        hint="A first name or anything you like. It is only shown back to you."
+        label="Your name"
+        hint="As it appears on the documents you'll be using, if you can. Applications ask for it, and this saves you typing it each time."
         value={displayName}
         onChange={setDisplayName}
-        optional
+        needed="Applications ask for a name, so we need one to fill in for you."
       />
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <TextField
-          label="Phone"
-          type="tel"
-          value={contactPhone}
-          onChange={setContactPhone}
-          optional
-        />
-        <TextField
-          label="Email"
-          type="email"
-          value={contactEmail}
-          onChange={setContactEmail}
-          optional
-        />
+      <div className="space-y-2">
+        <p className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
+          How you can be reached
+        </p>
+        <p className="text-[0.8125rem] leading-[1.6] text-[#6B5B4C]">
+          One of these is enough. An office with no way to reach you
+          can&rsquo;t take an application forward, so this is the one thing we
+          won&rsquo;t leave blank.
+        </p>
+        <div className="grid gap-5 pt-1 sm:grid-cols-2">
+          <TextField
+            label="Phone"
+            type="tel"
+            value={contactPhone}
+            onChange={setContactPhone}
+            needed={!contactEmail.trim() ? "A phone number or an email address." : undefined}
+          />
+          <TextField
+            label="Email"
+            type="email"
+            value={contactEmail}
+            onChange={setContactEmail}
+            needed={!contactPhone.trim() ? "A phone number or an email address." : undefined}
+          />
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -123,7 +157,13 @@ export const RecoveryCaseForm: React.FC<Props> = ({
         </select>
       </div>
 
-      <TextField label="District" value={district} onChange={setDistrict} optional />
+      <TextField
+        label="District"
+        hint="Assistance for atrocities is handled by the district office, so this is how we can point you at the right one."
+        value={district}
+        onChange={setDistrict}
+        needed="We need the district to tell you which office handles your area."
+      />
 
       {/* Said before the id is generated, not after, so it is never mistaken
           for an official number in the first place. */}

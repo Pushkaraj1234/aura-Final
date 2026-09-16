@@ -299,9 +299,19 @@ export const TextField: React.FC<{
   placeholder?: string;
   type?: "text" | "tel" | "email" | "date" | "number";
   optional?: boolean;
-}> = ({ label, value, onChange, hint, placeholder, type = "text", optional }) => {
+  /**
+   * Shown when the field is needed and empty.
+   *
+   * Phrased as what it is for, never as "this field is required". Someone
+   * filling this in has been told what to produce by enough offices already,
+   * and a form that only says "required" is one more of them.
+   */
+  needed?: string;
+}> = ({ label, value, onChange, hint, placeholder, type = "text", optional, needed }) => {
   const id = useId();
   const hintId = `${id}-hint`;
+  const needId = `${id}-need`;
+  const showNeed = Boolean(needed) && !value.trim();
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="block text-[0.9375rem] font-semibold text-[#3A2A1E]">
@@ -322,10 +332,19 @@ export const TextField: React.FC<{
         type={type}
         value={value}
         placeholder={placeholder}
-        aria-describedby={hint ? hintId : undefined}
+        required={Boolean(needed)}
+        aria-required={needed ? true : undefined}
+        aria-describedby={[hint ? hintId : "", showNeed ? needId : ""].filter(Boolean).join(" ") || undefined}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-[#E4D7C6] bg-white px-4 py-3.5 text-[1rem] text-[#3A2A1E] placeholder:text-[#A99A8A]"
+        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] text-[#3A2A1E] placeholder:text-[#A99A8A] ${
+          showNeed ? "border-[#C9A184]" : "border-[#E4D7C6]"
+        }`}
       />
+      {showNeed && (
+        <p id={needId} className="text-[0.8125rem] leading-[1.6] text-[#8A4A20]">
+          {needed}
+        </p>
+      )}
     </div>
   );
 };
@@ -337,9 +356,12 @@ export const TextArea: React.FC<{
   hint?: string;
   rows?: number;
   placeholder?: string;
-}> = ({ label, value, onChange, hint, rows = 7, placeholder }) => {
+  needed?: string;
+}> = ({ label, value, onChange, hint, rows = 7, placeholder, needed }) => {
   const id = useId();
   const hintId = `${id}-hint`;
+  const needId = `${id}-need`;
+  const showNeed = Boolean(needed) && !value.trim();
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="block text-[0.9375rem] font-semibold text-[#3A2A1E]">
@@ -355,10 +377,19 @@ export const TextArea: React.FC<{
         rows={rows}
         value={value}
         placeholder={placeholder}
-        aria-describedby={hint ? hintId : undefined}
+        required={Boolean(needed)}
+        aria-required={needed ? true : undefined}
+        aria-describedby={[hint ? hintId : "", showNeed ? needId : ""].filter(Boolean).join(" ") || undefined}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full rounded-xl border border-[#E4D7C6] bg-white px-4 py-3.5 text-[1rem] leading-[1.7] text-[#3A2A1E] placeholder:text-[#A99A8A]"
+        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] leading-[1.7] text-[#3A2A1E] placeholder:text-[#A99A8A] ${
+          showNeed ? "border-[#C9A184]" : "border-[#E4D7C6]"
+        }`}
       />
+      {showNeed && (
+        <p id={needId} className="text-[0.8125rem] leading-[1.6] text-[#8A4A20]">
+          {needed}
+        </p>
+      )}
     </div>
   );
 };

@@ -335,11 +335,43 @@ export function nextStep({ bundle, checklist }: NextStepInput): NextStep {
     };
   }
 
+  // Files opened before the intake required these can still reach here empty,
+  // and they are what every compensation form asks for first.
+  if (!incident.occurredOn && !incident.occurredTimeNote) {
+    return {
+      id: "incident_when",
+      title: "Add when this happened",
+      detail: "An approximate answer is fine if you don't remember the exact date.",
+      actionLabel: "Continue",
+      destination: "recovery_incident",
+    };
+  }
+
+  if (!incident.location && !incident.district) {
+    return {
+      id: "incident_where",
+      title: "Add where this happened",
+      detail: "A place or a district. Applications ask which area it falls in.",
+      actionLabel: "Continue",
+      destination: "recovery_incident",
+    };
+  }
+
   if (!incident.account) {
     return {
       id: "incident_account",
       title: "Add your account of what happened",
       detail: "You can type it or speak it. What you write stays in your words.",
+      actionLabel: "Continue",
+      destination: "recovery_incident",
+    };
+  }
+
+  if (incident.impacts.length === 0) {
+    return {
+      id: "incident_impacts",
+      title: "Tell us how this has affected you",
+      detail: "Your document checklist and the support we show you are built from this.",
       actionLabel: "Continue",
       destination: "recovery_incident",
     };

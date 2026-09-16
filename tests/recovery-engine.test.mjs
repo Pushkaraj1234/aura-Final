@@ -47,7 +47,7 @@ t('the next step is never empty, whatever the state', () => {
     mkBundle(),
     mkBundle({ incident: { category: 'other', impacts: [] } }),
     mkBundle({
-      incident: { category: 'other', account: 'x', impacts: [] },
+      incident: { category: 'other', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['emotional_impact'] },
       fir: { hasFir: false },
       documents: [{ docType: 'identity' }],
       legalAid: [{ id: 'a', applicationNumber: '1', status: 'SUBMITTED' }],
@@ -66,18 +66,62 @@ t('order of operations: incident before FIR before documents', () => {
   const noIncident = mkBundle();
   eq(nextStep({ bundle: noIncident }).id, 'incident_category');
 
-  const noAccount = mkBundle({ incident: { category: 'physical_violence', impacts: [] } });
+  // when and where now come before the account, matching the order of the
+  // four intake screens.
+  const noWhen = mkBundle({ incident: { category: 'physical_violence', impacts: [] } });
+  eq(nextStep({ bundle: noWhen }).id, 'incident_when');
+
+  const noAccount = mkBundle({
+    incident: { category: 'physical_violence', occurredOn: '2026-07-01',
+                district: 'Pune', impacts: [] },
+  });
   eq(nextStep({ bundle: noAccount }).id, 'incident_account');
 
   const noFirAnswer = mkBundle({
-    incident: { category: 'physical_violence', account: 'what happened', impacts: [] },
+    incident: {
+      category: 'physical_violence', occurredOn: '2026-07-01', district: 'Pune',
+      account: 'what happened', impacts: ['physical_injury'],
+    },
   });
   eq(nextStep({ bundle: noFirAnswer }).id, 'fir_question');
 });
 
+t('an intake missing when, where, the account or the impacts is asked for it', () => {
+  // These were all optional once, so the whole intake could be completed with
+  // a category and nothing else, producing a file that could not pre-fill a
+  // single official application.
+  const base = { category: 'physical_violence', impacts: [] };
+  eq(nextStep({ bundle: mkBundle({ incident: { ...base } }) }).id, 'incident_when');
+  eq(nextStep({ bundle: mkBundle({ incident: { ...base, occurredOn: '2026-07-01' } }) }).id,
+     'incident_where');
+  eq(nextStep({ bundle: mkBundle({ incident: { ...base, occurredOn: '2026-07-01', district: 'Pune' } }) }).id,
+     'incident_account');
+  eq(nextStep({ bundle: mkBundle({ incident: { ...base, occurredOn: '2026-07-01', district: 'Pune', account: 'x' } }) }).id,
+     'incident_impacts');
+});
+
+t('an approximate answer counts as knowing when', () => {
+  // The escape from a required date that is not "leave it blank": somebody who
+  // genuinely does not know it should not be pushed into inventing one.
+  const b = mkBundle({
+    incident: { category: 'other', occurredTimeNote: 'some time in July',
+                district: 'Pune', account: 'x', impacts: ['emotional_impact'] },
+  });
+  ok(nextStep({ bundle: b }).id !== 'incident_when', 'an approximate date must satisfy this');
+});
+
+t('a place or a district is enough, not both', () => {
+  const base = { category: 'other', occurredOn: '2026-07-01', account: 'x',
+                 impacts: ['emotional_impact'] };
+  for (const where of [{ location: 'near the well' }, { district: 'Pune' }]) {
+    const s = nextStep({ bundle: mkBundle({ incident: { ...base, ...where } }) });
+    ok(s.id !== 'incident_where', `${JSON.stringify(where)} should satisfy where`);
+  }
+});
+
 t('an FIR answered yes but with no number asks for the number', () => {
   const b = mkBundle({
-    incident: { category: 'physical_violence', account: 'x', impacts: [] },
+    incident: { category: 'physical_violence', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['physical_injury'] },
     fir: { hasFir: true },
   });
   eq(nextStep({ bundle: b }).id, 'fir_details');
@@ -85,7 +129,7 @@ t('an FIR answered yes but with no number asks for the number', () => {
 
 t('an FIR answered no routes to the process, never to a filing button', () => {
   const b = mkBundle({
-    incident: { category: 'physical_violence', account: 'x', impacts: [] },
+    incident: { category: 'physical_violence', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['physical_injury'] },
     fir: { hasFir: false },
   });
   const s = nextStep({ bundle: b });
@@ -98,7 +142,7 @@ t('hasFir null is "not asked yet", not "no"', () => {
   // These drive different next steps and collapsing them would skip the
   // question entirely for anyone who has not answered it.
   const unasked = mkBundle({
-    incident: { category: 'other', account: 'x', impacts: [] },
+    incident: { category: 'other', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['emotional_impact'] },
     fir: { hasFir: null },
   });
   eq(nextStep({ bundle: unasked }).id, 'fir_question');
@@ -106,7 +150,7 @@ t('hasFir null is "not asked yet", not "no"', () => {
 
 t('a missing commonly-asked-for document is named specifically', () => {
   const b = mkBundle({
-    incident: { category: 'physical_violence', account: 'x', impacts: [] },
+    incident: { category: 'physical_violence', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['physical_injury'] },
     fir: { hasFir: true, firNumber: '123/2026' },
   });
   const checklist = buildChecklist({
@@ -120,7 +164,7 @@ t('a missing commonly-asked-for document is named specifically', () => {
 t('a complete file says so rather than going blank', () => {
   const b = mkBundle({
     case: { financialImpacts: ['medical_expenses'] },
-    incident: { category: 'other', account: 'x', impacts: [] },
+    incident: { category: 'other', occurredOn: '2026-07-01', district: 'Pune', account: 'x', impacts: ['emotional_impact'] },
     fir: { hasFir: true, firNumber: '1/2026' },
     documents: [{ docType: 'identity' }],
     legalAid: [{ id: 'a', applicationNumber: 'LA1', status: 'COMPLETED' }],

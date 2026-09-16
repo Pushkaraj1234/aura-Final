@@ -293,6 +293,55 @@ t('an open case does not stay on screen indefinitely', () => {
      'the hub must return to the entry screen after a quiet period');
 });
 
+t('the intake cannot be completed empty', () => {
+  // The defect this guards against: every field on the incident screen was
+  // once optional, so the whole intake finished with a category and nothing
+  // else, producing a file that could not pre-fill a single official
+  // application. Each step must gate on something.
+  const incident = read(`${SCREEN_DIR}/RecoveryIncident.tsx`);
+  const gates = incident.match(/nextDisabled=/g) || [];
+  ok(gates.length >= 4, `every intake step must gate; found ${gates.length}`);
+  ok(/whenAnswered/.test(incident) && /whereAnswered/.test(incident),
+     'when and where must both be required');
+  ok(/nextDisabled=\{!account\.trim\(\)\}/.test(incident),
+     'the account is the point of the screen and cannot be skipped');
+  ok(/nextDisabled=\{impacts\.length === 0\}/.test(incident),
+     'the checklist and the matcher are built from the impacts');
+});
+
+t('a case cannot be opened with no way to reach the person', () => {
+  const form = read(`${SCREEN_DIR}/RecoveryCaseForm.tsx`);
+  ok(/!contactPhone\.trim\(\) && !contactEmail\.trim\(\)/.test(form),
+     'both contact fields blank is the case that cannot be right');
+  ok(/!displayName\.trim\(\)/.test(form) && /!district\.trim\(\)/.test(form),
+     'name and district are asked for by the applications this pre-fills');
+});
+
+t('a date nobody remembers has a way out that is not a blank', () => {
+  // A required date picker with no escape makes people invent an answer, and
+  // an invented date on an official application is worse than an approximate.
+  const incident = read(`${SCREEN_DIR}/RecoveryIncident.tsx`);
+  ok(/dateUnknown/.test(incident), 'there must be an "I don\'t remember" path');
+  ok(/as near as you can say/i.test(visibleText(incident)),
+     'and it must ask for what they do remember instead');
+});
+
+t('required screens still let someone leave without losing anything', () => {
+  // Required-to-continue must never mean required-to-exist.
+  const incident = read(`${SCREEN_DIR}/RecoveryIncident.tsx`);
+  const saves = incident.match(/onSaveAndExit=/g) || [];
+  ok(saves.length >= 4, `every gated step needs an exit; found ${saves.length}`);
+});
+
+t('no screen still promises that anything can be left blank', () => {
+  // Copy that contradicts the form is how a product starts feeling broken.
+  for (const rel of SOURCES.filter((f) => f.endsWith('.tsx'))) {
+    const text = visibleText(read(rel));
+    const m = text.match(/leave anything blank|leaving something blank is fine/i);
+    if (m) throw new Error(`${rel} still promises blanks: "${m[0]}"`);
+  }
+});
+
 t('the negation guard itself works, so the rules above can still fail', () => {
   // A guard that swallowed everything would quietly disable every rule it
   // protects. These two prove it distinguishes the cases.

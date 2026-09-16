@@ -36,6 +36,25 @@ import type {
  *
  * "I don't know" is a real answer and appears in the list, because somebody
  * who cannot yet name what happened to them is not an invalid form state.
+ *
+ * WHAT HAS TO BE FILLED IN, AND THE WAY ROUND BEING CRUEL ABOUT IT
+ *
+ * An earlier version of this screen made every field on it optional, so the
+ * whole intake could be completed with a category and nothing else. That file
+ * is useless for the thing the person came here for: every compensation form
+ * asks when and where, the document checklist is built from the impacts, and
+ * the resource matcher has nothing to match on. Being asked for those at the
+ * counter, months later, is worse than being asked for them here.
+ *
+ * The date is the hard case. Somebody may genuinely not know it, and a
+ * required date picker with no way out is the kind of form that makes people
+ * invent an answer or abandon the page. So the date is required, and "I don't
+ * remember the exact date" is a real option that asks instead for whatever
+ * they do remember: a month, a festival, the week a hearing fell. That is what
+ * an official form will accept as an approximate date anyway.
+ *
+ * "Save and come back later" remains on every step and stores whatever has
+ * been typed, so required-to-continue never means work lost.
  */
 
 interface Props {
@@ -68,6 +87,11 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
   );
   const [occurredOn, setOccurredOn] = useState(incident?.occurredOn || "");
   const [timeNote, setTimeNote] = useState(incident?.occurredTimeNote || "");
+  // A file restored with a note but no date was one where the exact date was
+  // not known, so the toggle comes back the way it was left.
+  const [dateUnknown, setDateUnknown] = useState(
+    Boolean(incident?.occurredTimeNote && !incident?.occurredOn)
+  );
   const [location, setLocation] = useState(incident?.location || "");
   const [state, setState] = useState(incident?.state || caseState || "");
   const [district, setDistrict] = useState(incident?.district || caseDistrict || "");
@@ -114,6 +138,11 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
     setRecording(false);
     setInterim("");
   };
+
+  // Either an exact date or something they do remember about when; and either
+  // a place or a district. Both blank is the state that cannot be right.
+  const whenAnswered = dateUnknown ? Boolean(timeNote.trim()) : Boolean(occurredOn);
+  const whereAnswered = Boolean(location.trim() || district.trim());
 
   const saveAnd = async (next: () => void) => {
     await onSave({
@@ -165,38 +194,70 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
       <StepShell
         eyebrow="What happened"
         title="When and where"
-        help="As much or as little as you remember. Leaving something blank is fine."
+        help="When and where, as near as you can say. If you don't remember the exact date there is a way to say so."
         step={2}
         totalSteps={TOTAL}
         onBack={() => setStep(1)}
         onNext={() => saveAnd(() => setStep(3))}
+        nextDisabled={!whenAnswered || !whereAnswered}
         onSaveAndExit={() => saveAnd(onExit)}
         busy={busy}
         error={error}
       >
-        <div className="grid gap-5 sm:grid-cols-2">
+        {!dateUnknown ? (
+          <div className="grid gap-5 sm:grid-cols-2">
+            <TextField
+              label="Date it happened"
+              type="date"
+              value={occurredOn}
+              onChange={setOccurredOn}
+              needed="Every compensation form asks for this, so it is worth having saved."
+            />
+            <TextField
+              label="Roughly what time"
+              placeholder="Late evening, around 9pm…"
+              value={timeNote}
+              onChange={setTimeNote}
+              optional
+            />
+          </div>
+        ) : (
           <TextField
-            label="Date it happened"
-            type="date"
-            value={occurredOn}
-            onChange={setOccurredOn}
-            optional
-          />
-          <TextField
-            label="Roughly what time"
-            placeholder="Late evening, around 9pm…"
+            label="When, as near as you can say"
+            hint="A month, a season, a festival, the week something else happened. Offices accept an approximate date."
+            placeholder="Some time in July, around the time of the first hearing"
             value={timeNote}
             onChange={setTimeNote}
-            optional
+            needed="Whatever you do remember about when. It does not have to be exact."
           />
-        </div>
+        )}
+
+        {/* The way out of a required date that is not "leave it blank". A form
+            with no escape here makes people invent a date, and an invented
+            date on an official application is worse than an approximate one. */}
+        <label className="flex cursor-pointer items-center gap-3 text-[0.875rem] text-[#6B5B4C]">
+          <input
+            type="checkbox"
+            checked={dateUnknown}
+            onChange={(e) => {
+              setDateUnknown(e.target.checked);
+              if (e.target.checked) setOccurredOn("");
+            }}
+            className="h-4 w-4 accent-[#A85D2E]"
+          />
+          I don&rsquo;t remember the exact date
+        </label>
 
         <TextField
           label="Where it happened"
           hint="A village, a road, a workplace. Whatever describes it."
           value={location}
           onChange={setLocation}
-          optional
+          needed={
+            !district.trim()
+              ? "Where it happened, or the district below. Applications ask which area it falls in."
+              : undefined
+          }
         />
 
         <div className="space-y-2">
@@ -222,7 +283,14 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
         </div>
 
         <div className="grid gap-5 sm:grid-cols-2">
-          <TextField label="District" value={district} onChange={setDistrict} optional />
+          <TextField
+            label="District"
+            value={district}
+            onChange={setDistrict}
+            needed={
+              !location.trim() ? "The district, or where it happened above." : undefined
+            }
+          />
           <TextField
             label="Police station"
             hint="If you know which one covers the area."
@@ -245,13 +313,15 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
         totalSteps={TOTAL}
         onBack={() => setStep(2)}
         onNext={() => saveAnd(() => setStep(4))}
+        nextDisabled={!account.trim()}
         onSaveAndExit={() => saveAnd(onExit)}
         busy={busy}
         error={error}
       >
         <TextArea
           label="Your account"
-          hint="Only what you want to write down. You can add to it any time."
+          hint="As much or as little as you want. A few lines is enough, and you can add to it any time."
+          needed="In your own words, however short. This is the part no form and no office can write for you."
           value={account + (interim ? ` ${interim}` : "")}
           onChange={(v) => {
             setAccount(v);
@@ -311,6 +381,7 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
       totalSteps={TOTAL}
       onBack={() => setStep(3)}
       onNext={() => saveAnd(onDone)}
+      nextDisabled={impacts.length === 0}
       nextLabel="Finish"
       onSaveAndExit={() => saveAnd(onExit)}
       busy={busy}
@@ -318,6 +389,7 @@ export const RecoveryIncidentIntake: React.FC<Props> = ({
     >
       <ChoiceList<ImpactType>
         legend="How has this affected you?"
+        hint="At least one. Your document checklist and the schemes we show you are built from these, so an empty answer leaves both empty."
         choices={(Object.keys(IMPACT_LABELS) as ImpactType[]).map((k) => ({
           value: k,
           label: IMPACT_LABELS[k],
