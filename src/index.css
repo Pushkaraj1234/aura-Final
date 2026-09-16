@@ -133,11 +133,16 @@ h4, h5, h6 {
 .btn-soft { background: #F3E7D8; color: #9A5B33; }
 .btn-soft:hover { background: #EBDAC6; }
 
-/* Visible, warm focus ring everywhere for keyboard users. */
+/* Visible, warm focus ring everywhere for keyboard users.
+   No border-radius here on purpose. It used to force 4px, which squared off
+   every rounded button and card the instant it took keyboard focus — and
+   because this file is unlayered while Tailwind's utilities sit in a layer, no
+   `focus-visible:rounded-*` utility could override it. Browsers already draw
+   the outline around the element's own radius, so leaving it alone is both
+   correct and better looking. */
 *:focus-visible {
   outline: 2px solid #C88A5A;
   outline-offset: 2px;
-  border-radius: 4px;
 }
 
 /* Custom natural-tone scrollbars */
@@ -157,4 +162,31 @@ h4, h5, h6 {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #A85D2E;
+}
+
+/* Honour a reduced-motion preference, site-wide.
+   Nothing here was respecting it. On a product used by people who may be
+   unwell, motion that cannot be turned off is an accessibility failure rather
+   than a polish issue. Transitions are cut rather than removed outright, so
+   state changes still register instead of snapping invisibly. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Subheadings inside an expanded reading panel.
+   The serif rule above targets h1-h3 with !important while h4-h6 fall to the
+   sans stack, so the same subheading rendered at h3 on its own page and h4 on
+   the landing page would come out in two different typefaces. This pins them
+   to one, whatever level the surrounding outline requires. */
+.reading-subhead {
+  font-family: var(--font-sans) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
 }

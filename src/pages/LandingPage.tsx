@@ -206,24 +206,37 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
 
           Rendered through the shared component, so this copy and the one
           inside the app cannot say different things. */}
-      <section className="py-16 bg-white border-t border-[#EFE8E2]">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <LiteracyLibrary>
-            <section className="rounded-3xl border border-[#E0D7CE] bg-[#FDFAF7] p-6 sm:p-7 space-y-4">
-              <h3 className="text-lg font-bold text-[#3C3530]">When you're ready</h3>
-              <p className="text-[15px] text-[#5A5049] leading-relaxed">
-                Reading costs nothing and nobody is told you were here. If you want to start
-                checking in, that takes about a minute.
-              </p>
-              <button
-                onClick={() => onStart("participant")}
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer"
-              >
-                <span>Start a check-in</span>
-                <ArrowRight size={16} aria-hidden="true" />
-              </button>
-            </section>
-          </LiteracyLibrary>
+      <section className="py-20 sm:py-28 bg-[#F7EFE3] border-t border-[#E8DACA]">
+        <div className="max-w-[1140px] mx-auto px-5 sm:px-8">
+          <div className="max-w-[720px] mx-auto">
+            <LiteracyLibrary>
+              {/* A door held open, not a call to action. Warmer ground than the
+                  cards so it reads as a change of register, and the button is
+                  sized to the sentence rather than to the section. */}
+              <section className="rounded-2xl border border-[#E6D3BC] bg-[#F3E7D8] px-6 sm:px-8 py-8 sm:py-9 space-y-4">
+                <h3 className="font-serif text-[1.375rem] leading-[1.3] text-[#3A2A1E]">
+                  When you&rsquo;re ready
+                </h3>
+                <p className="max-w-[58ch] text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
+                  Reading costs nothing and nobody is told you were here. If you want to start
+                  checking in, that takes about a minute.
+                </p>
+                <div className="pt-1">
+                  <button
+                    onClick={() => onStart("participant")}
+                    className="group/cta btn-primary px-6 py-3.5 text-[0.9375rem]"
+                  >
+                    <span>Start a check-in</span>
+                    <ArrowRight
+                      size={16}
+                      aria-hidden="true"
+                      className="transition-transform duration-200 ease-out group-hover/cta:translate-x-[3px]"
+                    />
+                  </button>
+                </div>
+              </section>
+            </LiteracyLibrary>
+          </div>
         </div>
       </section>
 
