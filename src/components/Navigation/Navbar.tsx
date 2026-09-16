@@ -3,6 +3,7 @@ import {
   Activity,
   Shield,
   LifeBuoy,
+  Compass,
   User as UserIcon,
   LogOut,
   Bell,
@@ -278,16 +279,20 @@ export const Navbar: React.FC<Props> = ({
                     <BookOpen size={14} className="hidden min-[1750px]:block" />
                     <span>Resources</span>
                   </button>
+                  {/* Recovery Hub took this slot from Consent Settings, which
+                      moved rather than went: it is still in the account menu
+                      below, because withdrawing consent and exporting data are
+                      things a person has to be able to reach. */}
                   <button
-                    onClick={() => onNavigate("consent_mgmt")}
+                    onClick={() => onNavigate("recovery_hub")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
-                      currentView === "consent_mgmt"
+                      currentView === "recovery_hub"
                         ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
                         : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
-                    <Sliders size={14} className="hidden min-[1750px]:block" />
-                    <span>Consent Settings</span>
+                    <Compass size={14} className="hidden min-[1750px]:block" />
+                    <span>Recovery Hub</span>
                   </button>
                   <button
                     onClick={() => onNavigate("privacy")}
@@ -541,6 +546,19 @@ export const Navbar: React.FC<Props> = ({
                           >
                             <BookOpen size={14} className="text-[#7F8C8D]" />
                             <span>Resource Library</span>
+                          </button>
+                          {/* Also here, not only as a nav chip: the chips are
+                              hidden on narrow screens, and this is the feature
+                              most likely to be opened from a phone. */}
+                          <button
+                            onClick={() => {
+                              onNavigate("recovery_hub");
+                              setUserDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
+                          >
+                            <Compass size={14} className="text-[#7F8C8D]" />
+                            <span>Recovery Hub</span>
                           </button>
                           <button
                             onClick={() => {

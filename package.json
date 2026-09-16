@@ -30,6 +30,8 @@
     "test:score-version": "npx esbuild src/services/riskEngine.ts --bundle --format=esm --outfile=dist-test/riskEngine.js --log-level=error && node tests/score-version.test.mjs",
     "test:exercises": "npx esbuild src/services/sectionExercises.ts --bundle --format=esm --outfile=dist-test/sectionExercises.js --log-level=error && node tests/section-exercises.test.mjs",
     "test:literacy": "npx esbuild src/services/literacyModules.ts --bundle --format=esm --outfile=dist-test/literacyModules.js --log-level=error && node tests/literacy-modules.test.mjs",
+    "test:recovery": "npx esbuild src/services/recoveryHub.ts --bundle --format=esm --outfile=dist-test/recoveryHub.js --log-level=error && node tests/recovery-engine.test.mjs",
+    "test:recovery-copy": "node tests/recovery-copy.test.mjs",
     "test:claims": "node tests/responsible-ai-claims.test.mjs",
     "test:switch": "node tests/counsellor-switch.browser.mjs",
     "test:voice-mute": "node tests/voice-mute.browser.mjs"

@@ -37,6 +37,7 @@ import { Messages } from "./pages/Messages";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GeminiChatbot } from "./components/GeminiChatbot";
 import { SafetyExitButton } from "./components/SafetyExitButton";
+import { RecoveryHub } from "./pages/RecoveryHub";
 
 export const App: React.FC = () => {
   // Ensure store initialization
@@ -346,6 +347,19 @@ export const App: React.FC = () => {
             participantId={participantRecordForUser.id}
             onDone={() => setCurrentView("participant_home")}
             onCancel={() => setCurrentView("participant_home")}
+          />
+        )}
+
+        {/* The Victim Recovery Hub. One route: the sub-screens live inside the
+            feature so the case bundle stays in one place and so a case id never
+            reaches the address bar. */}
+        {currentView === "recovery_hub" && currentUser && (
+          <RecoveryHub
+            userName={currentUser.name}
+            userEmail={currentUser.email}
+            language={currentUser.language || "en"}
+            onBack={() => setCurrentView("participant_home")}
+            onOpenEmergency={() => setEmergencyModalOpen(true)}
           />
         )}
 
