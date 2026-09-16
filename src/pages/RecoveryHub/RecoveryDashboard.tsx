@@ -3,6 +3,7 @@ import {
   ArrowRight,
   Banknote,
   BellRing,
+  Download,
   FileText,
   Gavel,
   ListChecks,
@@ -47,6 +48,7 @@ interface Props {
   notifications: RecoveryNotification[];
   onGo: (destination: RecoveryDestination) => void;
   onDismissNotification: (id: string) => void;
+  onExportCase: () => void;
   onDeleteCase: () => void;
 }
 
@@ -58,6 +60,7 @@ export const RecoveryDashboard: React.FC<Props> = ({
   notifications,
   onGo,
   onDismissNotification,
+  onExportCase,
   onDeleteCase,
 }) => {
   const { case: kase, fir, documents, legalAid, compensation } = bundle;
@@ -288,23 +291,36 @@ export const RecoveryDashboard: React.FC<Props> = ({
         </SectionCard>
       </div>
 
-      {/* §21: the person can delete their own file. Plain, not hidden. */}
+      {/* §21: the person can take their file with them, and can delete it.
+          Together, and in that order: being able to leave without losing what
+          you recorded is what makes deletion a real choice rather than a
+          threat. Neither is hidden behind a settings page. */}
       <section className="rounded-2xl border border-[#ECE1D3] bg-[#FDFAF4] p-5">
         <h2 className="text-[0.9375rem] font-semibold text-[#3A2A1E]">
-          Deleting this file
+          Your copy, and deleting this file
         </h2>
         <p className="mt-2 max-w-[62ch] text-[0.875rem] leading-[1.7] text-[#6B5B4C]">
-          You can remove this file and everything in it, including the documents
-          you uploaded. It cannot be undone, and it does not affect anything
-          else in your AURA account.
+          You can download everything you&rsquo;ve recorded here at any time.
+          You can also remove this file and everything in it, including the
+          documents you uploaded; that cannot be undone, and it does not affect
+          anything else in your AURA account.
         </p>
-        <button
-          onClick={onDeleteCase}
-          className="mt-4 inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#E4C3B4] bg-white px-4 py-2.5 text-[0.875rem] font-semibold text-[#8A3F20] transition-colors hover:bg-[#FBEFE9]"
-        >
-          <Trash2 size={15} aria-hidden="true" />
-          Delete my recovery file
-        </button>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button
+            onClick={onExportCase}
+            className="btn-ghost min-h-[44px] px-4 py-2.5 text-[0.875rem]"
+          >
+            <Download size={15} aria-hidden="true" />
+            Download my copy
+          </button>
+          <button
+            onClick={onDeleteCase}
+            className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-[#E4C3B4] bg-white px-4 py-2.5 text-[0.875rem] font-semibold text-[#8A3F20] transition-colors hover:bg-[#FBEFE9]"
+          >
+            <Trash2 size={15} aria-hidden="true" />
+            Delete my recovery file
+          </button>
+        </div>
       </section>
     </div>
   );

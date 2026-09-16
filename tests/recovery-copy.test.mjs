@@ -268,6 +268,31 @@ t('no case identifier is ever put in a URL', () => {
      'the shell must not write the sub-view or case id into the URL');
 });
 
+t('the person can take their file with them, not only delete it', () => {
+  // Being able to leave without losing what you recorded is what makes
+  // deletion a real choice rather than a threat.
+  const svc = read('src/services/recoveryService.ts');
+  ok(/exportCase/.test(svc), 'the service must offer an export');
+  const dash = visibleText(read(`${SCREEN_DIR}/RecoveryDashboard.tsx`));
+  ok(/Download my copy/.test(dash), 'export must be offered on the dashboard');
+  ok(/Delete my recovery file/.test(dash), 'deletion must stay offered too');
+});
+
+t('the export does not embed the uploaded documents', () => {
+  // A survivor's certificates inside a JSON blob in a Downloads folder is the
+  // device-search problem again, one directory over.
+  const svc = read('src/services/recoveryService.ts');
+  const body = svc.slice(svc.indexOf('async exportCase'), svc.indexOf('// -- notifications'));
+  ok(!/documentUrl|createSignedUrl|base64/.test(body),
+     'export must list documents, never inline their contents');
+});
+
+t('an open case does not stay on screen indefinitely', () => {
+  const shell = read('src/pages/RecoveryHub/index.tsx');
+  ok(/IDLE_MS/.test(shell) && /setView\("entry"\)/.test(shell),
+     'the hub must return to the entry screen after a quiet period');
+});
+
 t('the negation guard itself works, so the rules above can still fail', () => {
   // A guard that swallowed everything would quietly disable every rule it
   // protects. These two prove it distinguishes the cases.

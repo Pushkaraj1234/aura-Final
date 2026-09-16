@@ -164,6 +164,35 @@ export const RecoveryHub: React.FC<Props> = ({
     };
   }, [bundle, checklist, view]);
 
+  /**
+   * Returns to the entry screen after fifteen quiet minutes.
+   *
+   * Not a sign-out, and nothing is discarded: every step has already written
+   * to the database, so this only takes the case off the screen. That is the
+   * risk being managed. Phones in this population get borrowed, checked and
+   * taken, and a case left open on a kitchen table for an hour is the same
+   * disclosure as handing it over.
+   *
+   * Fifteen minutes rather than five because reading a government page in
+   * another tab, or finding a certificate in a drawer, is normal use of this
+   * feature and being thrown out mid-task would teach people not to use it.
+   */
+  useEffect(() => {
+    if (!bundle) return;
+    const IDLE_MS = 15 * 60 * 1000;
+    let timer = window.setTimeout(() => setView("entry"), IDLE_MS);
+    const reset = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => setView("entry"), IDLE_MS);
+    };
+    const events = ["pointerdown", "keydown", "visibilitychange"];
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    return () => {
+      window.clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [bundle]);
+
   // -- actions --------------------------------------------------------------
 
   /** Every mutation goes through here, so busy and error are never forgotten. */
@@ -306,6 +335,24 @@ export const RecoveryHub: React.FC<Props> = ({
       setBundle(null);
       setNotifications([]);
       setView("entry");
+    });
+  };
+
+  /**
+   * Hands the person a file. Built and revoked in the same tick so the blob URL
+   * does not sit in memory, and named with the case id so several exports do
+   * not overwrite each other in a Downloads folder.
+   */
+  const exportCase = async () => {
+    if (!bundle) return;
+    await run(async () => {
+      const json = await recoveryService.exportCase(bundle.case.id);
+      const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${bundle.case.id}-recovery-file.json`;
+      a.click();
+      URL.revokeObjectURL(url);
     });
   };
 
@@ -496,6 +543,7 @@ export const RecoveryHub: React.FC<Props> = ({
             notifications={notifications}
             onGo={go}
             onDismissNotification={dismissNotification}
+            onExportCase={exportCase}
             onDeleteCase={() => setConfirmDelete(true)}
           />
         </>

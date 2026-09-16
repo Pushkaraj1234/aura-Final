@@ -653,6 +653,45 @@ export const recoveryService = {
     if (error) fail("Could not remove that application", error);
   },
 
+  /**
+   * Everything in the file, as a file the person can keep.
+   *
+   * §21 asks for export alongside deletion, and the two belong together: being
+   * able to leave without losing what you recorded is what makes deletion a
+   * real choice rather than a threat. Documents are listed by name and type
+   * rather than embedded, because a survivor's certificates inside a JSON blob
+   * in a Downloads folder is the device-search problem again, one directory
+   * over. The originals stay in the document centre, where they can be opened
+   * one at a time through a link that expires.
+   */
+  async exportCase(caseId: string): Promise<string> {
+    const bundle = await recoveryService.loadBundle(caseId);
+    await recoveryService.log(caseId, "case_exported", {});
+    return JSON.stringify(
+      {
+        exportedAt: new Date().toISOString(),
+        note:
+          "Your own copy of your AURA Recovery Hub file. Statuses here are what " +
+          "you recorded; AURA has no connection to any police, court or " +
+          "compensation system. Uploaded documents are listed but not included.",
+        case: bundle.case,
+        incident: bundle.incident,
+        fir: bundle.fir,
+        timeline: bundle.timeline,
+        documents: bundle.documents.map((d) => ({
+          docType: d.docType,
+          label: d.label,
+          uploadedAt: d.uploadedAt,
+          sizeBytes: d.sizeBytes,
+        })),
+        legalAid: bundle.legalAid,
+        compensation: bundle.compensation,
+      },
+      null,
+      2
+    );
+  },
+
   // -- notifications --------------------------------------------------------
 
   async listNotifications(): Promise<RecoveryNotification[]> {
