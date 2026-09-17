@@ -36,6 +36,7 @@ import { notificationService } from "../services/notificationService";
 import { EmptyWellbeingState } from "../components/EmptyWellbeingState";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MyRecordings } from "../components/MyRecordings";
+import { CheckInDayPanel } from "../components/CheckInDayPanel";
 import { ParticipantTestCard } from "../components/ParticipantTestCard";
 import { supabaseService } from "../services/supabaseService";
 import { who5Due, type InstrumentAdministration, type InstrumentDue } from "../services/instruments";
@@ -355,6 +356,70 @@ ${
 
   const chartLabel = (i: number) => chartData[i]?.timestamp ?? "";
 
+  /**
+   * Which day's breakdown is open, as an index into checkIns.
+   *
+   * Held here rather than in the chart because the graph is only one way in:
+   * the same panel opens from the keyboard list below it, and both must show
+   * the same day.
+   */
+  const [openDay, setOpenDay] = useState<number | null>(null);
+
+  const openDayCheckIn = openDay !== null ? checkIns[openDay] : null;
+
+  /**
+   * Opens whichever point the chart currently has active.
+   *
+   * Recharts reports it as activeTooltipIndex — the same index driving the
+   * tooltip — so the target is the whole vertical band around a point rather
+   * than a 2.5px dot, which is the difference between a feature that works on
+   * a phone and one that does not.
+   *
+   * Two things this has to survive, both found by testing rather than by
+   * reading the types.
+   *
+   * The index is `number | string | null` in recharts 3 (TooltipIndex is a
+   * string), so it is coerced rather than type-checked; a
+   * `typeof === "number"` guard silently dropped every click.
+   *
+   * And on touch, recharts hands external handlers `activeTooltipIndex: null`
+   * even while its own tooltip is on screen showing the point. So a tap fell
+   * through entirely and the feature worked on a mouse only. Where the index
+   * is missing it is recovered from the rendered dots, which are in data
+   * order and are the very things the person is aiming at.
+   */
+  const chartRef = React.useRef<HTMLDivElement>(null);
+
+  /** The dot nearest this x position, or null if there is nothing to measure. */
+  const nearestPointTo = (clientX: number): number | null => {
+    const dots = chartRef.current?.querySelectorAll(".recharts-area-dot");
+    if (!dots || dots.length === 0) return null;
+    let best = -1;
+    let bestGap = Infinity;
+    dots.forEach((dot, idx) => {
+      const r = dot.getBoundingClientRect();
+      const gap = Math.abs(r.left + r.width / 2 - clientX);
+      if (gap < bestGap) {
+        bestGap = gap;
+        best = idx;
+      }
+    });
+    return best >= 0 && best < checkIns.length ? best : null;
+  };
+
+  const openDayFromChart = (state: any, event?: any) => {
+    const raw = state?.activeTooltipIndex ?? state?.activeIndex;
+    const i = Number(raw);
+    if (raw !== null && raw !== undefined && Number.isInteger(i) && i >= 0 && i < checkIns.length) {
+      setOpenDay(i);
+      return;
+    }
+    const clientX = event?.changedTouches?.[0]?.clientX ?? event?.clientX;
+    if (typeof clientX !== "number") return;
+    const nearest = nearestPointTo(clientX);
+    if (nearest !== null) setOpenDay(nearest);
+  };
+
   // Lightweight session request — no calendar/table, just a message to the
   // assigned counsellor plus a notification they can act on from Messages.
   /**
@@ -598,9 +663,18 @@ ${
               </div>
             </div>
           ) : (
-            <div className="h-64 sm:h-72 w-full pt-2">
+            <div className="h-64 sm:h-72 w-full pt-2" ref={chartRef}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <AreaChart
+                  data={chartData}
+                  margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                  style={{ cursor: "pointer" }}
+                  onClick={openDayFromChart}
+                  /* Touch does not go through onClick. A tap sets the active
+                     point (the tooltip proves it), so the same opener is
+                     hung on touch end, where that index is available. */
+                  onTouchEnd={openDayFromChart}
+                >
                   <defs>
                     <linearGradient id="scoreGradient" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#5A5049" stopOpacity={0.4} />
@@ -654,6 +728,38 @@ ${
                   />
                 </AreaChart>
               </ResponsiveContainer>
+            </div>
+          )}
+
+          {count >= 2 && (
+            <div className="space-y-2">
+              <p className="text-xs text-[#6B635C]">
+                Tap any point on the line to see that day&rsquo;s reading and how
+                it was worked out.
+              </p>
+              {/* The same days, reachable without a mouse.
+                  A chart is a canvas: it cannot be tabbed to and a screen
+                  reader finds nothing in it. These buttons carry the identical
+                  action, stay out of the layout until focused, and then appear
+                  where the focus ring is — so a keyboard user sees where they
+                  are instead of chasing an invisible target. */}
+              <div className="flex flex-wrap gap-1.5">
+                <h4 className="sr-only" id="day-list-label">
+                  Open a single day&rsquo;s breakdown
+                </h4>
+                <ul aria-labelledby="day-list-label" className="flex flex-wrap gap-1.5">
+                  {chartData.map((d) => (
+                    <li key={d.i}>
+                      <button
+                        onClick={() => setOpenDay(d.i)}
+                        className="sr-only focus:not-sr-only focus:rounded-full focus:border focus:border-[#DBC3B2] focus:bg-[#FDF9F5] focus:px-3 focus:py-1.5 focus:text-xs focus:font-bold focus:text-[#5A5049]"
+                      >
+                        {d.timestamp} — indicator {d.score} out of 100
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           )}
 
@@ -1228,6 +1334,18 @@ ${
           </div>
         </div>
       </div>
+
+      {/* A day opened from the trajectory. Rendered last so it sits above the
+          page rather than inside the card it was opened from. */}
+      {openDayCheckIn && openDay !== null && (
+        <CheckInDayPanel
+          checkIn={openDayCheckIn}
+          previous={openDay > 0 ? checkIns[openDay - 1] : null}
+          history={checkIns.slice(0, openDay + 1)}
+          chartScore={chartData[openDay]?.score ?? openDayCheckIn.calculatedScore ?? 0}
+          onClose={() => setOpenDay(null)}
+        />
+      )}
     </div>
   );
 };

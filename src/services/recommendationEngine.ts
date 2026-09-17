@@ -203,8 +203,25 @@ export function buildExplainabilityNarrative(
     return "An immediate safety priority was signaled in your response. This bypasses routine score calculation to ensure immediate support options are available.";
   }
 
-  if (points.length === 0 || score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
+  if (score <= ALERT_CONFIG.LOW_DISTRESS_MAX) {
     return "Your responses reflect low reported distress across stress, sleep, safety, and social connection. No immediate areas of strain were flagged.";
+  }
+
+  // No single answer crossed a threshold, but the score is not in the low band
+  // either. This happens on middle-of-the-scale answers: every factor at 3/5
+  // with safety "Mostly" generates no explanation points and still scores 42.
+  //
+  // This branch used to be folded into the one above, so such a check-in was
+  // told "low reported distress... no immediate areas of strain were flagged"
+  // directly beneath a Moderate badge and, sometimes, a double-digit rise.
+  // A screen that contradicts its own headline number teaches the reader to
+  // discount both.
+  if (points.length === 0) {
+    const rise =
+      change >= 15
+        ? ` It also rose ${change} points since your last check-in.`
+        : "";
+    return `No single answer stood out on its own today. This indicator comes from your answers taken together rather than from one area.${rise}`;
   }
 
   const primaryDrivers = points.slice(0, 3).join(" ");
