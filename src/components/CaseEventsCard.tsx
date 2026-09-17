@@ -17,7 +17,21 @@ interface Props {
   onRemove: (eventId: string) => void;
 }
 
-const TYPE_ORDER: CaseEventType[] = ["hearing", "threat", "intimidation", "police_contact", "other"];
+const TYPE_ORDER: CaseEventType[] = [
+  "hearing",
+  "fir_filed",
+  "threat",
+  "intimidation",
+  "police_contact",
+  "other",
+];
+
+/**
+ * A date the person shared from their Recovery Hub rather than one a
+ * counsellor typed. Staff can read these and nothing else: taking one back is
+ * the person's to do, in the Hub, where they granted it.
+ */
+const shared = (e: CaseEvent) => e.source === "participant_shared";
 
 /**
  * Where a counsellor records the dates that drive this case.
@@ -216,16 +230,34 @@ export const CaseEventsCard: React.FC<Props> = ({
                       {new Date(e.date).toLocaleDateString()}
                       {e.note && <span data-no-translate> — {e.note}</span>}
                     </p>
+                    {shared(e) && (
+                      // Provenance matters here in both directions: it tells
+                      // the counsellor the date came from the person rather
+                      // than from a court system, and it explains why there is
+                      // no bin next to it.
+                      <p className="text-[11px] text-[#6B5B4C] mt-0.5">
+                        Shared by them from their own case file
+                      </p>
+                    )}
                   </div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => onRemove(e.id)}
-                  aria-label={`Remove ${CASE_EVENT_LABELS[e.type]}`}
-                  className="shrink-0 p-1.5 rounded-lg text-[#6F5F4F] hover:text-[#A55D25] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
-                >
-                  <Trash2 size={13} />
-                </button>
+                {shared(e) ? (
+                  <span
+                    className="shrink-0 text-[10px] font-bold uppercase tracking-wider text-[#6B5B4C] bg-[#F4ECE3] rounded-full px-2.5 py-1"
+                    title="Only they can withdraw this"
+                  >
+                    Theirs
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => onRemove(e.id)}
+                    aria-label={`Remove ${CASE_EVENT_LABELS[e.type]}`}
+                    className="shrink-0 p-1.5 rounded-lg text-[#6F5F4F] hover:text-[#A55D25] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
               </li>
             );
           })}

@@ -199,10 +199,55 @@ export interface RecoveryCase {
   status: RecoveryStatus;
   financialImpacts: FinancialImpactType[];
   priorAssistance?: PriorAssistance;
+  /**
+   * Whether this case's dates — and only its dates — are visible to the
+   * person's counsellor. Off unless they turned it on. See
+   * `src/services/recoveryDates.ts`.
+   */
+  shareDatesWithCounsellor: boolean;
   openedAt: string;
   closedAt?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * A court date the survivor has recorded.
+ *
+ * Past and future both belong here. The week before a hearing is when
+ * anticipatory distress builds, and the days after are when it surfaces, so
+ * the engine needs both directions.
+ */
+export interface RecoveryHearing {
+  id: string;
+  caseId: string;
+  /** A plain date (YYYY-MM-DD). Nobody knows their hearing to the minute. */
+  hearingOn: string;
+  /** Their own reminder. Never leaves the Hub, even when sharing is on. */
+  note?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+/** The only two kinds of date that can be shared. Closed on purpose. */
+export type SharedDateKind = "hearing" | "fir_filed";
+
+/**
+ * One date a survivor has chosen to let their counsellor see.
+ *
+ * This is the whole shape: a kind and a date. There is no note, no FIR
+ * number, no description. The narrowness is the point — see the header of
+ * `supabase/migrations/20260917140000_recovery_shared_dates.sql`.
+ */
+export interface SharedCaseDate {
+  id: string;
+  caseId: string;
+  /** The auth user id, which is also the participant's clinical record id. */
+  ownerId: string;
+  kind: SharedDateKind;
+  /** A plain date (YYYY-MM-DD). */
+  onDate: string;
+  sharedAt: string;
 }
 
 export interface RecoveryIncident {
@@ -318,6 +363,7 @@ export interface RecoveryCaseBundle {
   case: RecoveryCase;
   incident: RecoveryIncident | null;
   fir: RecoveryFir | null;
+  hearings: RecoveryHearing[];
   timeline: RecoveryTimelineEvent[];
   documents: RecoveryDocument[];
   legalAid: LegalAidApplication[];

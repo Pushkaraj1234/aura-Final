@@ -3,6 +3,12 @@ import { assessLatest } from "../services/concordanceEngine";
 import { assessEngagement } from "../services/engagementSignals";
 import { assessEscalation } from "../services/escalationEngine";
 import {
+  mergeCaseEvents,
+  recoveryDates,
+  sharedDatesToCaseEvents,
+} from "../services/recoveryDates";
+import type { SharedCaseDate } from "../types/recovery";
+import {
   Users,
   AlertTriangle,
   TrendingUp,
@@ -90,6 +96,38 @@ export const SupportDashboard: React.FC<Props> = ({
   useEffect(() => {
     setCaseloadScope(assignedCount > 0 ? "mine" : "all");
   }, [assignedCount]);
+
+  /**
+   * Court dates people have chosen to share, keyed by participant.
+   *
+   * One request for the whole caseload rather than one per person. Nobody who
+   * has not turned sharing on appears in the result at all, and a caseload
+   * where nobody has is an empty map and no change to anything on screen.
+   */
+  const [sharedDates, setSharedDates] = useState<Map<string, SharedCaseDate[]>>(new Map());
+  const participantIdKey = useMemo(
+    () => participants.map((p) => p.id).sort().join(","),
+    [participants]
+  );
+  useEffect(() => {
+    let cancelled = false;
+    const ids = participantIdKey ? participantIdKey.split(",") : [];
+    if (ids.length === 0) {
+      setSharedDates(new Map());
+      return;
+    }
+    recoveryDates
+      .listForOwners(ids)
+      .then((map) => {
+        if (!cancelled) setSharedDates(map);
+      })
+      .catch(() => {
+        if (!cancelled) setSharedDates(new Map());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [participantIdKey]);
 
   // Personalised, live dashboard header — derived from the signed-in
   // counsellor's session and their current caseload, not a fixed mockup.
@@ -410,6 +448,14 @@ export const SupportDashboard: React.FC<Props> = ({
       .map((p) => {
         const checkIns = p.checkIns || [];
         const engagement = assessEngagement({ checkIns });
+        // A hearing someone shared has to reach the queue, not just their own
+        // page. The queue is what a counsellor actually looks at each morning,
+        // and a date that only surfaces once you open the person is a date
+        // that surfaces after you had a reason to open them.
+        const caseEvents = mergeCaseEvents(
+          p.caseEvents || [],
+          sharedDatesToCaseEvents(sharedDates.get(p.id) || [], p.id)
+        );
         return {
           participant: p,
           engagement,
@@ -417,14 +463,14 @@ export const SupportDashboard: React.FC<Props> = ({
             checkIns,
             engagement,
             concordance: assessLatest(checkIns),
-            caseEvents: p.caseEvents || [],
+            caseEvents,
           }),
         };
       })
       .filter((row) => row.escalation.level === "urgent" || row.escalation.level === "contact")
       .sort((a, b) => rank[b.escalation.level] - rank[a.escalation.level])
       .slice(0, 6);
-  }, [participants, currentWorker]);
+  }, [participants, currentWorker, sharedDates]);
 
 
   return (

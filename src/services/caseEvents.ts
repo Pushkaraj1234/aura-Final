@@ -20,13 +20,23 @@ const DAY_MS = 86_400_000;
 
 export const CASE_EVENT_LABELS: Record<CaseEventType, string> = {
   hearing: "Court hearing",
+  fir_filed: "FIR filed",
   threat: "Threat received",
   intimidation: "Intimidation",
   police_contact: "Police contact",
   other: "Other case event",
 };
 
-/** Types that are incidents done to the person, rather than scheduled dates. */
+/**
+ * Types that are incidents done to the person, rather than scheduled dates.
+ *
+ * `fir_filed` is deliberately not one of them. Filing is something the person
+ * did, not something done to them, and while the weeks after a complaint are
+ * genuinely dangerous under the SC/ST Act, this file has no evidence for a
+ * window or a weight. Inventing one would be guessing with someone's alert
+ * level. It is carried so a counsellor can see the date in context, and it
+ * changes no escalation on its own.
+ */
 const INCIDENT_TYPES: CaseEventType[] = ["threat", "intimidation", "police_contact"];
 
 export const isIncident = (type: CaseEventType): boolean => INCIDENT_TYPES.includes(type);

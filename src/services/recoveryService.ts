@@ -7,6 +7,7 @@ import type {
   RecoveryCaseBundle,
   RecoveryDocument,
   RecoveryFir,
+  RecoveryHearing,
   RecoveryIncident,
   RecoveryNotification,
   RecoveryTimelineEvent,
@@ -93,8 +94,20 @@ const toCase = (r: any): RecoveryCase => ({
   status: r.status,
   financialImpacts: r.financial_impacts ?? [],
   priorAssistance: r.prior_assistance ?? undefined,
+  // Absent column reads as false: a case loaded from an older row is not
+  // sharing, which is the safe direction for this particular default.
+  shareDatesWithCounsellor: r.share_dates_with_counsellor === true,
   openedAt: r.opened_at,
   closedAt: r.closed_at ?? undefined,
+  createdAt: r.created_at,
+  updatedAt: r.updated_at,
+});
+
+const toHearing = (r: any): RecoveryHearing => ({
+  id: r.id,
+  caseId: r.case_id,
+  hearingOn: r.hearing_on,
+  note: r.note ?? undefined,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 });
@@ -296,11 +309,16 @@ export const recoveryService = {
   /** Everything for the dashboard, in one round trip per table. */
   async loadBundle(caseId: string): Promise<RecoveryCaseBundle> {
     await requireUserId();
-    const [c, incident, fir, timeline, documents, legalAid, compensation] =
+    const [c, incident, fir, hearings, timeline, documents, legalAid, compensation] =
       await Promise.all([
         supabase.from("recovery_cases").select("*").eq("id", caseId).single(),
         supabase.from("recovery_incidents").select("*").eq("case_id", caseId).maybeSingle(),
         supabase.from("recovery_firs").select("*").eq("case_id", caseId).maybeSingle(),
+        supabase
+          .from("recovery_hearings")
+          .select("*")
+          .eq("case_id", caseId)
+          .order("hearing_on", { ascending: true }),
         supabase
           .from("recovery_timeline_events")
           .select("*")
@@ -330,6 +348,7 @@ export const recoveryService = {
       case: toCase(c.data),
       incident: incident.data ? toIncident(incident.data) : null,
       fir: fir.data ? toFir(fir.data) : null,
+      hearings: (hearings.data ?? []).map(toHearing),
       timeline: (timeline.data ?? []).map(toTimelineEvent),
       documents: (documents.data ?? []).map(toDocument),
       legalAid: (legalAid.data ?? []).map(toLegalAid),
@@ -677,6 +696,7 @@ export const recoveryService = {
         case: bundle.case,
         incident: bundle.incident,
         fir: bundle.fir,
+        hearings: bundle.hearings,
         timeline: bundle.timeline,
         documents: bundle.documents.map((d) => ({
           docType: d.docType,

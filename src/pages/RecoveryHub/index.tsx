@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { ErrorNote } from "../../components/Recovery/RecoveryPrimitives";
 import { recoveryService } from "../../services/recoveryService";
+import { recoveryDates } from "../../services/recoveryDates";
 import {
   buildChecklist,
   nextStep,
@@ -276,6 +277,51 @@ export const RecoveryHub: React.FC<Props> = ({
     });
   };
 
+  /**
+   * Court dates, and the grant that shares them.
+   *
+   * Each of these reloads the case and then re-projects the shared rows from
+   * it, so what the counsellor can see is derived from the file as it now
+   * stands rather than patched alongside it. Adding a date while sharing is
+   * on shares it; adding one while sharing is off does not, and neither
+   * branch is a separate code path that could drift from the other.
+   */
+  const syncShared = async (caseId: string) => {
+    const next = await refresh(caseId);
+    await recoveryDates.syncSharedDates(next);
+  };
+
+  const addHearing = async (date: string, note: string) => {
+    if (!bundle) return;
+    await run(async () => {
+      await recoveryDates.addHearing(bundle.case.id, date, note);
+      await syncShared(bundle.case.id);
+    });
+  };
+
+  const removeHearing = async (hearingId: string) => {
+    if (!bundle) return;
+    await run(async () => {
+      await recoveryDates.removeHearing(bundle.case.id, hearingId);
+      // Re-syncing is what withdraws the date from the counsellor's side. A
+      // date deleted here must not survive there.
+      await syncShared(bundle.case.id);
+    });
+  };
+
+  const toggleDateSharing = async (on: boolean) => {
+    if (!bundle) return;
+    await run(async () => {
+      await recoveryDates.setSharing(bundle.case.id, on);
+      // Turning it off is already complete at this point — the database
+      // trigger cleared the shared rows in the same transaction. The sync
+      // that follows projects the dates when turning it on, and confirms
+      // there is nothing left when turning it off.
+      await syncShared(bundle.case.id);
+      await recoveryService.log(bundle.case.id, on ? "dates_shared" : "dates_unshared", {});
+    });
+  };
+
   const uploadDocument = async (file: File, docType: DocumentType) => {
     if (!bundle) return;
     await run(async () => {
@@ -459,6 +505,9 @@ export const RecoveryHub: React.FC<Props> = ({
           busy={busy}
           error={error}
           onAdd={addTimelineEvent}
+          onAddHearing={addHearing}
+          onRemoveHearing={removeHearing}
+          onToggleSharing={toggleDateSharing}
           onBack={() => setView("dashboard")}
         />
       );

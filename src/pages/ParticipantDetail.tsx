@@ -34,6 +34,12 @@ import { analyzeDistress } from "../services/riskEngine";
 import { analyzeParticipantTrajectory, generateEarlyWarningForecast } from "../services/trajectoryEngine";
 import { assessEngagement } from "../services/engagementSignals";
 import { assessEscalation } from "../services/escalationEngine";
+import {
+  mergeCaseEvents,
+  recoveryDates,
+  sharedDatesToCaseEvents,
+} from "../services/recoveryDates";
+import type { SharedCaseDate } from "../types/recovery";
 import { assessLatest } from "../services/concordanceEngine";
 import { EscalationCard } from "../components/EscalationCard";
 import { CaseEventsCard } from "../components/CaseEventsCard";
@@ -207,6 +213,33 @@ export const ParticipantDetail: React.FC<Props> = ({
 
   // Held locally as well as in the store so recording a hearing updates the
   // escalation above it immediately, rather than on the next navigation.
+  /**
+   * Dates this person chose to share from their own Recovery Hub.
+   *
+   * Loaded separately from the participant record because they are not part
+   * of it: they live behind a grant the person controls and can withdraw, so
+   * they are fetched fresh rather than cached into the caseload. An empty
+   * result is the ordinary case and means only that nothing is shared.
+   */
+  const [sharedDates, setSharedDates] = React.useState<SharedCaseDate[]>([]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    recoveryDates
+      .listForOwner(participant.id)
+      .then((rows) => {
+        if (!cancelled) setSharedDates(rows);
+      })
+      .catch(() => {
+        // listForOwner already degrades to an empty list; this guards the
+        // unexpected. A counsellor's page must not fail over a date.
+        if (!cancelled) setSharedDates([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [participant.id]);
+
   const [caseEvents, setCaseEvents] = React.useState<CaseEvent[]>(
     () => participant.caseEvents || []
   );
@@ -229,15 +262,27 @@ export const ParticipantDetail: React.FC<Props> = ({
     [checkIns, threadMessages]
   );
 
+  /**
+   * What the counsellor records, plus what the person shared.
+   *
+   * This is the whole point of the grant: a hearing the person knows about
+   * reaches the engine that watches for the days around one, without the
+   * counsellor having to have been told and typed it in.
+   */
+  const visibleCaseEvents = React.useMemo(
+    () => mergeCaseEvents(caseEvents, sharedDatesToCaseEvents(sharedDates, participant.id)),
+    [caseEvents, sharedDates, participant.id]
+  );
+
   const escalation = React.useMemo(
     () =>
       assessEscalation({
         checkIns,
         engagement,
         concordance: assessLatest(checkIns),
-        caseEvents,
+        caseEvents: visibleCaseEvents,
       }),
-    [checkIns, engagement, caseEvents]
+    [checkIns, engagement, visibleCaseEvents]
   );
   const latestCheckIn = checkIns.length > 0 ? checkIns[checkIns.length - 1] : null;
   const previousCheckIn = checkIns.length > 1 ? checkIns[checkIns.length - 2] : null;
@@ -479,7 +524,7 @@ export const ParticipantDetail: React.FC<Props> = ({
 
       <CaseEventsCard
         participantId={participant.id}
-        events={caseEvents}
+        events={visibleCaseEvents}
         recordedBy={currentUser?.name || "Counselor"}
         onAdd={handleAddCaseEvent}
         onRemove={handleRemoveCaseEvent}

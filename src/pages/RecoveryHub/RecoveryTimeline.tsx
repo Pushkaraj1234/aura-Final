@@ -9,6 +9,7 @@ import {
   VerificationBadge,
   formatDate,
 } from "../../components/Recovery/RecoveryPrimitives";
+import { CourtDatesCard } from "../../components/Recovery/CourtDatesCard";
 import type {
   RecoveryCaseBundle,
   RecoveryTimelineEvent,
@@ -39,6 +40,9 @@ interface Props {
   busy: boolean;
   error: string | null;
   onAdd: (event: Partial<RecoveryTimelineEvent> & { stage: TimelineStage }) => Promise<void>;
+  onAddHearing: (date: string, note: string) => Promise<void>;
+  onRemoveHearing: (id: string) => Promise<void>;
+  onToggleSharing: (on: boolean) => Promise<void>;
   onBack: () => void;
 }
 
@@ -48,6 +52,9 @@ export const RecoveryTimelineScreen: React.FC<Props> = ({
   busy,
   error,
   onAdd,
+  onAddHearing,
+  onRemoveHearing,
+  onToggleSharing,
   onBack,
 }) => {
   const [adding, setAdding] = useState(false);
@@ -76,6 +83,19 @@ export const RecoveryTimelineScreen: React.FC<Props> = ({
           usually comes next.
         </p>
       </header>
+
+      {/* Above the timeline on purpose. Everything below this point is a
+          record of what has already happened; the only forward-looking thing
+          on the screen should not be buried under it. */}
+      <CourtDatesCard
+        hearings={bundle.hearings}
+        sharing={bundle.case.shareDatesWithCounsellor}
+        busy={busy}
+        error={error}
+        onAddHearing={onAddHearing}
+        onRemoveHearing={onRemoveHearing}
+        onToggleSharing={onToggleSharing}
+      />
 
       <ol className="relative space-y-1 border-l-2 border-[#EDE2D4] pl-6">
         {TIMELINE_STAGE_ORDER.map((s) => {

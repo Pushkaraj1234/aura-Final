@@ -36,7 +36,8 @@
     "test:charts": "node tests/chart-integrity.test.mjs",
     "test:claims": "node tests/responsible-ai-claims.test.mjs",
     "test:switch": "node tests/counsellor-switch.browser.mjs",
-    "test:voice-mute": "node tests/voice-mute.browser.mjs"
+    "test:voice-mute": "node tests/voice-mute.browser.mjs",
+    "test:recovery-dates": "npx esbuild src/services/recoveryDateProjection.ts --bundle --format=esm --outfile=dist-test/recoveryDateProjection.js --log-level=error && npx esbuild src/services/escalationEngine.ts --bundle --format=esm --outfile=dist-test/escalationEngine.js --log-level=error && npx esbuild src/services/caseEvents.ts --bundle --format=esm --outfile=dist-test/caseEvents.js --log-level=error && node tests/recovery-date-sharing.test.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

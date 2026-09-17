@@ -790,10 +790,24 @@ export interface RegionPlanningData {
  */
 export type CaseEventType =
   | "hearing"
+  | "fir_filed"
   | "threat"
   | "intimidation"
   | "police_contact"
   | "other";
+
+/**
+ * Who put this date here.
+ *
+ * `participant_shared` rows come from the survivor's own Recovery Hub, through
+ * the narrow grant in recoveryDates.ts. They are read-only to staff: a
+ * counsellor cannot edit or delete something the person chose to share, only
+ * the person can take it back.
+ *
+ * Absent means counsellor-recorded, which is what every event predating the
+ * grant is.
+ */
+export type CaseEventSource = "counsellor" | "participant_shared";
 
 export interface CaseEvent {
   id: string;
@@ -806,6 +820,8 @@ export interface CaseEvent {
   /** Who recorded it, for the audit trail. */
   recordedBy: string;
   recordedAt: string;
+  /** Defaults to counsellor-recorded when absent. */
+  source?: CaseEventSource;
 }
 
 export interface Participant {
