@@ -110,6 +110,8 @@ export class VoiceRecordingService {
   private analyser: AnalyserNode | null = null;
   private sourceNode: MediaStreamAudioSourceNode | null = null;
   private analysisInterval: any = null;
+  /** Set from the "Measure how it was said" consent on every start. */
+  private measureDelivery = true;
   private pitchSamplesHz: number[] = [];
   private energySamples: number[] = [];
   private voicedFrameCount = 0;
@@ -137,11 +139,21 @@ export class VoiceRecordingService {
   /**
    * Start recording audio and live speech-to-text
    */
+  /**
+   * @param options.measureDelivery
+   *   Whether to run the on-device pace/pause/loudness analysis. This is the
+   *   "Measure how it was said" consent, which until now was stored, shown on
+   *   the consent screen, and never read: the analysis ran whatever the switch
+   *   said. Off means the analyser is never attached, not that its output is
+   *   discarded afterwards.
+   */
   public async startRecording(
     onTranscriptUpdate: (finalText: string, interimText: string) => void,
     onDurationTick: (seconds: number) => void,
-    onError: (err: string) => void
+    onError: (err: string) => void,
+    options: { measureDelivery?: boolean } = {}
   ): Promise<boolean> {
+    this.measureDelivery = options.measureDelivery !== false;
     try {
       this.audioChunks = [];
       this.pitchSamplesHz = [];
@@ -168,7 +180,7 @@ export class VoiceRecordingService {
 
         // 1b. Vocal-delivery measurement via Web Audio API — entirely local,
         // nothing is sent anywhere; it just produces numeric summaries.
-        this.startAcousticAnalysis(this.stream);
+        if (this.measureDelivery) this.startAcousticAnalysis(this.stream);
       }
 
       // 2. Initialize Web Speech Recognition if available
@@ -315,7 +327,19 @@ export class VoiceRecordingService {
   /**
    * Stop recording and finalize audio Blob URL + measured delivery features
    */
-  public async stopRecording(): Promise<{ audioUrl: string | null; hasAudio: boolean; acoustic: AcousticDeliveryFeatures }> {
+  /**
+   * Returns the blob as well as the object URL.
+   *
+   * Without it there was nothing for a caller to persist, which is why "Keep
+   * the recording afterwards" could not have worked however it was set: an
+   * object URL lives in one tab and dies with it.
+   */
+  public async stopRecording(): Promise<{
+    audioUrl: string | null;
+    audioBlob: Blob | null;
+    hasAudio: boolean;
+    acoustic: AcousticDeliveryFeatures;
+  }> {
     const acoustic = this.stopAcousticAnalysis();
 
     return new Promise((resolve) => {
@@ -337,12 +361,12 @@ export class VoiceRecordingService {
           const audioBlob = new Blob(this.audioChunks, { type: "audio/webm" });
           const audioUrl = URL.createObjectURL(audioBlob);
           this.cleanupStream();
-          resolve({ audioUrl, hasAudio: this.audioChunks.length > 0, acoustic });
+          resolve({ audioUrl, audioBlob, hasAudio: this.audioChunks.length > 0, acoustic });
         };
         this.mediaRecorder.stop();
       } else {
         this.cleanupStream();
-        resolve({ audioUrl: null, hasAudio: false, acoustic });
+        resolve({ audioUrl: null, audioBlob: null, hasAudio: false, acoustic });
       }
     });
   }

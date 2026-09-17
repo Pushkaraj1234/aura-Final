@@ -384,6 +384,7 @@ export const App: React.FC = () => {
             onOpenVoiceCompanion={() => setCurrentView("voice_companion")}
             onOpenWellbeingIndex={() => setCurrentView("wellbeing_index")}
             onOpenWhatToExpect={() => setCurrentView("what_to_expect")}
+            onOpenConsent={() => setCurrentView("consent_mgmt")}
             onLogout={handleLogout}
             onUpdateConsent={handleUpdateConsent}
             onDataReset={() => {

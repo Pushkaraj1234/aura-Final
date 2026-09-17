@@ -35,6 +35,7 @@ import { apiService } from "../services/apiService";
 import { notificationService } from "../services/notificationService";
 import { EmptyWellbeingState } from "../components/EmptyWellbeingState";
 import { ConfirmDialog } from "../components/ConfirmDialog";
+import { MyRecordings } from "../components/MyRecordings";
 import { ParticipantTestCard } from "../components/ParticipantTestCard";
 import { supabaseService } from "../services/supabaseService";
 import { who5Due, type InstrumentAdministration, type InstrumentDue } from "../services/instruments";
@@ -50,6 +51,7 @@ interface Props {
   onOpenVoiceCompanion?: () => void;
   onOpenWellbeingIndex?: () => void;
   onOpenWhatToExpect?: () => void;
+  onOpenConsent?: () => void;
   onLogout: () => void;
   onUpdateConsent: (status: boolean) => void;
   onDataReset?: () => void;
@@ -70,6 +72,7 @@ export const ParticipantProfile: React.FC<Props> = ({
   onOpenVoiceCompanion,
   onOpenWellbeingIndex,
   onOpenWhatToExpect,
+  onOpenConsent,
   onLogout,
   onUpdateConsent,
   onDataReset,
@@ -331,7 +334,18 @@ ${
   };
 
   // Chart data
+  /**
+   * The trajectory, one point per check-in.
+   *
+   * `i` is the x-axis key, not the formatted date. Several check-ins commonly
+   * fall on the same day, and a category axis keyed on "Sep 8" collapses them:
+   * hovering anywhere in that band resolves to whichever point recharts
+   * matched first, so the tooltip and the highlighted dot disagreed with the
+   * cursor. Indices are unique by construction, and tickFormatter puts the
+   * date back on the axis where a reader wants it.
+   */
   const chartData = checkIns.map((c, idx) => ({
+    i: idx,
     date: `Day ${idx + 1}`,
     score: c.calculatedScore ?? 50,
     stress: c.stress * 20,
@@ -339,8 +353,35 @@ ${
     timestamp: new Date(c.timestamp).toLocaleDateString(undefined, { month: "short", day: "numeric" })
   }));
 
+  const chartLabel = (i: number) => chartData[i]?.timestamp ?? "";
+
   // Lightweight session request — no calendar/table, just a message to the
   // assigned counsellor plus a notification they can act on from Messages.
+  /**
+   * Whether audio is actually being kept.
+   *
+   * Read from the saved consent rather than assumed, and defaulting to off:
+   * the card should say "nothing is being kept" when we do not know, not
+   * imply a store that may not exist.
+   */
+  const [retainsAudio, setRetainsAudio] = useState(false);
+
+  useEffect(() => {
+    if (!participantRecord?.id) return;
+    let cancelled = false;
+    supabaseService.consents
+      .get(participantRecord.id)
+      .then((prefs) => {
+        if (!cancelled && prefs) setRetainsAudio(Boolean(prefs.voiceAudioRetention));
+      })
+      .catch(() => {
+        /* off is the safe answer */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [participantRecord?.id]);
+
   const [sessionNote, setSessionNote] = useState("");
   const [sessionRequested, setSessionRequested] = useState(false);
   const [requestingSession, setRequestingSession] = useState(false);
@@ -567,7 +608,15 @@ ${
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#EFE8E2" vertical={false} />
-                  <XAxis dataKey="timestamp" stroke="#7F8C8D" fontSize={11} tickLine={false} />
+                  <XAxis
+                    dataKey="i"
+                    tickFormatter={chartLabel}
+                    interval="preserveStartEnd"
+                    minTickGap={24}
+                    stroke="#7F8C8D"
+                    fontSize={11}
+                    tickLine={false}
+                  />
                   <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
                   <Tooltip
                     contentStyle={{
@@ -578,8 +627,21 @@ ${
                       fontSize: "12px",
                       padding: "8px 12px"
                     }}
+                    // Recharts colours the value with the series stroke, which is
+                    // #5A5049 here and all but invisible on this dark tooltip
+                    // (1.25:1). The reading is the point of hovering, so it is
+                    // set explicitly rather than inherited.
+                    itemStyle={{ color: "#F5EDE1" }}
+                    labelStyle={{ color: "#FFFFFF", fontWeight: 600 }}
                     formatter={(val: number) => [`${val}/100`, "Distress Indicator"]}
+                    labelFormatter={(i: number) => chartLabel(i)}
                   />
+                  {/* Every check-in gets a visible point, not only the hovered
+                      one. Without `dot` the line is a shape with no readable
+                      readings on it, and a reader cannot tell how many
+                      check-ins it is drawn from. activeDot is the one under
+                      the cursor, ringed in white so it reads against both the
+                      line and the fill. */}
                   <Area
                     type="monotone"
                     dataKey="score"
@@ -587,6 +649,8 @@ ${
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#scoreGradient)"
+                    dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0 }}
+                    activeDot={{ r: 6, fill: "#5A5049", stroke: "#FFFFFF", strokeWidth: 2 }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -938,6 +1002,14 @@ ${
               )}
             </div>
           )}
+
+          {/* Recordings the person chose to keep. Sits here rather than in a
+              page of its own because it is small, and because this column is
+              where the other "things about me" already live. */}
+          <MyRecordings
+            retentionOn={retainsAudio}
+            onOpenConsent={onOpenConsent}
+          />
         </div>
       </div>
 

@@ -272,7 +272,11 @@ export const ParticipantDetail: React.FC<Props> = ({
   useEffect(() => { loadTestMarks(); }, [loadTestMarks]);
 
   // Prepare chart data
+  // `i` is the x key rather than the formatted date: see the note on the
+  // participant's own chart. Check-ins on the same day would otherwise share a
+  // category and the tooltip would point at the wrong one.
   const trendData = checkIns.map((c, idx) => ({
+    i: idx,
     day: `Check-in ${idx + 1}`,
     score: c.calculatedScore || 0,
     stress: c.stress * 20,
@@ -290,6 +294,8 @@ export const ParticipantDetail: React.FC<Props> = ({
       return Math.abs(nearest.at - t) <= 5 * 24 * 3600 * 1000 ? nearest.mark : undefined;
     })(),
   }));
+
+  const trendLabel = (i: number) => trendData[i]?.date ?? "";
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -642,14 +648,28 @@ export const ParticipantDetail: React.FC<Props> = ({
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#EFE8E2" vertical={false} />
-                    <XAxis dataKey="date" stroke="#7F8C8D" fontSize={11} tickLine={false} />
+                    <XAxis
+                      dataKey="i"
+                      tickFormatter={trendLabel}
+                      interval="preserveStartEnd"
+                      minTickGap={24}
+                      stroke="#7F8C8D"
+                      fontSize={11}
+                      tickLine={false}
+                    />
                     <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#3C3530", border: "1px solid #3F4E4E", borderRadius: "1rem", color: "#fff", fontSize: "12px" }}
+                      // Recharts colours the value with the series stroke,
+                      // which is invisible on this dark tooltip. The reading
+                      // is the point of hovering, so it is set explicitly.
+                      itemStyle={{ color: "#F5EDE1" }}
+                      labelStyle={{ color: "#FFFFFF", fontWeight: 600 }}
                       formatter={(val: number, name: string) => [
                         `${val}/100`,
                         name === "counsellorMark" ? "Counsellor's mark" : "Self-reported",
                       ]}
+                      labelFormatter={(i: number) => trendLabel(i)}
                     />
                     <Area
                       type="monotone"
@@ -659,6 +679,8 @@ export const ParticipantDetail: React.FC<Props> = ({
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#detailGradient)"
+                      dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0 }}
+                      activeDot={{ r: 6, fill: "#5A5049", stroke: "#FFFFFF", strokeWidth: 2 }}
                     />
                     {/* The counsellor's own marks. Dashed and unfilled so it
                         reads as a second opinion laid over the self-report,
@@ -674,6 +696,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                       fill="none"
                       connectNulls
                       dot={{ r: 3, fill: "#9A5B33" }}
+                      activeDot={{ r: 6, fill: "#9A5B33", stroke: "#FFFFFF", strokeWidth: 2 }}
                     />
                   </AreaChart>
                 </ResponsiveContainer>

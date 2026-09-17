@@ -4,6 +4,8 @@ import { voiceRecordingService, AcousticDeliveryFeatures } from "../services/voi
 import { analyzeReflection } from "../services/reflectionAnalysis";
 import { ReflectionAnalysis } from "./ReflectionAnalysis";
 import { apiService } from "../services/apiService";
+import { voiceRecordingStore } from "../services/voiceRecordings";
+import { supabaseService } from "../services/supabaseService";
 import { ParticipantReflection, VoiceToneAnalysisResult } from "../types";
 import { ConfirmDialog } from "./ConfirmDialog";
 
@@ -22,6 +24,40 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
   initialTranscript = "",
   onSkip
 }) => {
+  /**
+   * The two voice consents, read rather than assumed.
+   *
+   * Both were stored, shown on the consent screen, and never consulted: the
+   * delivery analysis ran whatever "Measure how it was said" said, and "Keep
+   * the recording afterwards" kept nothing either way. They are loaded here so
+   * the switches decide what actually happens.
+   *
+   * Defaults are the cautious ones. If the preferences cannot be read, we
+   * measure nothing and keep nothing, because guessing wrong in the other
+   * direction means analysing or storing a person's voice they did not agree
+   * to.
+   */
+  const [measureDelivery, setMeasureDelivery] = useState(false);
+  const [keepRecording, setKeepRecording] = useState(false);
+  const [keptRecording, setKeptRecording] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const prefs = await supabaseService.consents.get(participantId);
+        if (cancelled || !prefs) return;
+        setMeasureDelivery(Boolean(prefs.voiceAcousticAnalysis));
+        setKeepRecording(Boolean(prefs.voiceAudioRetention));
+      } catch {
+        /* the cautious defaults stand */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [participantId]);
+
   // Mode & Recording State
   const [mode, setMode] = useState<"choice" | "voice" | "text">("choice");
   const [showPrivacyNotice, setShowPrivacyNotice] = useState(false);
@@ -101,7 +137,8 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       (err) => {
         setErrorMessage(err);
         setIsRecording(false);
-      }
+      },
+      { measureDelivery }
     );
 
     if (!started) {
@@ -111,9 +148,23 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
   const handleStopRecording = async () => {
     setIsRecording(false);
-    const { audioUrl: url, acoustic } = await voiceRecordingService.stopRecording();
+    const { audioUrl: url, audioBlob, acoustic } = await voiceRecordingService.stopRecording();
     setAudioUrl(url);
     setAcousticFeatures(acoustic);
+
+    // Only now does "Keep the recording afterwards" mean anything. A failure
+    // here never blocks the reflection: the person came to say something, not
+    // to file an audio archive.
+    setKeptRecording(false);
+    if (keepRecording && audioBlob && audioBlob.size > 0) {
+      const saved = await voiceRecordingStore.keep({
+        blob: audioBlob,
+        participantId,
+        durationSeconds: acoustic.durationSeconds,
+        transcript,
+      });
+      setKeptRecording(Boolean(saved));
+    }
 
     // Derive speaking rate from the final transcript + measured duration, then
     // send the transcript + measured vocal-delivery numbers to the LLM so it can
@@ -131,7 +182,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
       setVoiceToneResult(result as VoiceToneAnalysisResult);
     } catch (err: any) {
       console.warn("Voice tone analysis unavailable:", err);
-      setVoiceToneError("Voice tone analysis could not be completed right now. Your transcript and audio are still saved.");
+      setVoiceToneError("Voice tone analysis could not be completed right now. Your transcript is still here.");
     } finally {
       setIsAnalyzingTone(false);
     }

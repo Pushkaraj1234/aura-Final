@@ -9,12 +9,16 @@ import {
   ArrowLeft,
   EyeOff,
   Mic,
+  AudioLines,
+  Archive,
   FileText,
   Activity,
-  Check
+  Check,
+  type LucideIcon,
 } from "lucide-react";
 import { ConsentPreferences, User } from "../types";
 import { apiService } from "../services/apiService";
+import { voiceRecordingStore } from "../services/voiceRecordings";
 
 interface Props {
   user: User | null;
@@ -36,21 +40,34 @@ const VOICE_CONSENTS: {
   key: "voiceTranscription" | "voiceAcousticAnalysis" | "voiceAudioRetention";
   title: string;
   description: string;
+  /**
+   * One icon each.
+   *
+   * These three used to share a single Mic, with the other two rendering an
+   * empty bordered box where the icon goes. The intent was to show that the
+   * last two hang off the first, but an empty box does not read as hierarchy,
+   * it reads as an icon that failed to load, next to a switch about keeping
+   * recordings of someone's voice. Indentation carries the nesting instead.
+   */
+  Icon: LucideIcon;
 }[] = [
   {
     key: "voiceTranscription",
+    Icon: Mic,
     title: "Speak instead of typing",
     description:
       "Turns what you say into text so you can answer out loud. Without this the voice features can't work at all.",
   },
   {
     key: "voiceAcousticAnalysis",
+    Icon: AudioLines,
     title: "Measure how it was said",
     description:
       "Measures pace, pauses and loudness on your own phone, and sends only those numbers. No audio leaves the device for this. Turn it off and you can still speak.",
   },
   {
     key: "voiceAudioRetention",
+    Icon: Archive,
     title: "Keep the recording afterwards",
     description:
       "Stores the audio itself once the session ends. Turn this off and speaking and analysis both still work, and nothing is kept.",
@@ -101,9 +118,28 @@ export const ConsentManagement: React.FC<Props> = ({
     }
   };
 
-  const handleSavePreferences = () => {
+  const [removedCount, setRemovedCount] = useState(0);
+
+  /**
+   * Saving also acts on what was turned off.
+   *
+   * Turning off "Keep the recording afterwards" and leaving everything already
+   * stored in place is a pause, not a withdrawal, and the switch does not
+   * describe a pause. So the recordings go with it, and the screen says how
+   * many rather than leaving the person to wonder.
+   */
+  const handleSavePreferences = async () => {
     setSavedToast(true);
     setTimeout(() => setSavedToast(false), 3500);
+    if (!preferences.voiceAudioRetention) {
+      try {
+        setRemovedCount(await voiceRecordingStore.removeAll());
+      } catch (err: any) {
+        console.warn("[ConsentManagement] Recording cleanup notice:", err?.message || err);
+      }
+    } else {
+      setRemovedCount(0);
+    }
     if (user) {
       apiService.consents.update(user.id, preferences).catch((err: any) => {
         console.warn("[ConsentManagement] Persist notice:", err?.message || err);
@@ -114,6 +150,13 @@ export const ConsentManagement: React.FC<Props> = ({
   const handleWithdrawConsent = () => {
     setConsentRevoked(true);
     setShowConfirmModal(false);
+    // Withdrawing everything includes the audio, for the same reason.
+    voiceRecordingStore
+      .removeAll()
+      .then(setRemovedCount)
+      .catch((err: any) =>
+        console.warn("[ConsentManagement] Recording cleanup notice:", err?.message || err)
+      );
     setPreferences({
       wellbeingCheckIns: false,
       supportWorkerSharing: false,
@@ -175,6 +218,10 @@ export const ConsentManagement: React.FC<Props> = ({
             {consentRevoked
               ? "Your participation preferences have been updated. Consent withdrawn."
               : "Your privacy preferences have been securely saved and updated."}
+            {/* Said out loud, because deleting somebody's recordings quietly
+                is worse than not deleting them. */}
+            {removedCount > 0 &&
+              ` ${removedCount} saved recording${removedCount === 1 ? " was" : "s were"} deleted.`}
           </span>
         </div>
       )}
@@ -299,14 +346,19 @@ export const ConsentManagement: React.FC<Props> = ({
                was said, and keeping the recording. Someone glad to speak but
                unwilling to have their delivery analysed had no way to say so,
                so the honest reading of that switch was all three or nothing. */}
-          {VOICE_CONSENTS.map(({ key, title, description }, position) => (
+          {VOICE_CONSENTS.map(({ key, title, description, Icon }, position) => (
             <div
               key={key}
-              className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start justify-between gap-4"
+              // The two sub-options are indented rather than left iconless, so
+              // the nesting is visible without a blank square standing in for
+              // an icon.
+              className={`p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start justify-between gap-4 ${
+                position > 0 ? "sm:ml-6" : ""
+              }`}
             >
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 rounded-xl bg-white border border-[#EFE8E2] flex items-center justify-center text-[#5A5049] shrink-0 mt-0.5">
-                  {position === 0 ? <Mic size={16} /> : <span className="w-4" aria-hidden="true" />}
+                  <Icon size={16} aria-hidden="true" />
                 </div>
                 <div>
                   <span className="text-sm font-black text-[#3C3530] block">{title}</span>
