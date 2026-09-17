@@ -67,7 +67,7 @@ export const LandingAuth: React.FC<Props> = ({ onChoice, onBack }) => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-[#3C3530]">Participant Access</h3>
-                <p className="text-xs text-[#7F8C8D] mt-1 leading-relaxed">
+                <p className="text-xs text-[#68625D] mt-1 leading-relaxed">
                   For individuals voluntarily completing daily wellbeing check-ins and accessing support signals.
                 </p>
               </div>
@@ -97,7 +97,7 @@ export const LandingAuth: React.FC<Props> = ({ onChoice, onBack }) => {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-[#3C3530]">Counselor Portal</h3>
-                <p className="text-xs text-[#7F8C8D] mt-1 leading-relaxed">
+                <p className="text-xs text-[#68625D] mt-1 leading-relaxed">
                   For authorized counselors, case managers, and NGO humanitarian teams reviewing distress trends.
                 </p>
               </div>
@@ -114,7 +114,7 @@ export const LandingAuth: React.FC<Props> = ({ onChoice, onBack }) => {
             </div>
           </div>
 
-          <p className="text-center text-[11px] text-[#7F8C8D] font-medium">
+          <p className="text-center text-[11px] text-[#68625D] font-medium">
             Demo Credentials available on login screens for instant evaluator evaluation.
           </p>
 

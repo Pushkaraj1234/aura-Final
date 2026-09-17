@@ -161,7 +161,7 @@ export const AssignmentsTab: React.FC = () => {
       {!loading && users.length > 0 && (
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <div className="relative flex-1 min-w-[220px] max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#7F8C8D]" size={15} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#68625D]" size={15} />
             <input
               type="text"
               value={query}
@@ -172,7 +172,7 @@ export const AssignmentsTab: React.FC = () => {
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#7F8C8D] hover:text-[#3C3530] cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#68625D] hover:text-[#3C3530] cursor-pointer"
                 aria-label="Clear search"
               >
                 <X size={14} />
@@ -188,7 +188,7 @@ export const AssignmentsTab: React.FC = () => {
             />
             Unassigned only
           </label>
-          <span className="text-xs text-[#7F8C8D] ml-auto">
+          <span className="text-xs text-[#68625D] ml-auto">
             {filteredUsers.length} of {users.length}
           </span>
         </div>
@@ -208,7 +208,7 @@ export const AssignmentsTab: React.FC = () => {
         <Card className="overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#7F8C8D]">
+              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#68625D]">
                 <th className="px-5 py-3">User</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3">Assigned Counselor</th>
@@ -220,7 +220,7 @@ export const AssignmentsTab: React.FC = () => {
                 <tr key={u.id} className="border-b border-[#EFE8E2] last:border-0">
                   <td className="px-5 py-3">
                     <p className="font-bold text-[#3C3530]">{u.name}</p>
-                    {u.email && <p className="text-xs text-[#7F8C8D]">{u.email}</p>}
+                    {u.email && <p className="text-xs text-[#68625D]">{u.email}</p>}
                   </td>
                   <td className="px-5 py-3">
                     <Badge tone={u.status === "Urgent safety signal" ? "bad" : u.status === "Human review pending" ? "warn" : "neutral"}>

@@ -457,7 +457,7 @@ export const App: React.FC = () => {
           ) : (
             <div className="max-w-xl mx-auto py-16 px-4 text-center space-y-4">
               <h2 className="text-xl font-bold text-[#3C3530]">Participant profile could not be found</h2>
-              <p className="text-xs text-[#7F8C8D]">The selected participant record may have been removed or does not exist.</p>
+              <p className="text-xs text-[#68625D]">The selected participant record may have been removed or does not exist.</p>
               <button
                 onClick={() => setCurrentView("dashboard")}
                 className="px-4 py-2 bg-[#3C3530] text-white text-xs font-bold rounded-xl cursor-pointer"

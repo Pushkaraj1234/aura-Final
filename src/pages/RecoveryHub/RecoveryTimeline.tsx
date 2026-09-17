@@ -101,7 +101,7 @@ export const RecoveryTimelineScreen: React.FC<Props> = ({
 
               <p
                 className={`text-[1rem] font-semibold ${
-                  reached ? "text-[#3A2A1E]" : "text-[#A99A8A]"
+                  reached ? "text-[#3A2A1E]" : "text-[#6F5F4F]"
                 }`}
               >
                 {TIMELINE_STAGE_LABELS[s]}

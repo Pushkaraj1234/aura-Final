@@ -129,15 +129,15 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
   return (
     <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
       <div className="flex items-center gap-2">
-        <AudioLines size={15} className="text-[#9A5B33]" />
-        <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+        <AudioLines size={15} className="text-[#8A4A20]" />
+        <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
           Your Recordings
         </h3>
       </div>
 
       {!retentionOn ? (
         <div className="space-y-2">
-          <p className="text-[11px] text-[#7A726C] leading-relaxed">
+          <p className="text-[11px] text-[#6B635C] leading-relaxed">
             Recordings aren&rsquo;t being kept. When &ldquo;Keep the recording afterwards&rdquo;
             is off, the audio is used for the reflection and then discarded, so there is nothing
             here to play back.
@@ -145,18 +145,18 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
           {onOpenConsent && (
             <button
               onClick={onOpenConsent}
-              className="text-[11px] font-bold text-[#9A5B33] hover:underline cursor-pointer"
+              className="text-[11px] font-bold text-[#8A4A20] hover:underline cursor-pointer"
             >
               Change this in Consent Settings
             </button>
           )}
         </div>
       ) : loading ? (
-        <p className="text-[11px] text-[#7A726C]" role="status">
+        <p className="text-[11px] text-[#6B635C]" role="status">
           Looking for your recordings&hellip;
         </p>
       ) : recordings.length === 0 ? (
-        <p className="text-[11px] text-[#7A726C] leading-relaxed">
+        <p className="text-[11px] text-[#6B635C] leading-relaxed">
           Nothing saved yet. The next time you speak instead of typing, the audio will be kept
           here for you.
         </p>
@@ -175,7 +175,7 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
                     <p className="text-[11px] font-bold text-[#3C3530]">
                       {formatWhen(rec.recordedAt)}
                       {length && (
-                        <span className="font-normal text-[#7A726C]"> &middot; {length}</span>
+                        <span className="font-normal text-[#6B635C]"> &middot; {length}</span>
                       )}
                     </p>
                     {rec.transcript && (
@@ -184,7 +184,7 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
                           setOpenTranscript(openTranscript === rec.id ? null : rec.id)
                         }
                         aria-expanded={openTranscript === rec.id}
-                        className="text-[10px] font-semibold text-[#9A5B33] hover:underline cursor-pointer"
+                        className="text-[10px] font-semibold text-[#8A4A20] hover:underline cursor-pointer"
                       >
                         {openTranscript === rec.id ? "Hide what was written" : "What was written"}
                       </button>
@@ -202,7 +202,7 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
                     <button
                       onClick={() => setConfirmDelete(rec)}
                       aria-label={`Delete your recording from ${formatWhen(rec.recordedAt)}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#EFE8E2] bg-white text-[#8A7A6B] transition-colors hover:border-[#E4C3B4] hover:text-[#A65D52] cursor-pointer"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#EFE8E2] bg-white text-[#6F5F4F] transition-colors hover:border-[#E4C3B4] hover:text-[#8A3F35] cursor-pointer"
                     >
                       <Trash2 size={13} />
                     </button>
@@ -221,13 +221,13 @@ export const MyRecordings: React.FC<Props> = ({ retentionOn, onOpenConsent }) =>
       )}
 
       {error && (
-        <p role="alert" className="text-[11px] text-[#A65D52] leading-relaxed">
+        <p role="alert" className="text-[11px] text-[#8A3F35] leading-relaxed">
           {error}
         </p>
       )}
 
       {retentionOn && recordings.length > 0 && (
-        <p className="text-[10px] text-[#7A726C] leading-relaxed">
+        <p className="text-[10px] text-[#6B635C] leading-relaxed">
           Only you can play these. Your counsellor cannot hear them, and deleting one removes the
           audio itself.
         </p>

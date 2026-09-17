@@ -102,7 +102,7 @@ export const Navbar: React.FC<Props> = ({
                     Aura
                   </span>
                 </div>
-                <p className="text-[10px] font-bold text-[#8F867E] uppercase tracking-widest hidden sm:block min-[1500px]:hidden min-[1750px]:block mt-0.5">
+                <p className="text-[10px] font-bold text-[#6B635C] uppercase tracking-widest hidden sm:block min-[1500px]:hidden min-[1750px]:block mt-0.5">
                   {isWorker ? 'Care Operations' : 'Participant Portal'}
                 </p>
               </div>
@@ -133,8 +133,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("dashboard")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "dashboard" || currentView === "detail"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <LayoutDashboard size={14} className="hidden min-[1750px]:block" />
@@ -144,8 +144,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("messages")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "messages"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <MessageCircle size={14} className="hidden min-[1750px]:block" />
@@ -160,8 +160,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("alerts")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "alerts"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <Bell size={14} className="hidden min-[1750px]:block" />
@@ -176,8 +176,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("follow_ups")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "follow_ups"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <HeartHandshake size={14} className="hidden min-[1750px]:block" />
@@ -187,8 +187,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("community")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "community"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <BarChart2 size={14} className="hidden min-[1750px]:block" />
@@ -198,8 +198,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("support_resources")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "support_resources"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <BookOpen size={14} className="hidden min-[1750px]:block" />
@@ -209,8 +209,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("audit_log")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "audit_log"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <FileText size={14} className="hidden min-[1750px]:block" />
@@ -220,8 +220,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("privacy")}
                     className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "privacy"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7F8C8D] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#68625D] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <Shield size={14} />
@@ -234,8 +234,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("participant_home")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "participant_home"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <Activity size={14} className="hidden min-[1750px]:block" />
@@ -245,8 +245,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("messages")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 relative cursor-pointer ${
                       currentView === "messages"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <MessageCircle size={14} className="hidden min-[1750px]:block" />
@@ -261,8 +261,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("checkin")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "checkin"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <History size={14} className="hidden min-[1750px]:block" />
@@ -272,8 +272,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("support_resources")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "support_resources"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <BookOpen size={14} className="hidden min-[1750px]:block" />
@@ -287,8 +287,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("recovery_hub")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "recovery_hub"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <Compass size={14} className="hidden min-[1750px]:block" />
@@ -298,8 +298,8 @@ export const Navbar: React.FC<Props> = ({
                     onClick={() => onNavigate("privacy")}
                     className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center space-x-1.5 whitespace-nowrap shrink-0 cursor-pointer ${
                       currentView === "privacy"
-                        ? "bg-[#F3E7D8] text-[#9A5B33] ring-1 ring-[#C88A5A]/35"
-                        : "text-[#7A726C] hover:text-[#3C3530] hover:bg-white/60"
+                        ? "bg-[#F3E7D8] text-[#8A4A20] ring-1 ring-[#C88A5A]/35"
+                        : "text-[#6B635C] hover:text-[#3C3530] hover:bg-white/60"
                     }`}
                   >
                     <Shield size={14} />
@@ -349,10 +349,10 @@ export const Navbar: React.FC<Props> = ({
             {/* Emergency Hotline Button */}
             <button
               onClick={onOpenEmergency}
-              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-full bg-[#F3E7D8] border border-[#A85D2E]/30 text-[#9A5B33] text-xs font-semibold hover:bg-[#EBDAC6] transition-all active:scale-95 cursor-pointer"
+              className="inline-flex items-center space-x-1.5 px-3 py-2 rounded-full bg-[#F3E7D8] border border-[#A85D2E]/30 text-[#8A4A20] text-xs font-semibold hover:bg-[#EBDAC6] transition-all active:scale-95 cursor-pointer"
               title="Immediate Crisis & Emergency Resources"
             >
-              <LifeBuoy size={14} className="text-[#9A5B33]" />
+              <LifeBuoy size={14} className="text-[#8A4A20]" />
               <span className="hidden lg:inline whitespace-nowrap">Emergency Help</span>
             </button>
 
@@ -370,7 +370,7 @@ export const Navbar: React.FC<Props> = ({
                     <p className="text-[12px] font-bold text-[#3C3530] leading-tight truncate max-w-[120px]">
                       <span data-no-translate>{user.name}</span>
                     </p>
-                    <p className="text-[10px] text-[#7A726C] font-semibold">
+                    <p className="text-[10px] text-[#6B635C] font-semibold">
                       {isWorker ? 'Counselor' : 'Participant'}
                     </p>
                   </div>
@@ -383,7 +383,7 @@ export const Navbar: React.FC<Props> = ({
                       <p data-no-translate className="text-xs font-bold text-[#3C3530] truncate">
                         {user.name}
                       </p>
-                      <p className="text-[11px] text-[#7F8C8D] truncate">{user.email}</p>
+                      <p className="text-[11px] text-[#68625D] truncate">{user.email}</p>
                       <span className="inline-block mt-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EFE8E2] text-[#5A5049] uppercase">
                         {user.role.replace("_", " ")}
                       </span>
@@ -399,7 +399,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <LayoutDashboard size={14} className="text-[#7F8C8D]" />
+                            <LayoutDashboard size={14} className="text-[#68625D]" />
                             <span>Support Dashboard</span>
                           </button>
                           {/* Public profile lives in this menu rather than as a
@@ -413,7 +413,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <UserIcon size={14} className="text-[#7F8C8D]" />
+                            <UserIcon size={14} className="text-[#68625D]" />
                             <span>My public profile</span>
                           </button>
                           <button
@@ -424,7 +424,7 @@ export const Navbar: React.FC<Props> = ({
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center justify-between cursor-pointer"
                           >
                             <div className="flex items-center space-x-2">
-                              <MessageCircle size={14} className="text-[#7F8C8D]" />
+                              <MessageCircle size={14} className="text-[#68625D]" />
                               <span>Messages</span>
                             </div>
                             {unreadMessagesCount > 0 && (
@@ -440,7 +440,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <Bell size={14} className="text-[#7F8C8D]" />
+                            <Bell size={14} className="text-[#68625D]" />
                             <span>Escalations & Alerts</span>
                           </button>
                           <button
@@ -450,7 +450,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <HeartHandshake size={14} className="text-[#7F8C8D]" />
+                            <HeartHandshake size={14} className="text-[#68625D]" />
                             <span>Outcome Tracking</span>
                           </button>
                           <button
@@ -460,7 +460,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <BarChart2 size={14} className="text-[#7F8C8D]" />
+                            <BarChart2 size={14} className="text-[#68625D]" />
                             <span>Community Insights</span>
                           </button>
                           <button
@@ -470,7 +470,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <BookOpen size={14} className="text-[#7F8C8D]" />
+                            <BookOpen size={14} className="text-[#68625D]" />
                             <span>Resource Library</span>
                           </button>
                           <button
@@ -480,7 +480,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <FileText size={14} className="text-[#7F8C8D]" />
+                            <FileText size={14} className="text-[#68625D]" />
                             <span>Audit Log</span>
                           </button>
                         </>
@@ -493,7 +493,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <UserIcon size={14} className="text-[#7F8C8D]" />
+                            <UserIcon size={14} className="text-[#68625D]" />
                             <span>My Profile & Stats</span>
                           </button>
                           {/* Choosing or changing a counsellor lives here as
@@ -507,7 +507,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <UserPlus size={14} className="text-[#7F8C8D]" />
+                            <UserPlus size={14} className="text-[#68625D]" />
                             <span>My Counsellor</span>
                           </button>
                           <button
@@ -518,7 +518,7 @@ export const Navbar: React.FC<Props> = ({
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center justify-between cursor-pointer"
                           >
                             <div className="flex items-center space-x-2">
-                              <MessageCircle size={14} className="text-[#7F8C8D]" />
+                              <MessageCircle size={14} className="text-[#68625D]" />
                               <span>Messages</span>
                             </div>
                             {unreadMessagesCount > 0 && (
@@ -534,7 +534,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <History size={14} className="text-[#7F8C8D]" />
+                            <History size={14} className="text-[#68625D]" />
                             <span>Start Wellbeing Check-in</span>
                           </button>
                           <button
@@ -544,7 +544,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <BookOpen size={14} className="text-[#7F8C8D]" />
+                            <BookOpen size={14} className="text-[#68625D]" />
                             <span>Resource Library</span>
                           </button>
                           {/* Also here, not only as a nav chip: the chips are
@@ -557,7 +557,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <Compass size={14} className="text-[#7F8C8D]" />
+                            <Compass size={14} className="text-[#68625D]" />
                             <span>Recovery Hub</span>
                           </button>
                           <button
@@ -567,7 +567,7 @@ export const Navbar: React.FC<Props> = ({
                             }}
                             className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                           >
-                            <Sliders size={14} className="text-[#7F8C8D]" />
+                            <Sliders size={14} className="text-[#68625D]" />
                             <span>Consent Settings</span>
                           </button>
                         </>
@@ -581,7 +581,7 @@ export const Navbar: React.FC<Props> = ({
                         className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center justify-between cursor-pointer"
                       >
                         <div className="flex items-center space-x-2">
-                          <Bell size={14} className="text-[#7F8C8D]" />
+                          <Bell size={14} className="text-[#68625D]" />
                           <span>Notifications</span>
                         </div>
                         {unreadNotifCount > 0 && (
@@ -598,7 +598,7 @@ export const Navbar: React.FC<Props> = ({
                         }}
                         className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
                       >
-                        <Shield size={14} className="text-[#7F8C8D]" />
+                        <Shield size={14} className="text-[#68625D]" />
                         <span>Privacy & Architecture</span>
                       </button>
                     </div>
@@ -609,7 +609,7 @@ export const Navbar: React.FC<Props> = ({
                           setUserDropdownOpen(false);
                           onLogout();
                         }}
-                        className="w-full text-left px-4 py-2 text-xs font-semibold text-[#9A5B33] hover:bg-[#C48A55]/10 flex items-center space-x-2 cursor-pointer"
+                        className="w-full text-left px-4 py-2 text-xs font-semibold text-[#8A4A20] hover:bg-[#C48A55]/10 flex items-center space-x-2 cursor-pointer"
                       >
                         <LogOut size={14} />
                         <span>Sign Out</span>
@@ -628,7 +628,7 @@ export const Navbar: React.FC<Props> = ({
                 <a
                   href="/admin"
                   title="Administrator Access"
-                  className="w-9 h-9 rounded-full bg-white/60 backdrop-blur-sm border border-[#EFE8E2] shadow-sm flex items-center justify-center text-[#8F867E] hover:text-[#3C3530] hover:bg-white transition-colors cursor-pointer"
+                  className="w-9 h-9 rounded-full bg-white/60 backdrop-blur-sm border border-[#EFE8E2] shadow-sm flex items-center justify-center text-[#6B635C] hover:text-[#3C3530] hover:bg-white transition-colors cursor-pointer"
                 >
                   <ShieldCheck size={16} />
                 </a>
@@ -644,6 +644,8 @@ export const Navbar: React.FC<Props> = ({
             {/* Mobile menu toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
               className={`p-2 rounded-xl text-[#3C3530] hover:bg-[#EFE8E2] transition-colors cursor-pointer ${isWorker ? "min-[1700px]:hidden" : "min-[1500px]:hidden"}`}
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -854,7 +856,7 @@ export const Navbar: React.FC<Props> = ({
                     setMobileMenuOpen(false);
                     onLogout();
                   }}
-                  className="w-full text-left p-2.5 rounded-xl text-sm font-semibold text-[#9A5B33] hover:bg-[#C48A55]/10 flex items-center space-x-2"
+                  className="w-full text-left p-2.5 rounded-xl text-sm font-semibold text-[#8A4A20] hover:bg-[#C48A55]/10 flex items-center space-x-2"
                 >
                   <LogOut size={16} />
                   <span>
@@ -876,7 +878,7 @@ export const Navbar: React.FC<Props> = ({
               </button>
               <a
                 href="/admin"
-                className="w-full text-center py-2.5 flex items-center justify-center space-x-1.5 text-xs font-bold text-[#8F867E] hover:text-[#3C3530]"
+                className="w-full text-center py-2.5 flex items-center justify-center space-x-1.5 text-xs font-bold text-[#6B635C] hover:text-[#3C3530]"
               >
                 <ShieldCheck size={14} />
                 <span>Administrator Access</span>

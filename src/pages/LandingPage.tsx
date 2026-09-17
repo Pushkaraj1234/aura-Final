@@ -31,7 +31,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
             <p className="text-xl sm:text-2xl font-medium text-[#5A5049] max-w-3xl mx-auto">
               A short check-in, a few times a week. AURA tells you whose answers are drifting, and what moved.
             </p>
-            <p className="text-base sm:text-lg text-[#7A726C] max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-[#6B635C] max-w-2xl mx-auto leading-relaxed">
               It can be wrong. A counselor decides what happens next, and every score shows the arithmetic behind it.
             </p>
 
@@ -48,7 +48,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
 
             {/* Ethical Disclaimer Callout */}
             <div className="pt-6">
-              <div className="inline-flex items-center space-x-2 text-xs font-semibold text-[#7A726C] bg-white/90 border border-[#EFE8E2] px-4 py-2 rounded-xl shadow-xs">
+              <div className="inline-flex items-center space-x-2 text-xs font-semibold text-[#6B635C] bg-white/90 border border-[#EFE8E2] px-4 py-2 rounded-xl shadow-xs">
                 <AlertCircle size={14} className="text-[#A55D25] shrink-0" />
                 <span>
                   Demo data. <strong>AURA doesn't diagnose</strong>, and a person reviews every flag.
@@ -66,7 +66,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
               Two ways in
             </h2>
-            <p className="text-sm text-[#7F8C8D] mt-2">
+            <p className="text-sm text-[#68625D] mt-2">
               Same data, both sides.
             </p>
           </div>
@@ -88,11 +88,11 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
                     Participant
                   </h3>
-                  <p className="text-sm text-[#7F8C8D] mt-2 leading-relaxed">
+                  <p className="text-sm text-[#68625D] mt-2 leading-relaxed">
                     A few short questions about your week, one screen at a time.
                   </p>
                 </div>
-                <ul className="text-xs text-[#7A726C] space-y-2 pt-2">
+                <ul className="text-xs text-[#6B635C] space-y-2 pt-2">
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#5A5049] mr-2 shrink-0" />
                     One question per screen
@@ -120,17 +120,17 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                   <Users size={28} />
                 </div>
                 <div>
-                  <span className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] block mb-1">
+                  <span className="text-xs font-black uppercase tracking-wider text-[#68625D] block mb-1">
                     If you're the counselor
                   </span>
                   <h3 className="text-2xl font-bold text-[#3C3530] group-hover:text-[#5A5049] transition-colors">
                     Counselor dashboard
                   </h3>
-                  <p className="text-sm text-[#7F8C8D] mt-2 leading-relaxed">
+                  <p className="text-sm text-[#68625D] mt-2 leading-relaxed">
                     Everyone assigned to you, worst first.
                   </p>
                 </div>
-                <ul className="text-xs text-[#7A726C] space-y-2 pt-2">
+                <ul className="text-xs text-[#6B635C] space-y-2 pt-2">
                   <li className="flex items-center">
                     <CheckCircle2 size={14} className="text-[#3C3530] mr-2 shrink-0" />
                     A 0-100 score, arithmetic shown
@@ -168,7 +168,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 <TrendingUp size={24} />
               </div>
               <h4 className="text-xl font-bold text-[#3C3530]">Change, not snapshots</h4>
-              <p className="text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-sm text-[#6B635C] leading-relaxed">
                 AURA compares today's answer to the ones before. That's where the slow climbs show up, the ones nobody says out loud.
               </p>
             </div>
@@ -178,7 +178,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 <Activity size={24} />
               </div>
               <h4 className="text-xl font-bold text-[#3C3530]">No black boxes</h4>
-              <p className="text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-sm text-[#6B635C] leading-relaxed">
                 Every signal shows its working.
               </p>
             </div>
@@ -188,7 +188,7 @@ export const LandingPage: React.FC<Props> = ({ onStart, onOpenPrivacy }) => {
                 <Shield size={24} />
               </div>
               <h4 className="text-xl font-bold text-[#3C3530]">A person decides</h4>
-              <p className="text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-sm text-[#6B635C] leading-relaxed">
                 A counselor signs off before anyone is contacted. AURA never diagnoses, and never calls anybody's family on its own.
               </p>
             </div>

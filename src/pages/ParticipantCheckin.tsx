@@ -363,12 +363,12 @@ export const ParticipantCheckin: React.FC<Props> = ({
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
               {t.voluntaryAgreement}
             </h2>
-            <p className="text-xs sm:text-sm text-[#7F8C8D] leading-relaxed max-w-lg mx-auto">
+            <p className="text-xs sm:text-sm text-[#68625D] leading-relaxed max-w-lg mx-auto">
               Before we begin your quick reflection, please review how your answers are processed with complete dignity and transparency.
             </p>
           </div>
 
-          <div className="bg-[#FDF9F5] border border-[#EFE8E2] rounded-2xl p-5 space-y-3 text-xs text-[#7A726C]">
+          <div className="bg-[#FDF9F5] border border-[#EFE8E2] rounded-2xl p-5 space-y-3 text-xs text-[#6B635C]">
             <div className="flex items-start space-x-3">
               <CheckCircle2 size={16} className="text-[#5A5049] shrink-0 mt-0.5" />
               <span>
@@ -462,7 +462,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           <div className="pt-2 flex flex-col sm:flex-row gap-3">
             <button
               onClick={onGoToProfile}
-              className="w-full sm:w-1/3 py-3.5 rounded-xl border border-[#EFE8E2] text-[#7A726C] font-bold text-sm hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+              className="w-full sm:w-1/3 py-3.5 rounded-xl border border-[#EFE8E2] text-[#6B635C] font-bold text-sm hover:bg-[#FDF9F5] transition-colors cursor-pointer"
             >
               Cancel / Exit
             </button>
@@ -541,7 +541,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 {t.todaySignal}
               </h2>
-              <p className="text-xs text-[#7F8C8D] mt-0.5">
+              <p className="text-xs text-[#68625D] mt-0.5">
                 Anonymous Participant: <span className="font-mono font-bold text-[#3C3530]">{participantId}</span>
               </p>
             </div>
@@ -550,7 +550,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
             <div className="text-right sm:border-l sm:pl-6 border-[#EFE8E2]">
               <div className="text-3xl font-black text-[#3C3530]">
                 {resultAnalysis.score}
-                <span className="text-sm font-semibold text-[#7F8C8D]">/100</span>
+                <span className="text-sm font-semibold text-[#68625D]">/100</span>
               </div>
               <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full inline-block mt-1 ${
                 isUrgent ? "bg-[#A55D25]/20 text-[#A55D25]" :
@@ -566,7 +566,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           {/* Dynamic Change Delta */}
           {resultAnalysis.previousScore !== null && (
             <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center justify-between">
-              <div className="text-xs text-[#7A726C]">
+              <div className="text-xs text-[#6B635C]">
                 <span>Previous Check-in: <strong className="text-[#3C3530]">{resultAnalysis.previousScore}/100</strong></span>
               </div>
               <div className={`text-xs font-bold px-3 py-1 rounded-xl ${
@@ -574,7 +574,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   ? "bg-[#D49B6A]/20 text-[#D49B6A]"
                   : resultAnalysis.change < 0
                   ? "bg-[#DBC3B2]/30 text-[#5A5049]"
-                  : "bg-[#EFE8E2] text-[#7A726C]"
+                  : "bg-[#EFE8E2] text-[#6B635C]"
               }`}>
                 {resultAnalysis.change > 0 ? `+${resultAnalysis.change} pts change` : `${resultAnalysis.change} pts change`}
               </div>
@@ -594,7 +594,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                     {currentReflection?.type === "voice" ? "Voice Transcript" : "Text Input"}
                   </span>
                 </div>
-                <p className="text-[#7A726C] italic">"{currentReflection?.transcript || [copingReflection, publicUnderstandingReflection].filter(Boolean).join(" • ")}"</p>
+                <p className="text-[#6B635C] italic">"{currentReflection?.transcript || [copingReflection, publicUnderstandingReflection].filter(Boolean).join(" • ")}"</p>
               </div>
 
               <ReflectionAnalysis
@@ -606,7 +606,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
 
           {/* Explainable Factors */}
           <div className="space-y-3">
-            <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+            <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
               {t.factorsReasoning}
             </h4>
             <div className="space-y-2">
@@ -630,7 +630,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           </div>
 
           {/* Ethical Disclaimer */}
-          <div className="text-center p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-[11px] text-[#7F8C8D]">
+          <div className="text-center p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-[11px] text-[#68625D]">
             <strong className="text-[#3C3530]">Ethical Notice:</strong> {t.ethicalNotice}
           </div>
 
@@ -654,13 +654,13 @@ export const ParticipantCheckin: React.FC<Props> = ({
     <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 space-y-6">
       {/* Top Header & Progress */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-[#EFE8E2] shadow-xs space-y-4">
-        <div className="flex items-center justify-between text-xs text-[#7F8C8D] font-bold">
+        <div className="flex items-center justify-between text-xs text-[#68625D] font-bold">
           <span>Question {currentQuestionNumber} of {totalQuestions}</span>
           <div className="flex items-center space-x-3">
             <LanguageSelector variant="compact" />
             <button
               onClick={onGoToProfile}
-              className="text-[#7F8C8D] hover:text-[#3C3530] transition-colors cursor-pointer"
+              className="text-[#68625D] hover:text-[#3C3530] transition-colors cursor-pointer"
             >
               Save & Exit
             </button>
@@ -690,7 +690,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What primary circumstances or violations have you experienced or survived?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Select all that apply. Your responses are strictly confidential and help contextualize support resources.
               </p>
             </div>
@@ -758,7 +758,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                         {isSelected && <Check size={13} strokeWidth={3} />}
                       </div>
                     </div>
-                    <p className="text-xs text-[#7A726C] mt-2 leading-relaxed">{opt.desc}</p>
+                    <p className="text-xs text-[#6B635C] mt-2 leading-relaxed">{opt.desc}</p>
                   </button>
                 );
               })}
@@ -777,7 +777,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Right now, how safe is the place you are staying?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 About where you are now, not how you have felt about it in the past.
               </p>
             </div>
@@ -819,7 +819,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm sm:text-base text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -848,7 +848,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Do you have ongoing physical injuries, pain, or medical conditions resulting from what occurred?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Documenting somatic and physical trauma ensures proper referrals to medical specialists and rehabilitation care.
               </p>
             </div>
@@ -895,7 +895,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -924,7 +924,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Over the last 3 days, how often have you been in good spirits?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 How often, not how bad. There is no right answer and nothing here is a diagnosis.
               </p>
             </div>
@@ -971,7 +971,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1000,7 +1000,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Over the last 3 days, how often have you woken up feeling rested?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 About the rest you actually got. What interrupted it is asked separately.
               </p>
             </div>
@@ -1047,7 +1047,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1076,7 +1076,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Over the last 3 days, how often have you felt close to someone?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Feeling close, not how many people were nearby. A crowded place can still be a lonely one.
               </p>
             </div>
@@ -1123,7 +1123,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1153,7 +1153,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Over the last 3 days, how often have you felt on top of things?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Not how serious things are, just how often you felt able to keep up with them.
               </p>
             </div>
@@ -1200,7 +1200,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1228,14 +1228,14 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What has helped you endure, cope, or find moments of peace or strength?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Sharing what grounds you honors your dignity and helps identify personal sources of strength.
               </p>
             </div>
 
             {/* Quick Inspiration Tags */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#68625D] block">
                 Tap to add inspiration to your reflection:
               </span>
               <div className="flex flex-wrap gap-2">
@@ -1275,7 +1275,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   <Mic size={14} />
                   <span>{showVoiceRecorder ? "Hide Voice Recorder" : "Use Spoken Voice Recording Instead"}</span>
                 </button>
-                <span className="text-xs text-[#7F8C8D]">
+                <span className="text-xs text-[#68625D]">
                   {copingReflection.length} characters
                 </span>
               </div>
@@ -1319,14 +1319,14 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What do you wish institutions, investigators, or the public understood about survivors of atrocities?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Your perspective bridges the gap between abstract reports and the living reality of surviving trauma.
               </p>
             </div>
 
             {/* Quick Suggestion Pills */}
             <div className="space-y-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#68625D] block">
                 Tap common truths to include:
               </span>
               <div className="flex flex-wrap gap-2">
@@ -1375,7 +1375,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Have authorities, institutions, or human rights bodies acknowledged your experience?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Understanding your trust in official channels guides safe documentation and legal advocacy.
               </p>
             </div>
@@ -1422,7 +1422,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1451,7 +1451,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 What is your highest priority for healing, justice, and rebuilding your life?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Surviving atrocities involves multiple dimensions of recovery. Choose your primary need right now.
               </p>
             </div>
@@ -1498,7 +1498,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   >
                     <div className="space-y-1 pr-3">
                       <span className="font-bold text-sm text-[#3C3530] block">{opt.label}</span>
-                      <span className="text-xs text-[#7A726C] leading-relaxed block">{opt.desc}</span>
+                      <span className="text-xs text-[#6B635C] leading-relaxed block">{opt.desc}</span>
                     </div>
                     <div
                       className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
@@ -1529,7 +1529,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 A few practical questions about the last day or two.
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Not about how you felt, just what happened. Answer only what you want to. Skip anything you would rather not say.
               </p>
             </div>
@@ -1621,7 +1621,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                 <p className="text-sm font-bold text-[#3C3530]">
                   Has your body been troubling you in any of these ways?
                 </p>
-                <p className="text-[11px] text-[#7F8C8D]">Select any that apply, or none.</p>
+                <p className="text-[11px] text-[#68625D]">Select any that apply, or none.</p>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {([
                     ["headaches", "Headaches"],
@@ -1660,7 +1660,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Would you like to connect with a confidential, specialized human counselor?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 Checking yes will notify our humanitarian caseworker team for a voluntary, confidential follow-up.
               </p>
             </div>
@@ -1688,7 +1688,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                       {supportRequested === true && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
                   </div>
-                  <p className="text-xs text-[#7A726C] leading-relaxed">
+                  <p className="text-xs text-[#6B635C] leading-relaxed">
                     Your request goes to the support team, who will arrange a voluntary,
                     confidential conversation with a trauma-informed counsellor.
                   </p>
@@ -1717,7 +1717,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                       {supportRequested === false && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
                   </div>
-                  <p className="text-xs text-[#7A726C] leading-relaxed">
+                  <p className="text-xs text-[#6B635C] leading-relaxed">
                     Continue your personal reflection and access self-guided wellness resources without scheduling a call.
                   </p>
                 </div>
@@ -1737,7 +1737,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <h3 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
                 Are you in immediate physical danger or thinking of hurting yourself right now?
               </h3>
-              <p className="text-xs sm:text-sm text-[#7F8C8D]">
+              <p className="text-xs sm:text-sm text-[#68625D]">
                 This safety triage step ensures immediate access to emergency helplines and crisis assistance if needed.
               </p>
             </div>
@@ -1759,7 +1759,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
                   <span className="font-bold text-[#3C3530] block text-sm sm:text-base">
                     No, I am safe right now.
                   </span>
-                  <span className="text-xs text-[#7A726C] mt-0.5 block">
+                  <span className="text-xs text-[#6B635C] mt-0.5 block">
                     Complete check-in and review your personalized reflection summary.
                   </span>
                 </div>
@@ -1791,7 +1791,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
             type="button"
             onClick={() => setStep(Math.max(1, step - 1))}
             disabled={step <= 1}
-            className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 cursor-pointer"
+            className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] disabled:opacity-30 disabled:cursor-not-allowed flex items-center space-x-1 cursor-pointer"
           >
             <ArrowLeft size={14} />
             <span>{t.previous}</span>
@@ -1802,7 +1802,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
               <button
                 type="button"
                 onClick={() => handleNext()}
-                className="text-xs font-semibold text-[#7F8C8D] hover:text-[#3C3530] underline cursor-pointer"
+                className="text-xs font-semibold text-[#68625D] hover:text-[#3C3530] underline cursor-pointer"
               >
                 {t.skip}
               </button>

@@ -234,7 +234,7 @@ export const RecoveryDocumentsScreen: React.FC<Props> = ({
                   <button
                     onClick={() => onDelete(doc)}
                     aria-label={`Remove ${doc.label || DOCUMENT_LABELS[doc.docType]}`}
-                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#ECE1D3] bg-white p-2 text-[#8A7A6B] transition-colors hover:border-[#E4C3B4] hover:text-[#8A3F20]"
+                    className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-xl border border-[#ECE1D3] bg-white p-2 text-[#6F5F4F] transition-colors hover:border-[#E4C3B4] hover:text-[#8A3F20]"
                   >
                     <Trash2 size={15} aria-hidden="true" />
                   </button>

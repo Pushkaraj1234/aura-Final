@@ -214,7 +214,7 @@ export const CheckInResults: React.FC<Props> = ({
             {loadingStage === 1 && "Identifying wellbeing patterns..."}
             {loadingStage === 2 && "Preparing your personalized summary..."}
           </h2>
-          <p className="text-xs sm:text-sm text-[#7F8C8D] max-w-md mx-auto">
+          <p className="text-xs sm:text-sm text-[#68625D] max-w-md mx-auto">
             Processing voluntary self-reflection data to generate transparent, non-clinical wellbeing signals.
           </p>
         </div>
@@ -277,7 +277,7 @@ export const CheckInResults: React.FC<Props> = ({
               <span className="text-3xl sm:text-4xl font-black text-[#3C3530]">
                 {analysis.distressScore}
               </span>
-              <span className="text-[10px] font-bold text-[#7F8C8D]">out of 100</span>
+              <span className="text-[10px] font-bold text-[#68625D]">out of 100</span>
             </div>
           </div>
 
@@ -303,28 +303,28 @@ export const CheckInResults: React.FC<Props> = ({
               {analysis.level === "VERY_HIGH" && "High-priority wellbeing signal recorded."}
             </h3>
 
-            <p className="text-xs sm:text-sm text-[#7A726C] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#6B635C] leading-relaxed">
               Higher scores indicate higher reported distress in this prototype. This signal is dynamically calculated from your voluntary questionnaire responses.
             </p>
 
             {/* Historical Comparison Badges */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
               <div className="bg-[#FDF9F5] px-3 py-1.5 rounded-xl border border-[#EFE8E2] text-xs">
-                <span className="text-[#7F8C8D]">Previous: </span>
+                <span className="text-[#68625D]">Previous: </span>
                 <strong className="text-[#3C3530]">
                   {analysis.previousScore !== undefined ? `${analysis.previousScore}` : "Baseline"}
                 </strong>
               </div>
 
               <div className="bg-[#FDF9F5] px-3 py-1.5 rounded-xl border border-[#EFE8E2] text-xs">
-                <span className="text-[#7F8C8D]">Current: </span>
+                <span className="text-[#68625D]">Current: </span>
                 <strong className="text-[#3C3530]">{analysis.distressScore}</strong>
               </div>
 
               {analysis.change !== undefined && (
                 <div className="bg-[#FDF9F5] px-3 py-1.5 rounded-xl border border-[#EFE8E2] text-xs flex items-center space-x-1">
-                  <span className="text-[#7F8C8D]">Change: </span>
-                  <strong className={`font-bold flex items-center ${analysis.change > 0 ? "text-[#A55D25]" : analysis.change < 0 ? "text-[#5A5049]" : "text-[#7F8C8D]"}`}>
+                  <span className="text-[#68625D]">Change: </span>
+                  <strong className={`font-bold flex items-center ${analysis.change > 0 ? "text-[#A55D25]" : analysis.change < 0 ? "text-[#5A5049]" : "text-[#68625D]"}`}>
                     {analysis.change > 0 ? (
                       <>
                         <TrendingUp size={12} className="mr-0.5" /> +{analysis.change}
@@ -343,7 +343,7 @@ export const CheckInResults: React.FC<Props> = ({
               )}
 
               <div className="bg-[#FDF9F5] px-3 py-1.5 rounded-xl border border-[#EFE8E2] text-xs">
-                <span className="text-[#7F8C8D]">Trend: </span>
+                <span className="text-[#68625D]">Trend: </span>
                 <strong className="text-[#3C3530]">
                   {analysis.trend === "RAPID_INCREASE" && "↑ Rapid Increase"}
                   {analysis.trend === "INCREASING" && "↑ Increasing"}
@@ -362,7 +362,7 @@ export const CheckInResults: React.FC<Props> = ({
               <Activity size={18} className="text-[#5A5049]" />
               <span>What contributed to this signal?</span>
             </h4>
-            <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider">
+            <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider">
               Reported Areas of Concern
             </span>
           </div>
@@ -387,10 +387,10 @@ export const CheckInResults: React.FC<Props> = ({
                     style={{ width: `${analysis.factorPercentages.stress}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#7F8C8D] block">
+                <span className="text-[10px] text-[#68625D] block">
                   Questionnaire rating: {analysis.factors.stress}/5
                 </span>
-                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                <span className="text-[10px] font-mono text-[#6F5F4F] block leading-snug">
                   {factorFormula.stress} = {analysis.factorPercentages.stress}%
                 </span>
               </div>
@@ -410,10 +410,10 @@ export const CheckInResults: React.FC<Props> = ({
                     style={{ width: `${analysis.factorPercentages.sleep}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#7F8C8D] block">
+                <span className="text-[10px] text-[#68625D] block">
                   Restfulness rating: {analysis.factors.sleep}/5
                 </span>
-                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                <span className="text-[10px] font-mono text-[#6F5F4F] block leading-snug">
                   {factorFormula.sleep} = {analysis.factorPercentages.sleep}%
                 </span>
               </div>
@@ -433,10 +433,10 @@ export const CheckInResults: React.FC<Props> = ({
                     style={{ width: `${analysis.factorPercentages.emotionalWellbeing}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#7F8C8D] block">
+                <span className="text-[10px] text-[#68625D] block">
                   Day rating: {analysis.factors.mood}/5
                 </span>
-                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                <span className="text-[10px] font-mono text-[#6F5F4F] block leading-snug">
                   {factorFormula.emotionalWellbeing} = {analysis.factorPercentages.emotionalWellbeing}%
                 </span>
               </div>
@@ -445,7 +445,7 @@ export const CheckInResults: React.FC<Props> = ({
               <div className={factorCardClass("socialConnection")}>
                 <div className="flex items-center justify-between text-xs font-bold">
                   <span className="text-[#3C3530] flex items-center space-x-1.5">
-                    <Users size={14} className="text-[#7F8C8D]" />
+                    <Users size={14} className="text-[#68625D]" />
                     <span>Social Connection</span>
                   </span>
                   <span className="text-[#3C3530]">{analysis.factorPercentages.socialConnection}%</span>
@@ -456,10 +456,10 @@ export const CheckInResults: React.FC<Props> = ({
                     style={{ width: `${analysis.factorPercentages.socialConnection}%` }}
                   />
                 </div>
-                <span className="text-[10px] text-[#7F8C8D] block">
+                <span className="text-[10px] text-[#68625D] block">
                   Peer support rating: {analysis.factors.socialConnection}/5
                 </span>
-                <span className="text-[10px] font-mono text-[#A99A8A] block leading-snug">
+                <span className="text-[10px] font-mono text-[#6F5F4F] block leading-snug">
                   {factorFormula.socialConnection} = {analysis.factorPercentages.socialConnection}%
                 </span>
               </div>
@@ -472,7 +472,7 @@ export const CheckInResults: React.FC<Props> = ({
                   <Sparkles size={14} className="text-[#D49B6A]" />
                   <span>Try these</span>
                 </h5>
-                <p className="text-[10px] text-[#7F8C8D] leading-snug">
+                <p className="text-[10px] text-[#68625D] leading-snug">
                   Your highest reported area this check-in was{" "}
                   <strong className="text-[#3C3530]">{suggested.label}</strong> (
                   {analysis.factorPercentages[suggested.section]}%).
@@ -497,14 +497,14 @@ export const CheckInResults: React.FC<Props> = ({
 
               {/* Says what these are, so nobody reads them as a prescription or
                   as a way to move the number above. */}
-              <p className="text-[10px] text-[#7F8C8D] italic leading-snug">
+              <p className="text-[10px] text-[#68625D] italic leading-snug">
                 Self-care you can try alongside support from a person. Not
                 treatment, and not a way to change your score.
               </p>
             </aside>
           </div>
 
-          <p className="text-[11px] text-[#7F8C8D] text-center italic">
+          <p className="text-[11px] text-[#68625D] text-center italic">
             Note: These percentages represent voluntary self-reported response patterns and are not clinical or medical measurements.
           </p>
 
@@ -536,14 +536,14 @@ export const CheckInResults: React.FC<Props> = ({
 
         {analysis.explanationPoints && analysis.explanationPoints.length > 0 && (
           <div className="space-y-2 pt-2">
-            <span className="text-xs font-bold text-[#7F8C8D] uppercase tracking-wider block">
+            <span className="text-xs font-bold text-[#68625D] uppercase tracking-wider block">
               Key Contributing Highlights:
             </span>
             <div className="grid sm:grid-cols-2 gap-2.5">
               {analysis.explanationPoints.map((pt, i) => (
                 <div
                   key={i}
-                  className="flex items-start space-x-2 p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#7A726C]"
+                  className="flex items-start space-x-2 p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#6B635C]"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[#5A5049] mt-1.5 shrink-0" />
                   <span>{pt}</span>
@@ -553,7 +553,7 @@ export const CheckInResults: React.FC<Props> = ({
           </div>
         )}
 
-        <p className="text-[11px] text-[#7F8C8D]">
+        <p className="text-[11px] text-[#68625D]">
           AURA uses your voluntary responses to identify broad wellbeing patterns. It does not access external private data or make clinical diagnoses.
         </p>
       </div>
@@ -648,7 +648,7 @@ export const CheckInResults: React.FC<Props> = ({
           <h3 className="text-xl font-bold text-[#3C3530]">
             Personalized Recommendations
           </h3>
-          <p className="text-xs text-[#7F8C8D]">
+          <p className="text-xs text-[#68625D]">
             Prioritized suggestions based on your specific stress, sleep, connection, and wellbeing responses.
           </p>
         </div>
@@ -661,7 +661,7 @@ export const CheckInResults: React.FC<Props> = ({
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-white border border-[#EFE8E2] text-[#7A726C]">
+                  <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-white border border-[#EFE8E2] text-[#6B635C]">
                     {rec.category.replace("_", " ")}
                   </span>
                   <span
@@ -681,7 +681,7 @@ export const CheckInResults: React.FC<Props> = ({
                   {rec.title}
                 </h4>
 
-                <p className="text-xs text-[#7A726C] leading-relaxed">
+                <p className="text-xs text-[#6B635C] leading-relaxed">
                   {rec.description}
                 </p>
               </div>
@@ -714,12 +714,12 @@ export const CheckInResults: React.FC<Props> = ({
 
         <div className="p-5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs sm:text-sm text-[#3C3530] leading-relaxed italic space-y-2">
           <p>"{analysis.supportiveMessage}"</p>
-          <span className="block text-[11px] text-[#7F8C8D] not-italic">
+          <span className="block text-[11px] text-[#68625D] not-italic">
             AURA, non-clinical support assistant
           </span>
         </div>
 
-        <p className="text-[11px] text-[#7F8C8D]">
+        <p className="text-[11px] text-[#68625D]">
           This is compassionate non-clinical emotional support, not psychotherapy. AURA does not diagnose or make medical promises.
         </p>
       </div>
@@ -732,10 +732,10 @@ export const CheckInResults: React.FC<Props> = ({
             About this Result & Ethics
           </h4>
         </div>
-        <p className="text-xs text-[#7A726C] leading-relaxed">
+        <p className="text-xs text-[#6B635C] leading-relaxed">
           AURA analyzes your voluntary check-in responses to identify broad patterns in reported wellbeing and distress. This result is intended to support conversations and early human follow-up. It is not a diagnosis or replacement for professional care.
         </p>
-        <p className="text-[11px] text-[#7F8C8D]">
+        <p className="text-[11px] text-[#68625D]">
           {ALERT_CONFIG.THRESHOLD_DISCLAIMER}
         </p>
       </div>

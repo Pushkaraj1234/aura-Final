@@ -133,12 +133,12 @@ export const ParticipantSignUp: React.FC<Props> = ({
               Registration Successful
             </span>
             <h2 className="text-3xl font-black text-[#3C3530]">Welcome to AURA</h2>
-            <p className="text-sm text-[#7A726C] leading-relaxed">
+            <p className="text-sm text-[#6B635C] leading-relaxed">
               Your demonstration participant account has been created. Before your first wellbeing check-in, we will review how your reflections are processed.
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-left text-xs text-[#7A726C] space-y-2">
+          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-left text-xs text-[#6B635C] space-y-2">
             <div className="flex items-center space-x-2 font-bold text-[#3C3530]">
               <Shield size={16} className="text-[#5A5049]" />
               <span>Participant Safeguards Active</span>
@@ -176,7 +176,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   <HeartPulse size={16} className="text-[#A55D25]" />
                   <span>Make your own first aid kit</span>
                 </div>
-                <p className="text-xs text-[#7A726C] leading-relaxed">
+                <p className="text-xs text-[#6B635C] leading-relaxed">
                   A short, private list of what helps <em>you</em>. A song, a place you go, someone you could
                   message. Written now, while it is easier to think, so a harder day does not have to.
                 </p>
@@ -209,7 +209,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
         <button
           type="button"
           onClick={onBack}
-          className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
+          className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
         >
           <ArrowLeft size={14} />
           <span>Back to Role Selection</span>
@@ -258,7 +258,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
               <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530] tracking-tight">
                 Create your AURA account
               </h2>
-              <p className="text-xs sm:text-sm text-[#7F8C8D] mt-1">
+              <p className="text-xs sm:text-sm text-[#68625D] mt-1">
                 Your information is private and used only to provide your wellbeing experience.
               </p>
             </div>
@@ -271,7 +271,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
             )}
               {/* Preferred Name */}
               <div>
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                   Preferred Name or Pseudonym *
                 </label>
                 <input
@@ -286,7 +286,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
 
               {/* Email */}
               <div>
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                   Email Address *
                 </label>
                 <input
@@ -302,7 +302,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
               {/* Passwords */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                     Password *
                   </label>
                   <div className="relative">
@@ -316,7 +316,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#7F8C8D] hover:text-[#3C3530] cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[#68625D] hover:text-[#3C3530] cursor-pointer"
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
@@ -325,7 +325,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                     Confirm Password *
                   </label>
                   <input
@@ -345,7 +345,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   must never be turned away for not having a case number to
                   hand, and many will not. */}
               <div>
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                   Complaint number (optional)
                 </label>
                 <input
@@ -356,7 +356,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   placeholder="If you called the 14566 helpline, the number they gave you"
                   className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] placeholder:text-[#B9B0A6] focus:outline-none focus:ring-2 focus:ring-[#5A5049] text-sm"
                 />
-                <p className="text-[11px] text-[#7F8C8D] mt-1.5 leading-relaxed">
+                <p className="text-[11px] text-[#68625D] mt-1.5 leading-relaxed">
                   Lets your counsellor connect this wellbeing record to your complaint. You can
                   leave it blank and still use everything here.
                 </p>
@@ -365,7 +365,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
               {/* Language & Age Range */}
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                     Preferred Language
                   </label>
                   {/* Choosing here switches the app immediately, so the rest
@@ -390,7 +390,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                  <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                     Age Range (Privacy-first)
                   </label>
                   <select
@@ -409,7 +409,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
 
               {/* Preferred Support Method */}
               <div>
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                   Preferred Support Method
                 </label>
                 <select
@@ -424,7 +424,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
 
               {/* Emergency / Trusted Contact — optional, always skippable */}
               <div>
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                   Emergency / Trusted Contact <span className="normal-case font-medium text-[#B9B0A6]">(optional, you can skip this)</span>
                 </label>
                 <input
@@ -434,7 +434,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                   onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                   className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049] focus:border-transparent text-sm"
                 />
-                <p className="text-[11px] text-[#7F8C8D] mt-1">
+                <p className="text-[11px] text-[#68625D] mt-1">
                   Only a name and how to reach someone you trust. Leave blank if naming a contact is not safe for you. It is never required.
                 </p>
               </div>
@@ -493,7 +493,7 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 </button>
               </div>
 
-              <div className="text-center pt-2 text-xs text-[#7F8C8D]">
+              <div className="text-center pt-2 text-xs text-[#68625D]">
                 <span>Already have an account? </span>
                 <button
                   type="button"

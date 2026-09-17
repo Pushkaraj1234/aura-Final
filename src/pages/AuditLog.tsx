@@ -164,7 +164,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       case "status_change":
         return "bg-amber-100/60 text-amber-900 border-amber-200";
       default:
-        return "bg-[#FDF9F5] text-[#7A726C] border-[#EFE8E2]";
+        return "bg-[#FDF9F5] text-[#6B635C] border-[#EFE8E2]";
     }
   };
 
@@ -204,14 +204,14 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
               </span>
               <span>● Live Audit Stream</span>
             </div>
-            <span className="text-xs text-[#7F8C8D] font-mono hidden sm:inline">
+            <span className="text-xs text-[#68625D] font-mono hidden sm:inline">
               Immutable Access Records
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#3C3530] mt-1.5 tracking-tight">
             Counselor Audit Log & Access Trail
           </h1>
-          <p className="text-sm text-[#7A726C] max-w-3xl mt-1 leading-relaxed">
+          <p className="text-sm text-[#6B635C] max-w-3xl mt-1 leading-relaxed">
             Every view, evaluation, check-in, and support intervention is recorded in real time with cryptographic timestamps to guarantee ethical oversight and prevent unauthorized data access.
           </p>
         </div>
@@ -228,10 +228,10 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
             <span>{isTestTriggering ? "Logging Event..." : "Test Live Event"}</span>
           </button>
 
-          <div className="inline-flex items-center space-x-2 px-3 py-2 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#7A726C]">
+          <div className="inline-flex items-center space-x-2 px-3 py-2 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#6B635C]">
             <Activity size={14} className="text-[#5A5049]" />
             <span className="font-mono text-[#3C3530]">{scopedEvents.length}</span>
-            <span className="text-[11px] text-[#7F8C8D]">Events Tracked</span>
+            <span className="text-[11px] text-[#68625D]">Events Tracked</span>
           </div>
         </div>
       </div>
@@ -254,7 +254,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       </div>
 
       {isCounselor && (
-        <div className="flex items-center space-x-2 text-xs text-[#7A726C] bg-[#FDF9F5] border border-[#EFE8E2] rounded-xl px-3 py-2">
+        <div className="flex items-center space-x-2 text-xs text-[#6B635C] bg-[#FDF9F5] border border-[#EFE8E2] rounded-xl px-3 py-2">
           <Lock size={14} className="text-[#5A5049] shrink-0" />
           <span>
             Scoped to your access: events for your assigned caseload and actions
@@ -267,7 +267,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       <div className="space-y-3">
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
           <div className="relative flex-1 max-w-md">
-            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7F8C8D]" />
+            <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#68625D]" />
             <input
               type="text"
               id="input-audit-search"
@@ -280,7 +280,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
 
           {/* Actor Role Filter */}
           <div className="flex items-center space-x-2 overflow-x-auto">
-            <span className="text-xs font-bold text-[#7F8C8D] whitespace-nowrap">Actor:</span>
+            <span className="text-xs font-bold text-[#68625D] whitespace-nowrap">Actor:</span>
             {[
               { id: "all", label: "All Roles" },
               { id: "SUPPORT_WORKER", label: "Counselor" },
@@ -294,7 +294,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
                   roleFilter === r.id
                     ? "bg-[#3C3530] text-white"
-                    : "bg-white text-[#7A726C] border border-[#EFE8E2] hover:bg-[#FDF9F5]"
+                    : "bg-white text-[#6B635C] border border-[#EFE8E2] hover:bg-[#FDF9F5]"
                 }`}
               >
                 {r.label}
@@ -323,7 +323,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-colors cursor-pointer ${
                 categoryFilter === tab.id
                   ? "bg-[#5A5049] text-white"
-                  : "bg-white text-[#7A726C] border border-[#EFE8E2] hover:bg-[#FDF9F5]"
+                  : "bg-white text-[#6B635C] border border-[#EFE8E2] hover:bg-[#FDF9F5]"
               }`}
             >
               {tab.label}
@@ -336,11 +336,11 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
       <div className="bg-white rounded-3xl border border-[#EFE8E2] divide-y divide-[#EFE8E2] shadow-xs overflow-hidden">
         {filtered.length === 0 ? (
           <div className="p-12 text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center justify-center mx-auto text-[#7F8C8D]">
+            <div className="w-12 h-12 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center justify-center mx-auto text-[#68625D]">
               <FileText size={22} />
             </div>
             <h4 className="text-sm font-bold text-[#3C3530]">No audit events matching criteria</h4>
-            <p className="text-xs text-[#7F8C8D] max-w-sm mx-auto">
+            <p className="text-xs text-[#68625D] max-w-sm mx-auto">
               Try adjusting your search keywords or switching category filters. All live interactions are logged automatically.
             </p>
           </div>
@@ -359,7 +359,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
               >
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-bold text-[#7F8C8D]">
+                    <span className="font-mono text-xs font-bold text-[#68625D]">
                       {new Date(log.timestamp).toLocaleTimeString([], {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -392,7 +392,7 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2 text-xs text-[#7F8C8D]">
+                  <div className="flex items-center space-x-2 text-xs text-[#68625D]">
                     <UserCheck size={14} className="text-[#5A5049]" />
                     <span className="font-semibold text-[#3C3530]">{log.actorName || log.workerName || log.actorId}</span>
                     <span>•</span>
@@ -400,12 +400,12 @@ export const AuditLog: React.FC<Props> = ({ currentUser, participants = [] }) =>
                   </div>
                 </div>
 
-                <p className="text-xs text-[#7A726C] leading-relaxed pl-1 sm:pl-2">
+                <p className="text-xs text-[#6B635C] leading-relaxed pl-1 sm:pl-2">
                   {log.description || log.details}
                 </p>
 
                 {log.details && log.description && log.details !== log.description && (
-                  <div className="text-[11px] text-[#7F8C8D] bg-[#FDF9F5] p-2 rounded-lg border border-[#EFE8E2]/60 ml-1 sm:ml-2 font-mono">
+                  <div className="text-[11px] text-[#68625D] bg-[#FDF9F5] p-2 rounded-lg border border-[#EFE8E2]/60 ml-1 sm:ml-2 font-mono">
                     {log.details}
                   </div>
                 )}

@@ -33,7 +33,7 @@ export const VoiceCompanion: React.FC<Props> = ({ onBack, onOpenEmergency }) => 
 
     <div>
       <h1 className="text-2xl sm:text-3xl font-bold text-[#3C3530]">Talk it through</h1>
-      <p className="text-sm text-[#7A726C] mt-2 max-w-2xl">
+      <p className="text-sm text-[#6B635C] mt-2 max-w-2xl">
         Speak instead of typing, in English, Hindi or Marathi. You can interrupt at any
         point, and you can stop whenever you want.
       </p>
@@ -46,7 +46,7 @@ export const VoiceCompanion: React.FC<Props> = ({ onBack, onOpenEmergency }) => 
       <div className="w-10 h-10 rounded-2xl bg-[#DBC3B2]/40 text-[#8A5A2B] flex items-center justify-center shrink-0">
         <ShieldCheck size={17} />
       </div>
-      <div className="space-y-2 text-xs text-[#7A726C] leading-relaxed">
+      <div className="space-y-2 text-xs text-[#6B635C] leading-relaxed">
         <p>
           <span className="font-bold text-[#3C3530]">This is not a person.</span> It will
           not pass a message to your counsellor and it does not add to your wellbeing

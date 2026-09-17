@@ -70,11 +70,11 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
         </div>
 
         {loading ? (
-          <p className="text-sm text-[#7A726C]">Opening the form…</p>
+          <p className="text-sm text-[#6B635C]">Opening the form…</p>
         ) : blocked ? (
           <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center">
             <p className="text-sm font-semibold text-[#3C3530]">{blocked}</p>
-            <p className="text-xs text-[#7A726C] mt-2">
+            <p className="text-xs text-[#6B635C] mt-2">
               If you were expecting this form, ask the counsellor who sent it for a new link.
             </p>
           </div>
@@ -82,7 +82,7 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
           <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center space-y-2">
             <CheckCircle2 size={28} className="text-[#2F6B4F] mx-auto" />
             <p className="text-sm font-bold text-[#3C3530]">Thank you. Your answers have been sent.</p>
-            <p className="text-xs text-[#7A726C] max-w-sm mx-auto">
+            <p className="text-xs text-[#6B635C] max-w-sm mx-auto">
               Only the counsellor who asked you will read them. You can close this page; the link
               will not open again.
             </p>
@@ -93,12 +93,12 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
               <h1 className="text-xl font-bold text-[#3C3530]">
                 A few questions about someone you care for
               </h1>
-              <p className="text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-sm text-[#6B635C] leading-relaxed">
                 A counsellor has asked for your view. There are five questions and there are no
                 right answers. What you have actually noticed is what helps. It takes a couple of
                 minutes.
               </p>
-              <p className="text-xs text-[#7A726C] flex items-start gap-2 pt-1">
+              <p className="text-xs text-[#6B635C] flex items-start gap-2 pt-1">
                 <ShieldCheck size={13} className="text-[#2F6B4F] mt-0.5 shrink-0" />
                 Only the counsellor who sent this link sees your answers. The person you are
                 answering about is told that you were asked, but not what you said.
@@ -142,7 +142,7 @@ export const GuardianForm: React.FC<Props> = ({ token }) => {
               >
                 {sending ? "Sending…" : "Send my answers"}
               </button>
-              <span className="text-xs text-[#7A726C]">
+              <span className="text-xs text-[#6B635C]">
                 {answeredCount} of {questions.length} answered. You can leave any of them blank.
               </span>
             </div>

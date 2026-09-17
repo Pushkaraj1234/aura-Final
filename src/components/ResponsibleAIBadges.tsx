@@ -28,7 +28,7 @@ export const SignalStrengthVsHumanCard: React.FC<{ signalText?: string; score?: 
   return (
     <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 shadow-xs space-y-4">
       <div className="flex items-center justify-between border-b border-[#EFE8E2] pb-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] flex items-center">
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D] flex items-center">
           <Scale size={15} className="mr-1.5 text-[#5A5049]" />
           AI Signal Strength vs. Human Review
         </h4>
@@ -51,7 +51,7 @@ export const SignalStrengthVsHumanCard: React.FC<{ signalText?: string; score?: 
           <p className="text-sm font-black text-[#3C3530]">
             {signalText}
           </p>
-          <p className="text-[11px] text-[#7A726C] leading-relaxed">
+          <p className="text-[11px] text-[#6B635C] leading-relaxed">
             Mathematical delta in self-reported indicators. Does <strong>not</strong> quantify mental health disorder or emotional certainty.
           </p>
         </div>
@@ -69,13 +69,13 @@ export const SignalStrengthVsHumanCard: React.FC<{ signalText?: string; score?: 
           <p className="text-sm font-black text-[#3C3530]">
             Humanitarian Review Required
           </p>
-          <p className="text-[11px] text-[#7A726C] leading-relaxed">
+          <p className="text-[11px] text-[#6B635C] leading-relaxed">
             All non-routine actions must be evaluated by a trained human worker who speaks directly with the participant.
           </p>
         </div>
       </div>
 
-      <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center justify-between text-xs text-[#7A726C]">
+      <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center justify-between text-xs text-[#6B635C]">
         <span className="font-semibold text-[#3C3530]">
           Key Ethical Tenet:
         </span>
@@ -104,14 +104,14 @@ export const ModelTransparencyCard: React.FC = () => {
             <h4 className="text-sm font-black text-[#3C3530]">
               About the AI Architecture & Model Transparency
             </h4>
-            <p className="text-[11px] text-[#7F8C8D]">
+            <p className="text-[11px] text-[#68625D]">
               How the score is produced, in full, for anyone who wants to check it
             </p>
           </div>
         </div>
         <button
           onClick={() => setOpen(!open)}
-          className="p-1.5 rounded-lg text-[#7F8C8D] hover:bg-[#FDF9F5]"
+          className="p-1.5 rounded-lg text-[#68625D] hover:bg-[#FDF9F5]"
         >
           {open ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
         </button>
@@ -121,31 +121,31 @@ export const ModelTransparencyCard: React.FC = () => {
         <div className="space-y-4 text-xs text-[#3C3530]">
           <div className="grid sm:grid-cols-3 gap-3">
             <div className="p-3.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-              <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-1">
+              <span className="text-[10px] font-black uppercase text-[#68625D] block mb-1">
                 Model Archetype
               </span>
               <p className="font-bold text-[#3C3530]">
                 Rule-Based Weighted Heuristics + Multi-Step Trajectory Filter
               </p>
-              <p className="text-[11px] text-[#7A726C] mt-1">
+              <p className="text-[11px] text-[#6B635C] mt-1">
                 Deterministic and auditable. It cannot hallucinate a number.
               </p>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-              <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-1">
+              <span className="text-[10px] font-black uppercase text-[#68625D] block mb-1">
                 Inputs Analyzed
               </span>
               <p className="font-bold text-[#3C3530]">
                 Voluntary Self-Assessments
               </p>
-              <p className="text-[11px] text-[#7A726C] mt-1">
+              <p className="text-[11px] text-[#6B635C] mt-1">
                 Stress (1-5), Sleep (1-5), Safety perception, Connection (1-5), Support ask.
               </p>
             </div>
 
             <div className="p-3.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-              <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-1">
+              <span className="text-[10px] font-black uppercase text-[#68625D] block mb-1">
                 Outputs Produced
               </span>
               <p className="font-bold text-[#3C3530]">
@@ -153,7 +153,7 @@ export const ModelTransparencyCard: React.FC = () => {
               </p>
               {/* Was "...and confidence intervals". Nothing here computes one;
                   that phrase was the only occurrence of it in the codebase. */}
-              <p className="text-[11px] text-[#7A726C] mt-1">
+              <p className="text-[11px] text-[#6B635C] mt-1">
                 Every score opens to show the five answers and weights that produced it.
               </p>
             </div>
@@ -220,16 +220,16 @@ export const BiasMonitoringCard: React.FC = () => {
   return (
     <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 shadow-xs space-y-4">
       <div className="flex items-center justify-between border-b border-[#EFE8E2] pb-3">
-        <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] flex items-center">
+        <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D] flex items-center">
           <Globe2 size={15} className="mr-1.5 text-[#5A5049]" />
           Fairness: checked, and not yet measured
         </h4>
-        <span className="text-[10px] font-mono font-bold text-[#7A726C]">
+        <span className="text-[10px] font-mono font-bold text-[#6B635C]">
           Two different questions
         </span>
       </div>
 
-      <p className="text-xs text-[#7A726C] leading-relaxed">
+      <p className="text-xs text-[#6B635C] leading-relaxed">
         Whether the model can see who you are is a property of the code, and we can show you the
         answer. Whether it works equally well for everyone is a measurement, and we have not made
         it yet. Treating the first as though it settled the second is the usual way these claims
@@ -238,7 +238,7 @@ export const BiasMonitoringCard: React.FC = () => {
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
+          <span className="text-[10px] font-black uppercase text-[#68625D] block mb-0.5">
             Score inputs
           </span>
           <span className="text-xs font-black text-[#3C3530]">
@@ -250,7 +250,7 @@ export const BiasMonitoringCard: React.FC = () => {
         </div>
 
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
+          <span className="text-[10px] font-black uppercase text-[#68625D] block mb-0.5">
             Human review
           </span>
           <span className="text-xs font-black text-[#3C3530]">
@@ -262,7 +262,7 @@ export const BiasMonitoringCard: React.FC = () => {
         </div>
 
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
+          <span className="text-[10px] font-black uppercase text-[#68625D] block mb-0.5">
             Missed-distress rate by group
           </span>
           <span className="text-xs font-black text-[#3C3530]">
@@ -274,7 +274,7 @@ export const BiasMonitoringCard: React.FC = () => {
         </div>
 
         <div className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[10px] font-black uppercase text-[#7F8C8D] block mb-0.5">
+          <span className="text-[10px] font-black uppercase text-[#68625D] block mb-0.5">
             Caste
           </span>
           <span className="text-xs font-black text-[#3C3530]">
@@ -294,7 +294,7 @@ export const BiasMonitoringCard: React.FC = () => {
           may read differently in a machine-translated interface than in a hand-written one, which
           is how a model blind to language still ends up worse in Marathi.
         </p>
-        <p className="text-[11px] text-[#7A726C] leading-relaxed">
+        <p className="text-[11px] text-[#6B635C] leading-relaxed">
           The real measurement is the missed-distress rate per group, against a validated
           questionnaire, reported on the Fairness Slices screen. It is withheld until there are
           enough answers for a rate to mean anything, and it says so rather than showing a
@@ -414,7 +414,7 @@ export const HumanitarianImpactSection: React.FC = () => {
             Demonstrated Humanitarian Impact
           </h3>
         </div>
-        <span className="text-xs text-[#7F8C8D]">
+        <span className="text-xs text-[#68625D]">
           6 Key Advantages
         </span>
       </div>
@@ -430,7 +430,7 @@ export const HumanitarianImpactSection: React.FC = () => {
               <h4 className="text-sm font-black text-[#3C3530]">
                 {item.title}
               </h4>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 {item.desc}
               </p>
             </div>

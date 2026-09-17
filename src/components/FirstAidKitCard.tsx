@@ -55,7 +55,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
             type="button"
             onClick={() => setEditing(false)}
             aria-label="Close without saving"
-            className="shrink-0 p-2 -m-2 rounded-full text-[#7F8C8D] hover:text-[#3C3530] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+            className="shrink-0 p-2 -m-2 rounded-full text-[#68625D] hover:text-[#3C3530] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -93,7 +93,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
           </span>
           <h3 className="text-xl font-bold text-[#3C3530]">Make your own first aid kit</h3>
         </div>
-        <p className="text-sm text-[#7A726C] leading-relaxed max-w-xl">
+        <p className="text-sm text-[#6B635C] leading-relaxed max-w-xl">
           A short list of the things that help <em>you</em>. Your song, the place you go, the person you would
           message. Written now, while it is easier to think, so a harder day does not have to.
         </p>
@@ -118,7 +118,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
             <span>Your first aid</span>
           </span>
           <h3 className="text-xl font-bold text-[#3C3530]">What helps you</h3>
-          <p className="text-xs text-[#7F8C8D]">
+          <p className="text-xs text-[#68625D]">
             {kitItemCount(kit)} {kitItemCount(kit) === 1 ? "thing" : "things"} you wrote for yourself.
           </p>
         </div>
@@ -138,7 +138,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
           if (!items.length) return null;
           return (
             <div key={prompt.category} className="space-y-1.5">
-              <p className="text-[10px] font-black uppercase tracking-wider text-[#A99A8A]">{prompt.label}</p>
+              <p className="text-[10px] font-black uppercase tracking-wider text-[#6F5F4F]">{prompt.label}</p>
               <ul className="space-y-1">
                 {items.map((item) => (
                   <li
@@ -155,7 +155,7 @@ export const FirstAidKitCard: React.FC<Props> = ({ user, onSave }) => {
         })}
       </div>
 
-      <p className="text-[11px] text-[#7F8C8D] flex items-center gap-1.5 pt-1 border-t border-[#EFE8E2]">
+      <p className="text-[11px] text-[#68625D] flex items-center gap-1.5 pt-1 border-t border-[#EFE8E2]">
         {kit?.shareWithWorker ? (
           <>
             <Eye size={12} className="text-[#5A5049]" />

@@ -56,7 +56,7 @@ export const LanguageSelector: React.FC<Props> = ({ variant = "full", className 
         size={14}
         aria-hidden="true"
         className={`shrink-0 ${
-          loading ? "animate-spin text-[#7F8C8D]" : degraded ? "text-[#B0713C]" : "text-[#5A5049]"
+          loading ? "animate-spin text-[#68625D]" : degraded ? "text-[#8A4A20]" : "text-[#5A5049]"
         }`}
       />
 

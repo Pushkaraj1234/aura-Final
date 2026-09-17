@@ -11,7 +11,7 @@ interface Props {
 const CONCERN_STYLE: Record<string, string> = {
   low: "text-[#2F6B4F] bg-[#2F6B4F]/10",
   moderate: "text-[#8A5A2B] bg-[#DBC3B2]/40",
-  high: "text-[#A65D52] bg-[#A65D52]/12",
+  high: "text-[#8A3F35] bg-[#A65D52]/12",
 };
 
 /**
@@ -71,13 +71,13 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
   return (
     <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
       <div className="flex items-center gap-2">
-        <Users size={16} className="text-[#9A5B33]" />
-        <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+        <Users size={16} className="text-[#8A4A20]" />
+        <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
           Family / guardian assessment
         </h3>
       </div>
 
-      <p className="text-xs text-[#7A726C] leading-relaxed">
+      <p className="text-xs text-[#6B635C] leading-relaxed">
         Five fixed questions for someone close to this person. They answer through a one-time link
         and need no account. This participant is told who you asked and when, but never sees the
         answers.
@@ -141,9 +141,9 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
       )}
 
       {loading ? (
-        <p className="text-xs text-[#7A726C]">Loading…</p>
+        <p className="text-xs text-[#6B635C]">Loading…</p>
       ) : rows.length === 0 ? (
-        <p className="text-xs text-[#7A726C]">Nothing sent yet.</p>
+        <p className="text-xs text-[#6B635C]">Nothing sent yet.</p>
       ) : (
         <ul className="space-y-2">
           {rows.map((g) => (
@@ -153,7 +153,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
                   <p className="text-sm font-bold text-[#3C3530]" data-no-translate>
                     {g.guardianLabel}
                   </p>
-                  <p className="text-[11px] text-[#7A726C]">
+                  <p className="text-[11px] text-[#6B635C]">
                     {g.status === "sent" && `link sent ${new Date(g.createdAt).toLocaleDateString()} · not answered yet`}
                     {g.status === "revoked" && "withdrawn"}
                     {g.status === "submitted" && `answered ${g.submittedAt ? new Date(g.submittedAt).toLocaleDateString() : ""}`}
@@ -177,7 +177,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
                     <button
                       onClick={async () => { await guardianService.revoke(g.id); load(); }}
                       aria-label="Withdraw link"
-                      className="p-1.5 text-[#A65D52] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
+                      className="p-1.5 text-[#8A3F35] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
                     >
                       <Ban size={13} />
                     </button>
@@ -211,7 +211,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
 
             {open.aiSummary && (
               <div className="rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] p-3">
-                <p className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D] mb-1">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#68625D] mb-1">
                   Summary
                 </p>
                 <p className="text-sm text-[#3C3530] leading-relaxed" data-no-translate>
@@ -225,7 +225,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
                 const a = open.answers?.find((x) => x.questionId === q.id);
                 return (
                   <div key={q.id} className="rounded-2xl border border-[#EFE8E2] p-3">
-                    <p className="text-xs text-[#7A726C]">{i + 1}. {q.prompt}</p>
+                    <p className="text-xs text-[#6B635C]">{i + 1}. {q.prompt}</p>
                     <p className="text-sm font-semibold text-[#3C3530] mt-1" data-no-translate>
                       {a?.value || <span className="text-[#9A928C] italic font-normal">Not answered</span>}
                     </p>
@@ -234,7 +234,7 @@ export const GuardianAssessmentPanel: React.FC<Props> = ({ participantId, worker
               })}
             </div>
 
-            <p className="text-[11px] text-[#7A726C]">
+            <p className="text-[11px] text-[#6B635C]">
               This is one person's account of another. It sits beside the participant's own
               check-ins rather than replacing them, and it does not change their distress score.
             </p>

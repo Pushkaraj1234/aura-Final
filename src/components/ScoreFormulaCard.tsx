@@ -79,7 +79,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
             <span className="block text-xs font-black uppercase tracking-wider text-[#3C3530]">
               How this number was calculated
             </span>
-            <span className="block text-[11px] text-[#7F8C8D] font-mono truncate">
+            <span className="block text-[11px] text-[#68625D] font-mono truncate">
               {breakdown.terms.map((t) => fmt(t.points)).join(" + ")} = {fmt(breakdown.subtotal)} →{" "}
               {breakdown.score}
               {aiAdjustment !== 0 && ` ${aiAdjustment > 0 ? "+" : "−"} ${Math.abs(aiAdjustment)} = ${derived}`}
@@ -89,13 +89,13 @@ export const ScoreFormulaCard: React.FC<Props> = ({
         </span>
         <ChevronDown
           size={16}
-          className={`text-[#7F8C8D] shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          className={`text-[#68625D] shrink-0 transition-transform duration-200 ${open ? "rotate-180" : ""}`}
         />
       </button>
 
       {open && (
         <div className="px-4 pb-4 space-y-3 border-t border-[#EFE8E2] pt-3">
-          <p className="text-[11px] text-[#7F8C8D] leading-relaxed">
+          <p className="text-[11px] text-[#68625D] leading-relaxed">
             Each question carries a fixed weight. Your answer is converted to points, and the points are added
             up. Nothing is hidden and no outside data is used.
           </p>
@@ -104,7 +104,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               points column out of view or crushes the arithmetic, and the
               points are the whole reason this box exists. */}
           <div className="space-y-0.5">
-            <div className="flex items-baseline justify-between gap-3 text-[10px] uppercase tracking-wider text-[#7F8C8D] font-bold pb-1">
+            <div className="flex items-baseline justify-between gap-3 text-[10px] uppercase tracking-wider text-[#68625D] font-bold pb-1">
               <span>Your answers</span>
               <span>Points</span>
             </div>
@@ -116,7 +116,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               >
                 <div className="min-w-0">
                   <p className="text-[11px] font-semibold text-[#3C3530]">{term.label}</p>
-                  <p className="text-[10px] text-[#7A726C] break-words">
+                  <p className="text-[10px] text-[#6B635C] break-words">
                     <span className="font-semibold text-[#5A5049]">{term.response}</span>
                     <span className="font-mono"> · {term.expression}</span>
                   </p>
@@ -125,7 +125,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
                   <p className="text-[12px] font-mono font-bold text-[#3C3530] leading-tight">
                     {fmt(term.points)}
                   </p>
-                  <p className="text-[10px] text-[#A99A8A] leading-tight">of {term.maxPoints}</p>
+                  <p className="text-[10px] text-[#6F5F4F] leading-tight">of {term.maxPoints}</p>
                 </div>
               </div>
             ))}
@@ -135,7 +135,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
               <span className="text-[12px] font-mono font-bold text-[#3C3530]">{fmt(breakdown.subtotal)}</span>
             </div>
             <div className="flex items-baseline justify-between gap-3">
-              <span className="text-[10px] text-[#7F8C8D]">Rounded to the nearest whole number</span>
+              <span className="text-[10px] text-[#68625D]">Rounded to the nearest whole number</span>
               <span className="text-[13px] font-mono font-black text-[#3C3530] whitespace-nowrap">
                 {breakdown.score}
               </span>
@@ -147,7 +147,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
             {aiConsulted && (
               <>
                 <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[10px] text-[#7F8C8D]">
+                  <span className="text-[10px] text-[#68625D]">
                     AI review of what you wrote or said
                     {/* The cap is stated because it is derived from how much
                         the person actually wrote. Without it, a small number
@@ -163,7 +163,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
                   </span>
                   <span
                     className={`text-[12px] font-mono font-bold whitespace-nowrap ${
-                      aiAdjustment === 0 ? "text-[#7F8C8D]" : "text-[#A55D25]"
+                      aiAdjustment === 0 ? "text-[#68625D]" : "text-[#A55D25]"
                     }`}
                   >
                     {aiAdjustment === 0
@@ -196,17 +196,17 @@ export const ScoreFormulaCard: React.FC<Props> = ({
           </div>
 
           <div className="rounded-xl bg-white border border-[#EFE8E2] p-3 space-y-1.5">
-            <p className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D]">The general formula</p>
+            <p className="text-[10px] font-black uppercase tracking-wider text-[#68625D]">The general formula</p>
             <p className="text-[11px] font-mono text-[#5A5049] leading-relaxed break-words">
               score = safety + ((stress − 1) ÷ 4) × 22 + ((5 − wellbeing) ÷ 4) × 22 + ((5 − sleep) ÷ 4) × 17 +
               ((5 − connection) ÷ 4) × 11
             </p>
-            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+            <p className="text-[10px] text-[#68625D] leading-relaxed">
               safety: No = 28 · Unsure = 18 · Mostly = 6 · Yes = 0. Scales run 1–5, and the reversed ones
               (wellbeing, sleep, connection) score 0 points at 5, because a higher rating there means things are
               going better.
             </p>
-            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+            <p className="text-[10px] text-[#68625D] leading-relaxed">
               Asking for support is deliberately <em>not</em> scored. It still brings a counsellor sooner. It just
               does not change this number, so saying you would rather not talk to anyone can never make your
               score look calmer than your answers earned.
@@ -214,7 +214,7 @@ export const ScoreFormulaCard: React.FC<Props> = ({
           </div>
 
           {aiConsulted ? (
-            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+            <p className="text-[10px] text-[#68625D] leading-relaxed">
               The questionnaire above is scored by fixed rules. Anything you wrote or said is read separately by
               the AI, which can move the total by at most 15 points either way. Enough to weigh something the
               questions could not ask about, not enough to replace an answer you can check for yourself.
@@ -222,13 +222,13 @@ export const ScoreFormulaCard: React.FC<Props> = ({
                 " Here it wanted to move the score further than that, so it was held at the limit and your support worker has been told the two readings disagree."}
             </p>
           ) : (
-            <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+            <p className="text-[10px] text-[#68625D] leading-relaxed">
               No AI review this time. That only happens when you write or record a reflection. This score is the
               questionnaire alone.
             </p>
           )}
 
-          <p className="text-[10px] text-[#7F8C8D] leading-relaxed italic">
+          <p className="text-[10px] text-[#68625D] leading-relaxed italic">
             The percentage bars above are a separate visual scale for reading each area at a glance. They are not
             the points in this breakdown and do not add up to the score. This is a transparent rule-based calculation
             on your own voluntary answers, not a clinical measurement or a diagnosis.

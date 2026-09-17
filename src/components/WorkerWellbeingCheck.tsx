@@ -113,7 +113,7 @@ export const WorkerWellbeingCheck: React.FC = () => {
           </div>
           <div className="text-left">
             <p className="text-sm font-bold text-[#3C3530]">Your wellbeing check</p>
-            <p className="text-[11px] text-[#7F8C8D]">
+            <p className="text-[11px] text-[#68625D]">
               Private to you · vicarious-trauma & burnout self-check
               {shown && (
                 <>
@@ -127,12 +127,12 @@ export const WorkerWellbeingCheck: React.FC = () => {
             </p>
           </div>
         </div>
-        {open ? <ChevronUp size={16} className="text-[#7F8C8D]" /> : <ChevronDown size={16} className="text-[#7F8C8D]" />}
+        {open ? <ChevronUp size={16} className="text-[#68625D]" /> : <ChevronDown size={16} className="text-[#68625D]" />}
       </button>
 
       {open && (
         <div className="px-6 pb-6 pt-2 border-t border-[#EFE8E2] space-y-5">
-          <div className="flex items-start gap-2 text-[11px] text-[#7A726C] bg-[#FDF9F5] border border-[#EFE8E2] rounded-xl p-3">
+          <div className="flex items-start gap-2 text-[11px] text-[#6B635C] bg-[#FDF9F5] border border-[#EFE8E2] rounded-xl p-3">
             <ShieldCheck size={14} className="text-[#5A5049] shrink-0 mt-0.5" />
             <span>
               Not a clinical assessment and never shared. Stored only in this browser so you can track your own load
@@ -156,7 +156,7 @@ export const WorkerWellbeingCheck: React.FC = () => {
                   onChange={(e) => setDraft((d) => ({ ...d, [q.key]: Number(e.target.value) }))}
                   className="w-full accent-[#5A5049] cursor-pointer"
                 />
-                <div className="flex justify-between text-[10px] text-[#7F8C8D] mt-0.5">
+                <div className="flex justify-between text-[10px] text-[#68625D] mt-0.5">
                   <span>{q.low}</span>
                   <span>{q.high}</span>
                 </div>
@@ -188,7 +188,7 @@ export const WorkerWellbeingCheck: React.FC = () => {
 
           {history.length > 1 && (
             <div className="pt-3 border-t border-[#EFE8E2]">
-              <p className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider mb-2">Recent checks</p>
+              <p className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider mb-2">Recent checks</p>
               <div className="flex items-end gap-1.5 h-16">
                 {history
                   .slice(0, 14)

@@ -51,20 +51,20 @@ export const WorkerProfileCard: React.FC = () => {
         className="w-full flex items-center justify-between gap-3 cursor-pointer text-left"
       >
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-2xl bg-[#F1E7DA] text-[#9A5B33] flex items-center justify-center shrink-0">
+          <div className="w-9 h-9 rounded-2xl bg-[#F1E7DA] text-[#8A4A20] flex items-center justify-center shrink-0">
             <UserCog size={17} />
           </div>
           <div className="min-w-0">
             <h3 className="text-[14px] font-semibold text-[#3A2A1E]">Your profile</h3>
-            <p className="text-[12px] text-[#8A7A6B] truncate">
+            <p className="text-[12px] text-[#6F5F4F] truncate">
               {summary || "Add your languages, availability and caseload limit"}
             </p>
           </div>
         </div>
         {open ? (
-          <ChevronUp size={16} className="text-[#8A7A6B] shrink-0" />
+          <ChevronUp size={16} className="text-[#6F5F4F] shrink-0" />
         ) : (
-          <ChevronDown size={16} className="text-[#8A7A6B] shrink-0" />
+          <ChevronDown size={16} className="text-[#6F5F4F] shrink-0" />
         )}
       </button>
 
@@ -113,7 +113,7 @@ export const WorkerProfileCard: React.FC = () => {
               {saving ? "Saving…" : "Save profile"}
             </button>
             {saved && <span className="text-[12px] font-medium text-[#5E7148]">✓ Saved</span>}
-            <span className="text-[11px] text-[#A99A8A]">
+            <span className="text-[11px] text-[#6F5F4F]">
               Helps the assignment engine match you to the right participants.
             </span>
           </div>

@@ -83,8 +83,8 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
               Assigned counselor on file
             </span>
           ) : (
-            <span className="text-xs font-semibold text-[#7F8C8D] px-3 py-1 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center">
-              <Info size={13} className="mr-1.5 text-[#7F8C8D]" />
+            <span className="text-xs font-semibold text-[#68625D] px-3 py-1 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-center">
+              <Info size={13} className="mr-1.5 text-[#68625D]" />
               No counselor assigned
             </span>
           )}
@@ -104,21 +104,21 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
           {/* Primary Consideration & Suggested Focus */}
           <div className="space-y-4">
             <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-              <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+              <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
                 Primary Consideration
               </span>
               <p className="text-sm font-black text-[#3C3530]">
                 {activePlan.primaryRecommendation || "Continue voluntary routine monitoring."}
               </p>
               {activePlan.rationale && (
-                <p className="text-xs text-[#7A726C] mt-1.5 leading-relaxed">
+                <p className="text-xs text-[#6B635C] mt-1.5 leading-relaxed">
                   <strong>Rationale:</strong> {activePlan.rationale}
                 </p>
               )}
             </div>
 
             <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-              <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+              <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
                 Suggested Conversation Focus
               </span>
               <p className="text-xs font-bold text-[#5A5049] leading-relaxed">
@@ -130,7 +130,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
           {/* Recommended Resources */}
           <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex flex-col justify-between">
             <div>
-              <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-2">
+              <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-2">
                 Optional Support Resources
               </span>
               {activePlan.resources && activePlan.resources.length > 0 ? (
@@ -143,13 +143,13 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
                   ))}
                 </ul>
               ) : (
-                <p className="text-xs text-[#7F8C8D] italic">
+                <p className="text-xs text-[#68625D] italic">
                   Standard grounding and voluntary counseling resources available.
                 </p>
               )}
             </div>
 
-            <div className="mt-4 pt-3 border-t border-[#EFE8E2] text-[11px] text-[#7F8C8D]">
+            <div className="mt-4 pt-3 border-t border-[#EFE8E2] text-[11px] text-[#68625D]">
               Voluntary resources, not clinical prescriptions.
             </div>
           </div>
@@ -159,7 +159,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
           <p className="text-xs font-bold text-[#3C3530]">
             No support plan has been generated yet.
           </p>
-          <p className="text-[11px] text-[#7F8C8D]">
+          <p className="text-[11px] text-[#68625D]">
             A suggested plan will be created automatically once check-in reflections or human review signals are received.
           </p>
         </div>
@@ -177,7 +177,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
           </button>
         </div>
 
-        <span className="text-[11px] text-[#7F8C8D] italic">
+        <span className="text-[11px] text-[#68625D] italic">
           The counselor makes the final decision on all actions. Assignment changes are made by an administrator.
         </span>
       </div>
@@ -189,7 +189,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
             <h4 className="text-lg font-black text-[#3C3530]">
               Create Intervention Follow-up
             </h4>
-            <p className="text-xs text-[#7A726C]">
+            <p className="text-xs text-[#6B635C]">
               Log a planned human intervention to measure subsequent changes in distress indicators.
             </p>
             <div>
@@ -232,7 +232,7 @@ export const SuggestedSupportPlanCard: React.FC<Props> = ({
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => setShowFollowUpModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-[#7F8C8D] hover:bg-[#FDF9F5]"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#68625D] hover:bg-[#FDF9F5]"
               >
                 Cancel
               </button>

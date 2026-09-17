@@ -154,7 +154,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
   };
 
   if (loading) {
-    return <p className="max-w-4xl mx-auto px-4 py-8 text-sm text-[#7A726C]">Loading…</p>;
+    return <p className="max-w-4xl mx-auto px-4 py-8 text-sm text-[#6B635C]">Loading…</p>;
   }
 
   return (
@@ -169,7 +169,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
 
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-[#3C3530]">Your public profile</h1>
-        <p className="text-sm text-[#7A726C] mt-2 max-w-2xl">
+        <p className="text-sm text-[#6B635C] mt-2 max-w-2xl">
           This is what someone sees when they are choosing a counsellor. It is separate from your
           account details, and nothing here is visible until you publish it.
         </p>
@@ -195,7 +195,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
           <h2 className="font-bold text-[#3C3530] text-sm">
             {profile.published ? "Listed in the directory" : "Not listed yet"}
           </h2>
-          <p className="text-xs text-[#7A726C] mt-1">
+          <p className="text-xs text-[#6B635C] mt-1">
             {profile.published
               ? "People choosing a counsellor can see this profile and select you."
               : "Nobody can see this profile or choose you from the directory. Admin assignment is unaffected either way."}
@@ -357,7 +357,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
               </Chip>
             ))}
           </div>
-          <p className="text-[11px] text-[#7A726C] mt-2">
+          <p className="text-[11px] text-[#6B635C] mt-2">
             Used only so someone who asked for a particular counsellor can be matched. Leave it blank
             and you simply will not appear for that filter.
           </p>
@@ -391,7 +391,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
               }
               className="w-full p-3 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530]"
             />
-            <p className="text-[11px] text-[#7A726C] mt-1.5">
+            <p className="text-[11px] text-[#6B635C] mt-1.5">
               Once you reach this, you stop showing as available even if the box above is ticked.
             </p>
           </div>
@@ -409,7 +409,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
       <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 space-y-4 shadow-xs">
         <div>
           <h2 className="font-bold text-[#3C3530]">Session log</h2>
-          <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl">
+          <p className="text-xs text-[#6B635C] mt-1.5 max-w-2xl">
             Record a session once it has happened. This is attendance only. No notes are stored
             here. It matters because someone can only review a session that has been logged as
             completed.
@@ -466,7 +466,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
         </div>
 
         {mine.length === 0 && (
-          <p className="text-xs text-[#7A726C]">
+          <p className="text-xs text-[#6B635C]">
             You have no participants assigned yet, so there is nothing to log.
           </p>
         )}
@@ -479,10 +479,10 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
                 <span className="text-[#3C3530] font-medium" data-no-translate>
                   {s.participantId}
                 </span>
-                <span className="text-xs text-[#7A726C]">
+                <span className="text-xs text-[#6B635C]">
                   {s.heldAt ? new Date(s.heldAt).toLocaleDateString() : "—"} · {s.format}
                 </span>
-                <span className="ml-auto text-[11px] font-bold uppercase tracking-wide text-[#7A726C]">
+                <span className="ml-auto text-[11px] font-bold uppercase tracking-wide text-[#6B635C]">
                   {s.status}
                 </span>
               </li>
@@ -498,7 +498,7 @@ export const CounsellorProfileEditor: React.FC<Props> = ({ user, participants, o
         <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 sm:p-8 space-y-4 shadow-xs">
           <div>
             <h2 className="font-bold text-[#3C3530]">When someone moved on</h2>
-            <p className="text-xs text-[#7A726C] mt-1.5 max-w-2xl leading-relaxed">
+            <p className="text-xs text-[#6B635C] mt-1.5 max-w-2xl leading-relaxed">
               People can change counsellor at any time, for any reason, and most say
               nothing. These are the ones who chose to. You are not shown who wrote them
               or when, and nothing here is part of anyone&rsquo;s record. It is here so

@@ -35,7 +35,7 @@ const STYLES: Record<
   contact: {
     bg: "bg-[#D49B6A]/10",
     border: "border-[#D49B6A]/40",
-    text: "text-[#B0713C]",
+    text: "text-[#8A4A20]",
     badge: "bg-[#D49B6A] text-white",
     Icon: Clock,
   },
@@ -49,7 +49,7 @@ const STYLES: Record<
   none: {
     bg: "bg-white",
     border: "border-[#EFE8E2]",
-    text: "text-[#7F8C8D]",
+    text: "text-[#68625D]",
     badge: "bg-[#EFE8E2] text-[#5A5049]",
     Icon: CheckCircle2,
   },
@@ -73,7 +73,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
         <div className="flex items-start gap-3 min-w-0">
           <Icon size={20} className={`${style.text} shrink-0 mt-0.5`} />
           <div className="min-w-0 space-y-1">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D] block">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#68625D] block">
               Passive monitoring
             </span>
             <h3 className={`text-lg sm:text-xl font-black leading-snug ${style.text}`}>
@@ -92,21 +92,21 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
 
       {escalation.evidence.length > 0 ? (
         <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D] flex items-center gap-1.5">
+          <p className="text-[10px] font-black uppercase tracking-wider text-[#68625D] flex items-center gap-1.5">
             <ListChecks size={12} />
             <span>What this is based on</span>
           </p>
           <ul className="space-y-1.5">
             {escalation.evidence.map((line, i) => (
               <li key={i} className="text-[13px] text-[#3C3530] leading-relaxed flex gap-2">
-                <span className="text-[#A99A8A] shrink-0">·</span>
+                <span className="text-[#6F5F4F] shrink-0">·</span>
                 <span>{line}</span>
               </li>
             ))}
           </ul>
         </div>
       ) : (
-        <p className="text-[13px] text-[#7A726C] leading-relaxed">
+        <p className="text-[13px] text-[#6B635C] leading-relaxed">
           Their check-in rhythm, messages and last answers are all within their own normal range.
         </p>
       )}
@@ -117,7 +117,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-1 border-t border-[#EFE8E2]">
           {engagement.daysSinceLastCheckIn !== null && (
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A99A8A] block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6F5F4F] block">
                 Last check-in
               </span>
               <span className="text-sm font-black text-[#3C3530]">
@@ -129,7 +129,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
           )}
           {engagement.baselineCadenceDays !== null && (
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A99A8A] block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6F5F4F] block">
                 Their usual rhythm
               </span>
               <span className="text-sm font-black text-[#3C3530]">
@@ -139,7 +139,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
           )}
           {engagement.daysSinceAnyContact !== null && (
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#A99A8A] block">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6F5F4F] block">
                 Any contact
               </span>
               <span className="text-sm font-black text-[#3C3530]">
@@ -152,7 +152,7 @@ export const EscalationCard: React.FC<Props> = ({ escalation, engagement }) => {
         </div>
       )}
 
-      <p className="text-[11px] text-[#7F8C8D] leading-relaxed pt-1 border-t border-[#EFE8E2]">
+      <p className="text-[11px] text-[#68625D] leading-relaxed pt-1 border-t border-[#EFE8E2]">
         {escalation.basis.length > 0 && (
           <>
             Drawn from {escalation.basis.map((b) => BASIS_LABEL[b] || b).join(", ")}.{" "}

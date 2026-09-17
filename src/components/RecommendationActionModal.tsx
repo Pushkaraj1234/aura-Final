@@ -53,7 +53,7 @@ export const RecommendationActionModal: React.FC<Props> = ({
       >
         <div className="sticky top-0 bg-white border-b border-[#EFE8E2] px-6 py-4 flex items-start justify-between gap-4">
           <div className="space-y-1 min-w-0">
-            <span className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D]">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#68625D]">
               {recommendation.category.replace(/_/g, " ")}
             </span>
             <h3 className="text-lg font-bold text-[#3C3530] leading-snug">{guide.title}</h3>
@@ -63,7 +63,7 @@ export const RecommendationActionModal: React.FC<Props> = ({
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="shrink-0 p-2 -m-2 rounded-full text-[#7F8C8D] hover:text-[#3C3530] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+            className="shrink-0 p-2 -m-2 rounded-full text-[#68625D] hover:text-[#3C3530] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
           >
             <X size={18} />
           </button>
@@ -84,7 +84,7 @@ export const RecommendationActionModal: React.FC<Props> = ({
           </ul>
 
           {guide.footnote && (
-            <p className="text-[11px] text-[#7F8C8D] leading-relaxed italic border-t border-[#EFE8E2] pt-3">
+            <p className="text-[11px] text-[#68625D] leading-relaxed italic border-t border-[#EFE8E2] pt-3">
               {guide.footnote}
             </p>
           )}
@@ -127,7 +127,7 @@ export const RecommendationActionModal: React.FC<Props> = ({
             </button>
           </div>
 
-          <p className="text-[10px] text-[#7F8C8D] leading-relaxed">
+          <p className="text-[10px] text-[#68625D] leading-relaxed">
             These are self-care and coping suggestions alongside human support, not treatment and not a
             substitute for it. Nothing here is required, and none of it is a test you can fail.
           </p>

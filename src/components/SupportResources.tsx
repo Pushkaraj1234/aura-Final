@@ -176,7 +176,7 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-[#3C3530]">Support Directory</h1>
-          <p className="text-[#7A726C]">Verified crisis lines, grounding groups, and caseworkers.</p>
+          <p className="text-[#6B635C]">Verified crisis lines, grounding groups, and caseworkers.</p>
         </div>
         <div className="flex items-center gap-3">
           {isWorker && (
@@ -189,7 +189,7 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
           )}
           <button
             onClick={onOpenEmergency}
-            className="inline-flex items-center gap-1.5 bg-[#F3E7D8] hover:bg-[#EBDAC6] text-[#9A5B33] border border-[#C48A55]/35 px-4 py-2 rounded-xl text-sm font-semibold shadow-xs transition-all"
+            className="inline-flex items-center gap-1.5 bg-[#F3E7D8] hover:bg-[#EBDAC6] text-[#8A4A20] border border-[#C48A55]/35 px-4 py-2 rounded-xl text-sm font-semibold shadow-xs transition-all"
           >
             <ShieldAlert size={15} />
             Crisis Support
@@ -294,7 +294,7 @@ export const SupportResources: React.FC<Props> = ({ userRole, onOpenEmergency })
               </div>
               <h3 className="font-bold text-lg text-[#3C3530] leading-tight mb-2">{res.name}</h3>
               
-              <div className="space-y-2 mt-auto pt-4 text-sm text-[#7A726C]">
+              <div className="space-y-2 mt-auto pt-4 text-sm text-[#6B635C]">
                 {res.region && (
                   <div className="flex items-start">
                     <MapPin size={16} className="mr-2 shrink-0 mt-0.5 text-slate-400" />

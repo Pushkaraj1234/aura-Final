@@ -56,7 +56,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
               activeTab === tab.id
                 ? "bg-[#3C3530] text-white shadow-xs"
-                : "text-[#7A726C] hover:bg-[#FDF9F5]"
+                : "text-[#6B635C] hover:bg-[#FDF9F5]"
             }`}
           >
             {tab.label}
@@ -74,7 +74,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
             <h2 className="text-2xl font-black text-[#3C3530] mt-1">
               Monitor → Detect → Predict → Explain → Recommend → Review → Measure
             </h2>
-            <p className="text-xs text-[#7F8C8D] mt-0.5">
+            <p className="text-xs text-[#68625D] mt-0.5">
               This does not diagnose anything. It helps a counselor decide who to check on first.
             </p>
           </div>
@@ -104,7 +104,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 subtitle: "Early-Warning Model",
                 desc: "Simulates 7-day trajectory forecasts (Rapid, Gradual, Fluctuating, Improving) with confidence intervals.",
                 tag: "Simulated Forecast",
-                color: "bg-[#D49B6A] text-white"
+                color: "bg-[#A85D2E] text-white"
               },
               {
                 step: "04",
@@ -128,7 +128,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 subtitle: "Counselor Sign-Off",
                 desc: "Authorized workers review, accept, modify, or decline AI suggestions before taking any action.",
                 tag: "Human-in-the-Loop",
-                color: "bg-[#D49B6A] text-white"
+                color: "bg-[#A85D2E] text-white"
               },
               {
                 step: "07",
@@ -158,8 +158,8 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                     </span>
                   </div>
                   <h3 className="font-bold text-[#3C3530] text-sm">{item.title}</h3>
-                  <p className="text-[11px] font-semibold text-[#7F8C8D]">{item.subtitle}</p>
-                  <p className="text-xs text-[#7A726C] leading-relaxed">{item.desc}</p>
+                  <p className="text-[11px] font-semibold text-[#68625D]">{item.subtitle}</p>
+                  <p className="text-xs text-[#6B635C] leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             ))}
@@ -177,7 +177,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
             <h2 className="text-2xl font-black text-[#3C3530] mt-1">
               Offline-First Mesh Architecture
             </h2>
-            <p className="text-xs text-[#7F8C8D] mt-0.5">
+            <p className="text-xs text-[#68625D] mt-0.5">
               Engineered for refugee settlements, conflict zones, and disaster response sites without reliable cellular network.
             </p>
           </div>
@@ -188,7 +188,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <Database size={22} />
               </div>
               <h3 className="text-base font-bold text-[#3C3530]">Local Storage Cache</h3>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 Check-ins, trend calculations, and emergency contacts are cached in encrypted browser storage (IndexedDB/AES-256) for instant offline operation.
               </p>
             </div>
@@ -198,7 +198,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <RefreshCw size={22} />
               </div>
               <h3 className="text-base font-bold text-[#3C3530]">Opportunistic Re-Sync</h3>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 When humanitarian workers reach network coverage, local batches are cryptographically signed and securely uploaded without data loss or conflicts.
               </p>
             </div>
@@ -208,7 +208,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <Cpu size={22} />
               </div>
               <h3 className="text-base font-bold text-[#3C3530]">Client-Side Scoring</h3>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 The distress trajectory engine runs 100% on the device without requiring cloud round-trips or costly external LLM APIs during intake.
               </p>
             </div>
@@ -226,7 +226,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <Lock size={22} />
               </div>
               <h3 className="text-lg font-bold text-[#3C3530]">Data Minimization</h3>
-              <p className="text-xs sm:text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#6B635C] leading-relaxed">
                 We store only anonymous IDs, age brackets (not full birthdates), and aggregate reflection scores. No biometric, GPS location, or device telemetry is collected.
               </p>
             </div>
@@ -236,7 +236,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <Eye size={22} />
               </div>
               <h3 className="text-lg font-bold text-[#3C3530]">No Black-Box Scoring</h3>
-              <p className="text-xs sm:text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#6B635C] leading-relaxed">
                 Every indicator score is 100% explainable to both participant and counselor with clear factor percentages (sleep, stress, safety, connection).
               </p>
             </div>
@@ -246,7 +246,7 @@ export const PrivacyArchitecture: React.FC<Props> = ({ onOpenEmergency }) => {
                 <HeartHandshake size={22} />
               </div>
               <h3 className="text-lg font-bold text-[#3C3530]">Non-Diagnostic Mandate</h3>
-              <p className="text-xs sm:text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-xs sm:text-sm text-[#6B635C] leading-relaxed">
                 AURA explicitly forbids medical diagnostic labeling (e.g. PTSD, major depression). The system strictly outputs assistive distress risk flags for human practitioners.
               </p>
             </div>

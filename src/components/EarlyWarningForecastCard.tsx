@@ -60,7 +60,7 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
           </div>
         </div>
 
-        <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#7A726C]">
+        <div className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#6B635C]">
           <span>Synthetic Trend Model</span>
         </div>
       </div>
@@ -69,16 +69,16 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Current Indicator */}
         <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
             Current Indicator
           </span>
           <div className="flex items-baseline space-x-2">
             <span className="text-3xl font-black text-[#3C3530]">
               {currentScore}
             </span>
-            <span className="text-xs text-[#7F8C8D] font-bold">/ 100</span>
+            <span className="text-xs text-[#68625D] font-bold">/ 100</span>
           </div>
-          <span className="text-[11px] text-[#7A726C] mt-1 block">
+          <span className="text-[11px] text-[#6B635C] mt-1 block">
             3-check-in avg: <strong>{movingAvg3}</strong>
           </span>
         </div>
@@ -91,7 +91,7 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
             ? "bg-[#DBC3B2]/20 border-[#DBC3B2]/40"
             : "bg-[#FDF9F5] border-[#EFE8E2]"
         }`}>
-          <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
             Projected Next Range
           </span>
           <div className="flex items-baseline space-x-2">
@@ -100,16 +100,16 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
             }`}>
               {projectedMin}–{projectedMax}
             </span>
-            <span className="text-xs text-[#7F8C8D] font-bold">pts</span>
+            <span className="text-xs text-[#68625D] font-bold">pts</span>
           </div>
-          <span className="text-[11px] text-[#7A726C] mt-1 block">
+          <span className="text-[11px] text-[#6B635C] mt-1 block">
             Confidence: <strong>{confidenceBand}</strong>
           </span>
         </div>
 
         {/* Trajectory Category */}
         <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
             Trajectory
           </span>
           <div className="flex items-center space-x-1.5 mt-1">
@@ -118,20 +118,20 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
             ) : isFalling ? (
               <ArrowDownRight size={20} className="text-[#5A5049]" />
             ) : (
-              <Activity size={18} className="text-[#7F8C8D]" />
+              <Activity size={18} className="text-[#68625D]" />
             )}
             <span className="text-lg font-black text-[#3C3530]">
               {trajectoryCategory}
             </span>
           </div>
-          <span className="text-[11px] text-[#7A726C] mt-1 block">
+          <span className="text-[11px] text-[#6B635C] mt-1 block">
             Rate: <strong>{rateOfChange >= 0 ? `+${rateOfChange}` : rateOfChange} pts/step</strong>
           </span>
         </div>
 
         {/* Recommended Action */}
         <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2]">
-          <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+          <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
             Signal Recommendation
           </span>
           <p className="text-xs font-bold text-[#3C3530] leading-snug line-clamp-2 mt-1">
@@ -146,7 +146,7 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
       {/* Visual Forecast Chart with Dashed Confidence Range */}
       <div className="p-5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] flex items-center">
+          <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D] flex items-center">
             <Activity size={14} className="mr-1.5 text-[#5A5049]" />
             Trajectory Progression & 72h Projection
           </h4>
@@ -257,14 +257,14 @@ export const EarlyWarningForecastCard: React.FC<Props> = ({
           </svg>
         </div>
 
-        <div className="flex items-center justify-between text-[11px] text-[#7F8C8D] pt-1">
+        <div className="flex items-center justify-between text-[11px] text-[#68625D] pt-1">
           <span>Past Check-ins (Chronological)</span>
           <span className="font-bold text-[#3C3530]">Next 24–72h Forecast Range</span>
         </div>
       </div>
 
       {/* Heuristic Disclaimer Box */}
-      <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start space-x-3 text-xs text-[#7A726C]">
+      <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start space-x-3 text-xs text-[#6B635C]">
         <Info size={16} className="text-[#5A5049] shrink-0 mt-0.5" />
         <p className="leading-relaxed">
           <strong>Demonstration Note:</strong> This prototype estimates possible future changes from synthetic historical trends. It is not a clinically validated prediction model. All signals serve solely as prioritized decision-support for human humanitarian workers.

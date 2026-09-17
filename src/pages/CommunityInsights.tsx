@@ -115,21 +115,21 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
             <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#5A5049]">
               Anonymous Macro Analytics
             </span>
-            <span className="text-xs text-[#7F8C8D] font-mono">
+            <span className="text-xs text-[#68625D] font-mono">
               Privacy-Preserving Aggregations
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#3C3530] mt-1 tracking-tight">
             Community Wellbeing & Resource Planning
           </h1>
-          <p className="text-sm text-[#7A726C] max-w-3xl mt-1 leading-relaxed">
+          <p className="text-sm text-[#6B635C] max-w-3xl mt-1 leading-relaxed">
             Counts across everyone using AURA, so coordinators can see where support is needed without anything here identifying a person. Groups smaller than {MIN_GROUP_SIZE} are withheld rather than shown, and the page says what it withheld.
           </p>
         </div>
 
         {/* Was "Synthetic Demonstration Aggregates", which stopped being true
             once the figures above it started coming from real records. */}
-        <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#7A726C]">
+        <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs font-bold text-[#6B635C]">
           <span>Computed from real records, k-anonymised at {MIN_GROUP_SIZE}</span>
         </div>
       </div>
@@ -146,7 +146,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
           <Info size={18} className="shrink-0 mt-0.5 text-[#A55D25]" aria-hidden="true" />
           <div>
             <h2 className="font-black text-[#3C3530]">Not enough check-ins to report a trend</h2>
-            <p className="text-sm text-[#7A726C] mt-1 leading-relaxed">
+            <p className="text-sm text-[#6B635C] mt-1 leading-relaxed">
               {cohort.basis === 0
                 ? "Nobody has completed a check-in yet."
                 : `${cohort.basis} of ${cohort.totalParticipants} participants have checked in, which is below the floor of ${MIN_GROUP_SIZE}.`}{" "}
@@ -168,12 +168,12 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
           </div>
 
           <div className="p-5 rounded-3xl bg-white border border-[#EFE8E2] shadow-xs">
-            <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
               Improving
             </span>
             <div className="flex items-baseline space-x-1">
               <span className="text-3xl font-black text-emerald-600">{cohort.improving}</span>
-              <span className="text-xs text-[#7F8C8D]">
+              <span className="text-xs text-[#68625D]">
                 ({Math.round((cohort.improving / cohort.basis) * 100)}%)
               </span>
             </div>
@@ -183,27 +183,27 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
           </div>
 
           <div className="p-5 rounded-3xl bg-white border border-[#EFE8E2] shadow-xs">
-            <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
               Steady
             </span>
             <div className="flex items-baseline space-x-1">
               <span className="text-3xl font-black text-[#3C3530]">{cohort.stable}</span>
-              <span className="text-xs text-[#7F8C8D]">
+              <span className="text-xs text-[#68625D]">
                 ({Math.round((cohort.stable / cohort.basis) * 100)}%)
               </span>
             </div>
-            <span className="text-[11px] text-[#7A726C] mt-1 block">
+            <span className="text-[11px] text-[#6B635C] mt-1 block">
               Little movement either way
             </span>
           </div>
 
           <div className="p-5 rounded-3xl bg-white border border-[#EFE8E2] shadow-xs">
-            <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
               Rising
             </span>
             <div className="flex items-baseline space-x-1">
               <span className="text-3xl font-black text-[#A55D25]">{cohort.increasing}</span>
-              <span className="text-xs text-[#7F8C8D]">
+              <span className="text-xs text-[#68625D]">
                 ({Math.round((cohort.increasing / cohort.basis) * 100)}%)
               </span>
             </div>
@@ -213,7 +213,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
           </div>
 
           <div className="p-5 rounded-3xl bg-white border border-[#EFE8E2] shadow-xs col-span-2 sm:col-span-1">
-            <span className="text-[11px] font-bold text-[#7F8C8D] uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-bold text-[#68625D] uppercase tracking-wider block mb-1">
               Safety concern
             </span>
             <div className="flex items-baseline space-x-1">
@@ -227,7 +227,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
       )}
 
       {cohort.tooEarly > 0 && !cohort.suppressed && (
-        <p className="text-xs text-[#7A726C]">
+        <p className="text-xs text-[#6B635C]">
           {cohort.tooEarly} {cohort.tooEarly === 1 ? "person has" : "people have"} checked in only
           once, so there is no direction to report for them yet. They are counted in the total and
           in none of the three directions.
@@ -247,7 +247,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
                 <h3 className="text-lg font-black text-[#3C3530]">
                   Most Common Community Signals
                 </h3>
-                <p className="text-xs text-[#7F8C8D]">
+                <p className="text-xs text-[#68625D]">
                   {common.suppressed
                     ? "Withheld until the cohort is larger"
                     : `Counted once per person, on their most recent check-in (${common.basis} ${common.basis === 1 ? "person" : "people"})`}
@@ -258,7 +258,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
 
           <div className="space-y-4">
             {common.suppressed && (
-              <p className="text-xs text-[#7F8C8D] leading-relaxed">
+              <p className="text-xs text-[#68625D] leading-relaxed">
                 Fewer than {MIN_GROUP_SIZE} people have completed a check-in, so a breakdown here
                 would describe them individually rather than a group.
               </p>
@@ -267,7 +267,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
               <div key={idx} className="space-y-1.5">
                 <div className="flex items-center justify-between text-xs">
                   <span className="font-bold text-[#3C3530]">{sig.name}</span>
-                  <span className="font-mono text-[#7A726C] font-bold">
+                  <span className="font-mono text-[#6B635C] font-bold">
                     {sig.percent}% ({sig.count} of {common.basis})
                   </span>
                 </div>
@@ -287,7 +287,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
             ))}
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#7A726C] flex items-start space-x-2">
+          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#6B635C] flex items-start space-x-2">
             <Info size={15} className="text-[#5A5049] shrink-0 mt-0.5" />
             {/* Was: "Stress and sleep disruption represent 78% of compound
                 signal triggers. Early environmental intervention (such as
@@ -319,7 +319,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
                 <h3 className="text-lg font-black text-[#3C3530]">
                   {trend.windowDays}-day community distress curve
                 </h3>
-                <p className="text-xs text-[#7F8C8D]">
+                <p className="text-xs text-[#68625D]">
                   {trend.suppressed
                     ? "Not enough check-ins on any day to plot"
                     : `Mean score per day, on the ${trend.reportedDays} ${trend.reportedDays === 1 ? "day" : "days"} with at least ${MIN_GROUP_SIZE} check-ins`}
@@ -330,7 +330,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
 
           {trend.suppressed ? (
             <div className="h-44 flex items-center justify-center text-center px-6">
-              <p className="text-sm text-[#7A726C] leading-relaxed">
+              <p className="text-sm text-[#6B635C] leading-relaxed">
                 No single day in the last {trend.windowDays} has {MIN_GROUP_SIZE} or more check-ins.
                 A daily average over fewer than that describes the people who happened to check in,
                 so nothing is plotted.
@@ -384,7 +384,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
           )}
 
           {trend.suppressedDays > 0 && (
-            <p className="text-xs text-[#7A726C]">
+            <p className="text-xs text-[#6B635C]">
               {trend.suppressedDays} {trend.suppressedDays === 1 ? "day is" : "days are"} missing
               from the line: there were check-ins, but fewer than {MIN_GROUP_SIZE}, so they are
               withheld rather than plotted.
@@ -435,7 +435,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
         ) : (
           <div className="grid md:grid-cols-3 gap-6">
             <div className="p-6 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-3">
-              <h4 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-[#68625D] uppercase tracking-wider">
                 Alerts stood down
               </h4>
               <div className="flex items-end space-x-3">
@@ -451,7 +451,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
             </div>
 
             <div className="p-6 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-3">
-              <h4 className="text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+              <h4 className="text-xs font-bold text-[#68625D] uppercase tracking-wider">
                 What was decided
               </h4>
               <div className="space-y-3">
@@ -480,7 +480,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
                   </div>
                 </div>
               </div>
-              <p className="text-[11px] text-[#7A726C] leading-relaxed">
+              <p className="text-[11px] text-[#6B635C] leading-relaxed">
                 {overrides.raised - overrides.decided} of {overrides.raised} raised alerts have no
                 recorded decision and are counted in neither bar.
               </p>
@@ -521,7 +521,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
             </div>
           </div>
 
-          <div className="text-xs text-[#7F8C8D] italic">
+          <div className="text-xs text-[#68625D] italic">
             Broad areas only. No exact location is stored or shown.
           </div>
         </div>
@@ -545,7 +545,7 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
               >
                 <div className="flex items-start justify-between">
                   <div>
-                    <span className="font-mono text-xs font-black text-[#7F8C8D]">
+                    <span className="font-mono text-xs font-black text-[#68625D]">
                       {reg.checkIns} check-ins
                     </span>
                     <h4 className="text-base font-black text-[#3C3530] mt-0.5">
@@ -565,17 +565,17 @@ export const CommunityInsights: React.FC<Props> = ({ participants, alerts = [] }
 
                 <div className="grid grid-cols-3 gap-2 text-xs">
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
-                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Participants</span>
+                    <span className="text-[10px] text-[#68625D] uppercase block">Participants</span>
                     <span className="font-black text-sm text-[#3C3530]">{reg.participants}</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
-                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Mean score</span>
+                    <span className="text-[10px] text-[#68625D] uppercase block">Mean score</span>
                     <span className="font-black text-sm text-[#3C3530]">
                       {reg.meanScore === null ? "no data" : reg.meanScore}
                     </span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-white border border-[#EFE8E2]">
-                    <span className="text-[10px] text-[#7F8C8D] uppercase block">Gone quiet</span>
+                    <span className="text-[10px] text-[#68625D] uppercase block">Gone quiet</span>
                     <span className={`font-black text-sm ${reg.quiet > 0 ? "text-[#A55D25]" : "text-[#5A5049]"}`}>
                       {reg.quiet}
                     </span>

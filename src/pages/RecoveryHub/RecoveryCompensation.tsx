@@ -360,7 +360,7 @@ export const RecoveryCompensationScreen: React.FC<Props> = ({
                   </span>
                   <span
                     className={`text-[0.9375rem] font-semibold ${
-                      reached ? "text-[#3A2A1E]" : "text-[#A99A8A]"
+                      reached ? "text-[#3A2A1E]" : "text-[#6F5F4F]"
                     }`}
                   >
                     {rung.label}

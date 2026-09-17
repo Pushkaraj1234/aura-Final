@@ -514,7 +514,7 @@ ${
           </div>
           <div className="flex-1">
             <h3 className="text-sm font-bold text-[#3C3530]">Would you like to talk to someone today?</h3>
-            <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
+            <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">
               {nudgeReason} There's no pressure. Reaching out is always your choice.
             </p>
           </div>
@@ -535,7 +535,7 @@ ${
             </button>
             <button
               onClick={dismissNudge}
-              className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+              className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
             >
               Not now
             </button>
@@ -552,7 +552,7 @@ ${
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[#EFE8E2]">
             <div>
               <h3 className="text-xl font-bold text-[#3C3530]">Wellbeing Indicator Trajectory</h3>
-              <p className="text-xs text-[#7F8C8D]">
+              <p className="text-xs text-[#68625D]">
                 {count === 0
                   ? "Complete your first check-in to begin building your wellbeing history."
                   : count === 1
@@ -579,20 +579,20 @@ ${
                 <h4 className="text-xl font-black text-[#3C3530]">
                   First Reflection Logged
                 </h4>
-                <p className="text-xs text-[#7F8C8D] max-w-md">
+                <p className="text-xs text-[#68625D] max-w-md">
                   First score recorded: <strong>{latestCheckIn?.calculatedScore}/100</strong>. After a few more check-ins, this page can show how it has moved.
                 </p>
               </div>
 
               <div className="p-4 rounded-2xl bg-white border border-[#EFE8E2] text-center shrink-0">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[#68625D] block">
                   Today's Signal
                 </span>
                 <div className="text-3xl font-black text-[#5A5049]">
                   {latestCheckIn?.calculatedScore}
-                  <span className="text-xs text-[#7F8C8D] font-normal">/100</span>
+                  <span className="text-xs text-[#68625D] font-normal">/100</span>
                 </div>
-                <span className="text-[10px] text-[#7A726C] font-semibold block mt-0.5">
+                <span className="text-[10px] text-[#6B635C] font-semibold block mt-0.5">
                   Single Check-in
                 </span>
               </div>
@@ -613,11 +613,11 @@ ${
                     tickFormatter={chartLabel}
                     interval="preserveStartEnd"
                     minTickGap={24}
-                    stroke="#7F8C8D"
+                    stroke="#68625D"
                     fontSize={11}
                     tickLine={false}
                   />
-                  <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
+                  <YAxis domain={[0, 100]} stroke="#68625D" fontSize={11} tickLine={false} />
                   <Tooltip
                     contentStyle={{
                       backgroundColor: "#3C3530",
@@ -658,7 +658,7 @@ ${
           )}
 
           {/* Trend Interpretation Note */}
-          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start space-x-3 text-xs text-[#7A726C]">
+          <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] flex items-start space-x-3 text-xs text-[#6B635C]">
             <Activity size={18} className="text-[#5A5049] shrink-0 mt-0.5" />
             <div>
               <strong className="text-[#3C3530]">How to read this:</strong> A higher indicator score reflects elevated self-reported stress, insomnia, or environmental insecurity. Significant multi-day increases alert your assigned counselor to reach out.
@@ -705,7 +705,7 @@ ${
                 </div>
 
                 {/* The three things worth knowing before you start, not after. */}
-                <p className="text-[11px] text-[#8A7461] font-semibold">
+                <p className="text-[11px] text-[#6B635C] font-semibold">
                   Not a person &middot; Never read by staff &middot; Does not change your score
                 </p>
               </div>
@@ -796,39 +796,39 @@ ${
         <div className="lg:col-span-4 space-y-6">
           {/* Latest Signal Card */}
           <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
-            <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
               Latest Reflection Summary
             </h3>
 
             {latestCheckIn ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#7A726C]">Distress Indicator</span>
+                  <span className="text-xs font-semibold text-[#6B635C]">Distress Indicator</span>
                   <div className="flex items-baseline space-x-1">
                     <span className="text-2xl font-black text-[#3C3530]">
                       {latestCheckIn.calculatedScore ?? 0}
                     </span>
-                    <span className="text-xs font-bold text-[#7F8C8D]">/100</span>
+                    <span className="text-xs font-bold text-[#68625D]">/100</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#EFE8E2] text-center">
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Stress</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Stress</span>
                     <span className="text-sm font-black text-[#3C3530]">{latestCheckIn.stress}/5</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Sleep</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Sleep</span>
                     <span className="text-sm font-black text-[#3C3530]">{latestCheckIn.sleep}/5</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Safety</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Safety</span>
                     <span className="text-xs font-black text-[#3C3530] truncate">{latestCheckIn.safety}</span>
                   </div>
                 </div>
 
-                <div className="text-[11px] text-[#7F8C8D] flex items-center space-x-1.5 pt-1">
-                  <Clock size={13} className="text-[#7F8C8D]" />
+                <div className="text-[11px] text-[#68625D] flex items-center space-x-1.5 pt-1">
+                  <Clock size={13} className="text-[#68625D]" />
                   <span>Submitted {new Date(latestCheckIn.timestamp).toLocaleDateString()}</span>
                 </div>
 
@@ -844,28 +844,28 @@ ${
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-[#7A726C]">Distress Indicator</span>
-                  <span className="text-sm font-bold text-[#7F8C8D] bg-[#FDF9F5] px-2.5 py-1 rounded-lg border border-[#EFE8E2]">
+                  <span className="text-xs font-semibold text-[#6B635C]">Distress Indicator</span>
+                  <span className="text-sm font-bold text-[#68625D] bg-[#FDF9F5] px-2.5 py-1 rounded-lg border border-[#EFE8E2]">
                     Not available yet
                   </span>
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[#EFE8E2] text-center">
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Stress</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Stress</span>
+                    <span className="text-sm font-bold text-[#68625D]">—</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Sleep</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Sleep</span>
+                    <span className="text-sm font-bold text-[#68625D]">—</span>
                   </div>
                   <div className="p-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <span className="text-[10px] font-bold text-[#7F8C8D] block">Safety</span>
-                    <span className="text-sm font-bold text-[#7F8C8D]">—</span>
+                    <span className="text-[10px] font-bold text-[#68625D] block">Safety</span>
+                    <span className="text-sm font-bold text-[#68625D]">—</span>
                   </div>
                 </div>
 
-                <p className="text-[11px] text-[#7F8C8D] pt-1">
+                <p className="text-[11px] text-[#68625D] pt-1">
                   No reflection has been submitted yet. Complete your first check-in to generate a wellbeing signal.
                 </p>
               </div>
@@ -874,7 +874,7 @@ ${
 
           {/* Support Preferences Card */}
           <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
-            <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
               Support Preference
             </h3>
 
@@ -925,17 +925,17 @@ ${
                     <h3 className="text-sm font-black text-[#3C3530] truncate" data-no-translate>
                       {counsellorName}
                     </h3>
-                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D]">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-[#68625D]">
                       Your counsellor
                     </p>
                   </div>
                 </div>
               ) : (
-                <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
                   Your Counsellor
                 </h3>
               )}
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 {participantRecord?.assignedWorker
                   ? "You can change to a different counsellor whenever you want. You do not need to give a reason, and nobody is told why."
                   : "You can pick a counsellor yourself, or leave it and your support team will assign someone."}
@@ -953,8 +953,8 @@ ${
           {participantRecord?.assignedWorker && (
             <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
               <div className="flex items-center gap-2">
-                <CalendarClock size={15} className="text-[#9A5B33]" />
-                <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+                <CalendarClock size={15} className="text-[#8A4A20]" />
+                <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
                   Request a Session
                 </h3>
               </div>
@@ -964,20 +964,20 @@ ${
                   <p className="text-xs font-semibold text-[#5E7148]">
                     ✓ Your counselor has been notified.
                   </p>
-                  <p className="text-[11px] text-[#7A726C] leading-relaxed">
+                  <p className="text-[11px] text-[#6B635C] leading-relaxed">
                     They&rsquo;ll reply in Messages to arrange a time. You can send another
                     request whenever you need to.
                   </p>
                   <button
                     onClick={() => setSessionRequested(false)}
-                    className="text-[11px] font-bold text-[#9A5B33] hover:underline cursor-pointer"
+                    className="text-[11px] font-bold text-[#8A4A20] hover:underline cursor-pointer"
                   >
                     Request another
                   </button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <p className="text-[11px] text-[#7A726C] leading-relaxed">
+                  <p className="text-[11px] text-[#6B635C] leading-relaxed">
                     Ask your assigned counselor to set up a time to talk. Add a note if
                     there&rsquo;s something specific you&rsquo;d like to cover.
                   </p>
@@ -989,7 +989,7 @@ ${
                     className="w-full p-3 rounded-xl border border-[#EFE8E2] bg-white text-xs text-[#3C3530] focus:ring-2 focus:ring-[#8FAF8B] focus:outline-none resize-none"
                   />
                   {sessionError && (
-                    <p className="text-[11px] text-[#A65D52]">{sessionError}</p>
+                    <p className="text-[11px] text-[#8A3F35]">{sessionError}</p>
                   )}
                   <button
                     onClick={handleRequestSession}
@@ -1021,7 +1021,7 @@ ${
               <div className="flex items-center space-x-2">
                 <h3 className="text-xl font-bold text-[#3C3530]">What might help right now</h3>
               </div>
-              <p className="text-xs text-[#7F8C8D] mt-1">
+              <p className="text-xs text-[#68625D] mt-1">
                 Generated from your latest check-in reflection responses.
               </p>
             </div>
@@ -1043,12 +1043,12 @@ ${
                   <span className="text-[10px] font-black uppercase tracking-wider text-[#5A5049] bg-[#DBC3B2]/20 px-2 py-0.5 rounded-md">
                     {rec.category.replace("_", " ")}
                   </span>
-                  <span className="text-[10px] font-bold text-[#7F8C8D]">
+                  <span className="text-[10px] font-bold text-[#68625D]">
                     {rec.priority} Priority
                   </span>
                 </div>
                 <h4 className="text-xs font-bold text-[#3C3530]">{rec.title}</h4>
-                <p className="text-[11px] text-[#7A726C] leading-relaxed line-clamp-3">
+                <p className="text-[11px] text-[#6B635C] leading-relaxed line-clamp-3">
                   {rec.description}
                 </p>
               </div>
@@ -1069,7 +1069,7 @@ ${
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#EFE8E2]">
           <div>
             <h3 className="text-xl font-bold text-[#3C3530]">Privacy, Consent & Data Rights</h3>
-            <p className="text-xs text-[#7F8C8D] mt-1">
+            <p className="text-xs text-[#68625D] mt-1">
               You retain full control over your participation in this demonstration.
             </p>
           </div>
@@ -1086,7 +1086,7 @@ ${
               </button>
               <button
                 onClick={handleExportDataJson}
-                className="text-[10px] font-bold text-[#7A726C] hover:text-[#3C3530] underline underline-offset-2 cursor-pointer"
+                className="text-[10px] font-bold text-[#6B635C] hover:text-[#3C3530] underline underline-offset-2 cursor-pointer"
                 title="Download the same data as a raw JSON file"
               >
                 JSON
@@ -1094,7 +1094,7 @@ ${
             </div>
             <button
               onClick={() => setShowResetConfirm(true)}
-              className="text-xs font-bold text-[#7A726C] hover:text-[#3C3530] bg-[#FDF9F5] hover:bg-[#EFE8E2] border border-[#EFE8E2] px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer"
+              className="text-xs font-bold text-[#6B635C] hover:text-[#3C3530] bg-[#FDF9F5] hover:bg-[#EFE8E2] border border-[#EFE8E2] px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer"
               title="Reset check-in reflections for this participant"
             >
               <RotateCcw size={13} />
@@ -1126,7 +1126,7 @@ ${
           onCancel={() => setShowResetConfirm(false)}
         />
 
-        <div className="grid sm:grid-cols-2 gap-4 text-xs text-[#7A726C]">
+        <div className="grid sm:grid-cols-2 gap-4 text-xs text-[#6B635C]">
           <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2">
             <div className="flex items-center justify-between">
               <span className="font-bold text-[#3C3530]">Voluntary Participation Status</span>
@@ -1136,7 +1136,7 @@ ${
                 {user.consentGiven ? "Active Consent" : "Consent Withdrawn"}
               </span>
             </div>
-            <p className="text-[#7F8C8D]">
+            <p className="text-[#68625D]">
               You can withdraw your consent at any time without penalty.
             </p>
             <button
@@ -1154,7 +1154,7 @@ ${
                 Once someone can choose their own, a hardcoded name here
                 contradicts the card above and reads as the switch not having
                 worked. Name whoever is really assigned, or say nobody is. */}
-            <p className="text-[#7F8C8D]">
+            <p className="text-[#68625D]">
               AURA Humanitarian Demo Unit
               {counsellorName ? (
                 <>
@@ -1203,7 +1203,7 @@ ${
                   </button>
                   <button
                     onClick={() => { setEcValue(user.emergencyContact || ""); setEcEditing(false); }}
-                    className="text-[11px] font-bold text-[#7A726C] hover:text-[#3C3530] px-2 py-1.5 cursor-pointer"
+                    className="text-[11px] font-bold text-[#6B635C] hover:text-[#3C3530] px-2 py-1.5 cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1218,7 +1218,7 @@ ${
                 </div>
               </div>
             ) : (
-              <p className="text-[#7F8C8D]">
+              <p className="text-[#68625D]">
                 {ecValue
                   ? ecValue
                   : "None on file. Add a trusted person only if it is safe for you to name one."}

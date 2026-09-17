@@ -148,8 +148,8 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
     <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <ClipboardList size={16} className="text-[#9A5B33]" />
-          <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+          <ClipboardList size={16} className="text-[#8A4A20]" />
+          <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
             Tests for this person
           </h3>
         </div>
@@ -194,7 +194,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
           {questions.map((q, qi) => (
             <div key={q.id} className="rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] p-3 space-y-2">
               <div className="flex items-start gap-2">
-                <span className="text-xs font-bold text-[#7F8C8D] pt-3">{qi + 1}.</span>
+                <span className="text-xs font-bold text-[#68625D] pt-3">{qi + 1}.</span>
                 <input
                   value={q.prompt}
                   onChange={(e) => updateQuestion(q.id, { prompt: e.target.value })}
@@ -221,7 +221,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                   <button
                     onClick={() => setQuestions((qs) => qs.filter((x) => x.id !== q.id))}
                     aria-label="Remove question"
-                    className="p-2.5 text-[#A65D52] hover:bg-[#A65D52]/10 rounded-xl cursor-pointer"
+                    className="p-2.5 text-[#8A3F35] hover:bg-[#A65D52]/10 rounded-xl cursor-pointer"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -249,7 +249,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                             options: (q.options || []).filter((_, i) => i !== oi),
                           })}
                           aria-label="Remove option"
-                          className="p-1.5 text-[#A65D52] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
+                          className="p-1.5 text-[#8A3F35] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
                         >
                           <X size={12} />
                         </button>
@@ -258,7 +258,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                   ))}
                   <button
                     onClick={() => updateQuestion(q.id, { options: [...(q.options || []), ""] })}
-                    className="text-[11px] font-bold text-[#9A5B33] hover:underline cursor-pointer"
+                    className="text-[11px] font-bold text-[#8A4A20] hover:underline cursor-pointer"
                   >
                     + add option
                   </button>
@@ -266,12 +266,12 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
               )}
 
               {q.type === "scale" && (
-                <p className="pl-6 text-[11px] text-[#7A726C]">
+                <p className="pl-6 text-[11px] text-[#6B635C]">
                   They answer on a scale of 1 to 5.
                 </p>
               )}
               {q.type === "text" && (
-                <p className="pl-6 text-[11px] text-[#7A726C]">
+                <p className="pl-6 text-[11px] text-[#6B635C]">
                   They answer in their own words.
                 </p>
               )}
@@ -280,7 +280,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
 
           <button
             onClick={() => setQuestions((qs) => [...qs, blankQuestion()])}
-            className="text-xs font-bold text-[#9A5B33] hover:underline cursor-pointer"
+            className="text-xs font-bold text-[#8A4A20] hover:underline cursor-pointer"
           >
             + add question
           </button>
@@ -304,12 +304,12 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
             </button>
             <button
               onClick={() => { setEditing(null); setError(null); }}
-              className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer ml-auto"
+              className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer ml-auto"
             >
               Cancel
             </button>
           </div>
-          <p className="text-[11px] text-[#7A726C]">
+          <p className="text-[11px] text-[#6B635C]">
             A draft stays private to you. Sending makes it visible to this person straight away.
           </p>
         </div>
@@ -319,9 +319,9 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
       {/* The list                                                          */}
       {/* ---------------------------------------------------------------- */}
       {loading ? (
-        <p className="text-xs text-[#7A726C]">Loading…</p>
+        <p className="text-xs text-[#6B635C]">Loading…</p>
       ) : tests.length === 0 && !editing ? (
-        <p className="text-xs text-[#7A726C]">
+        <p className="text-xs text-[#6B635C]">
           No tests set yet. A test is only visible to this person once you send it.
         </p>
       ) : (
@@ -333,7 +333,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-[#3C3530] truncate" data-no-translate>{t.title}</p>
-                    <p className="text-[11px] text-[#7A726C]">
+                    <p className="text-[11px] text-[#6B635C]">
                       {t.questions.length} question{t.questions.length === 1 ? "" : "s"} ·{" "}
                       {t.status === "draft" && "draft, not sent"}
                       {t.status === "assigned" && "sent, waiting for answers"}
@@ -362,7 +362,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                       <button
                         onClick={async () => { await counsellorTestService.deleteTest(t.id); load(); }}
                         aria-label="Delete draft"
-                        className="p-1.5 text-[#A65D52] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
+                        className="p-1.5 text-[#8A3F35] hover:bg-[#A65D52]/10 rounded-lg cursor-pointer"
                       >
                         <Trash2 size={13} />
                       </button>
@@ -386,7 +386,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
               <button
                 onClick={() => setReviewing(null)}
                 aria-label="Close"
-                className="p-1 text-[#7A726C] hover:text-[#3C3530] cursor-pointer"
+                className="p-1 text-[#6B635C] hover:text-[#3C3530] cursor-pointer"
               >
                 <X size={18} />
               </button>
@@ -423,7 +423,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                   onChange={(e) => setMark(Number(e.target.value))}
                   className="w-full accent-[#5A5049] cursor-pointer"
                 />
-                <p className="text-[11px] text-[#7A726C] mt-1.5">
+                <p className="text-[11px] text-[#6B635C] mt-1.5">
                   Plotted on this person's trajectory beside their self-reported score, so the two
                   readings can be compared. It is not added to that score, and they are not shown
                   the number.
@@ -443,7 +443,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                   data-no-translate
                   className="w-full p-3 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530] resize-none"
                 />
-                <p className="text-[11px] text-[#7A726C] mt-1.5">
+                <p className="text-[11px] text-[#6B635C] mt-1.5">
                   This is the only part they see, so it has to stand on its own.
                 </p>
               </div>
@@ -459,7 +459,7 @@ export const CounsellorTestPanel: React.FC<Props> = ({ participantId, workerId, 
                 </button>
                 <button
                   onClick={() => setReviewing(null)}
-                  className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+                  className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
                 >
                   Cancel
                 </button>

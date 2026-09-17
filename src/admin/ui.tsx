@@ -13,7 +13,7 @@ export const PageHeader: React.FC<{ title: string; subtitle?: string; action?: R
   <div className="flex items-start justify-between mb-6 gap-4 flex-wrap">
     <div>
       <h1 className="text-2xl font-black text-[#3C3530]">{title}</h1>
-      {subtitle && <p className="text-sm text-[#7F8C8D] mt-1">{subtitle}</p>}
+      {subtitle && <p className="text-sm text-[#68625D] mt-1">{subtitle}</p>}
     </div>
     {action}
   </div>
@@ -37,7 +37,7 @@ export const Badge: React.FC<{ tone?: "neutral" | "good" | "warn" | "bad"; child
 };
 
 export const Spinner: React.FC<{ label?: string }> = ({ label = "Loading..." }) => (
-  <div className="flex items-center gap-2 text-sm text-[#7F8C8D] py-8 justify-center">
+  <div className="flex items-center gap-2 text-sm text-[#68625D] py-8 justify-center">
     <Loader2 size={16} className="animate-spin" />
     <span>{label}</span>
   </div>
@@ -50,7 +50,7 @@ export const ErrorBanner: React.FC<{ message: string }> = ({ message }) => (
 );
 
 export const EmptyState: React.FC<{ message: string }> = ({ message }) => (
-  <div className="text-center text-sm text-[#7F8C8D] py-12">{message}</div>
+  <div className="text-center text-sm text-[#68625D] py-12">{message}</div>
 );
 
 export const PrimaryButton: React.FC<React.ButtonHTMLAttributes<HTMLButtonElement>> = ({ className = "", ...props }) => (

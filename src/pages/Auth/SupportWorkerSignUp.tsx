@@ -56,7 +56,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
               <CheckCircle2 size={28} />
             </div>
             <h2 className="text-2xl font-black text-[#3C3530]">Application Submitted</h2>
-            <p className="text-sm text-[#7F8C8D]">
+            <p className="text-sm text-[#68625D]">
               Thank you, {name.split(" ")[0]}. Your application and credential document are under review. You'll
               receive an email with your login credentials once an administrator approves your account.
             </p>
@@ -79,7 +79,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
         <button
           type="button"
           onClick={onBack}
-          className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
+          className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
         >
           <ArrowLeft size={14} />
           <span>Back to Counselor Portal</span>
@@ -91,7 +91,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
               <Users size={28} />
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">Apply as a Counselor</h2>
-            <p className="text-xs sm:text-sm text-[#7F8C8D]">
+            <p className="text-xs sm:text-sm text-[#68625D]">
               Submit your credentials for review. An administrator will verify your degree/credential document
               before activating your account.
             </p>
@@ -99,7 +99,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
               <input
@@ -112,7 +112,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <input
@@ -125,7 +125,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Phone Number <span className="normal-case font-medium text-[#B9B0A6]">(optional)</span>
               </label>
               <input
@@ -138,12 +138,12 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Degree / Credential Document
               </label>
               <label
                 htmlFor="credentialFile"
-                className="w-full flex items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed border-[#EFE8E2] bg-[#FDF9F5] text-[#7F8C8D] hover:border-[#5A5049] transition-colors cursor-pointer text-sm"
+                className="w-full flex items-center justify-center gap-2 px-4 py-6 rounded-xl border-2 border-dashed border-[#EFE8E2] bg-[#FDF9F5] text-[#68625D] hover:border-[#5A5049] transition-colors cursor-pointer text-sm"
               >
                 {file ? (
                   <span className="flex items-center gap-2 text-[#3C3530] font-semibold">
@@ -176,7 +176,7 @@ export const SupportWorkerSignUp: React.FC<Props> = ({ onBack }) => {
           </form>
 
           <div className="pt-2 border-t border-[#EFE8E2] text-center">
-            <p className="text-[11px] text-[#7F8C8D]">
+            <p className="text-[11px] text-[#68625D]">
               Your credential document is stored securely and is only visible to platform administrators.
             </p>
           </div>

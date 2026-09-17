@@ -130,11 +130,11 @@ export const ExplainableAISignal: React.FC<Props> = ({
           {/* Contributing Indicators Breakdown */}
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h4 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D] flex items-center">
+              <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D] flex items-center">
                 <Scale size={14} className="mr-1.5 text-[#5A5049]" />
                 Contributing Indicators & Estimated Weights
               </h4>
-              <span className="text-[11px] font-semibold text-[#7F8C8D]">
+              <span className="text-[11px] font-semibold text-[#68625D]">
                 Distress Indicator: <strong className="text-[#3C3530]">{score}/100</strong>
               </span>
             </div>
@@ -157,7 +157,7 @@ export const ExplainableAISignal: React.FC<Props> = ({
                     </span>
                   </div>
 
-                  <p className="text-xs text-[#7A726C] mb-2 leading-relaxed">
+                  <p className="text-xs text-[#6B635C] mb-2 leading-relaxed">
                     {factor.description}
                   </p>
 
@@ -213,7 +213,7 @@ export const ExplainableAISignal: React.FC<Props> = ({
               </li>
             </ul>
 
-            <div className="pt-2 border-t border-[#A55D25]/20 flex items-center justify-between text-[11px] text-[#7A726C]">
+            <div className="pt-2 border-t border-[#A55D25]/20 flex items-center justify-between text-[11px] text-[#6B635C]">
               <span className="flex items-center font-medium">
                 <UserCheck size={14} className="mr-1.5 text-[#5A5049]" />
                 A trained human counselor must review all elevated signals before taking action.

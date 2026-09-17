@@ -88,7 +88,7 @@ export const AtrocityExposureCard: React.FC<Props> = ({ participantId }) => {
         </div>
         <div>
           <h3 className="text-lg font-black text-[#3C3530]">What they have described</h3>
-          <p className="text-xs text-[#7F8C8D] mt-0.5">
+          <p className="text-xs text-[#68625D] mt-0.5">
             Read from reflections they chose to share with you
           </p>
         </div>
@@ -101,14 +101,14 @@ export const AtrocityExposureCard: React.FC<Props> = ({ participantId }) => {
             className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] px-5 py-4"
           >
             <p className="text-sm font-semibold text-[#3C3530]">{signal.label}</p>
-            <p className="text-xs text-[#7A726C] mt-1.5">
+            <p className="text-xs text-[#6B635C] mt-1.5">
               From their own words:{" "}
               {/* The person's writing. Never sent to the translation service. */}
               <span className="font-medium text-[#5A5049]" data-no-translate>
                 &ldquo;{signal.matched}&rdquo;
               </span>
               {at && (
-                <span className="text-[#9A8E82]">
+                <span className="text-[#6B635C]">
                   {" "}
                   &middot; {new Date(at).toLocaleDateString()}
                 </span>

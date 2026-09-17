@@ -49,7 +49,7 @@ const SummaryCard: React.FC<{ icon: React.ElementType; label: string; value: Rea
       </div>
     </div>
     <p className="text-2xl font-black text-[#3C3530]">{value}</p>
-    <p className="text-xs text-[#7F8C8D] font-semibold mt-0.5">{label}</p>
+    <p className="text-xs text-[#68625D] font-semibold mt-0.5">{label}</p>
   </Card>
 );
 
@@ -101,7 +101,7 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
                 Active Escalations — Platform-Wide
               </h3>
             </div>
-            <p className="text-xs text-[#7F8C8D] mb-4">
+            <p className="text-xs text-[#68625D] mb-4">
               Every open high-severity or escalated alert across all participants, whoever they are assigned to.
               Oversight only — follow up through the assigned counselor, not directly on the case.
             </p>
@@ -131,11 +131,11 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
                         </Badge>
                         <span className="text-sm font-bold text-[#3C3530] truncate">{e.participantName}</span>
                         {typeof e.score === "number" && (
-                          <span className="text-xs font-semibold text-[#7F8C8D]">{e.score}/100</span>
+                          <span className="text-xs font-semibold text-[#68625D]">{e.score}/100</span>
                         )}
                       </div>
                       <p className="text-xs text-[#5A5049] mt-0.5">{e.title || e.reason}</p>
-                      <p className="text-[11px] text-[#7F8C8D] mt-0.5">
+                      <p className="text-[11px] text-[#68625D] mt-0.5">
                         {e.assignedWorkerName ? `Assigned to ${e.assignedWorkerName}` : "Unassigned"} ·{" "}
                         {new Date(e.createdAt).toLocaleDateString()} · status {e.status}
                       </p>
@@ -161,7 +161,7 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
                 Flagged &amp; Unassigned
               </h3>
             </div>
-            <p className="text-xs text-[#7F8C8D] mb-4">
+            <p className="text-xs text-[#68625D] mb-4">
               Users with high/escalating distress indicators who do not currently have an assigned counselor.
               Assign them promptly from the User Assignments tab.
             </p>
@@ -198,16 +198,16 @@ export const OverviewTab: React.FC<{ onNavigate: (tab: string) => void }> = ({ o
                   Regional Humanitarian Context
                 </h3>
               </div>
-              <p className="text-xs text-[#7F8C8D] mb-4">
+              <p className="text-xs text-[#68625D] mb-4">
                 Real, publicly published, non-identifying conflict statistics for the broad regions your caseload
                 spans — background context only, not derived from and not linked to any individual user.
               </p>
               <div className="grid sm:grid-cols-3 gap-4">
                 {regionalContext.map((r) => (
                   <div key={r.region} className="p-4 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
-                    <p className="text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">{r.region}</p>
+                    <p className="text-xs font-bold text-[#68625D] uppercase tracking-wider">{r.region}</p>
                     <p className="text-2xl font-black text-[#3C3530] mt-1">{r.deaths_estimate.toLocaleString()}</p>
-                    <p className="text-[11px] text-[#7F8C8D] mt-0.5">Conflict-related deaths, {r.year} (full year)</p>
+                    <p className="text-[11px] text-[#68625D] mt-0.5">Conflict-related deaths, {r.year} (full year)</p>
                   </div>
                 ))}
               </div>

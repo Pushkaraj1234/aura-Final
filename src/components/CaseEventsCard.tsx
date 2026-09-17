@@ -71,12 +71,12 @@ export const CaseEventsCard: React.FC<Props> = ({
     <div className="bg-white rounded-3xl p-6 sm:p-7 border border-[#EFE8E2] shadow-xs space-y-5">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1">
-          <span className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D] flex items-center gap-1.5">
+          <span className="text-[10px] font-black uppercase tracking-wider text-[#68625D] flex items-center gap-1.5">
             <Gavel size={13} className="text-[#5A5049]" />
             <span>Case timeline</span>
           </span>
           <h3 className="text-xl font-black text-[#3C3530]">Hearings &amp; incidents</h3>
-          <p className="text-xs text-[#7A726C] leading-relaxed max-w-lg">
+          <p className="text-xs text-[#6B635C] leading-relaxed max-w-lg">
             A hearing date is the one pressure that can be seen coming. Recording it lets AURA
             raise this case before the day rather than after it.
           </p>
@@ -95,7 +95,7 @@ export const CaseEventsCard: React.FC<Props> = ({
       {(reading.nextHearing || reading.recentIncidents.length > 0) && (
         <div className="flex flex-wrap gap-2">
           {reading.nextHearing && reading.daysToNextHearing !== null && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-[#D49B6A]/15 text-[#B0713C]">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full bg-[#D49B6A]/15 text-[#8A4A20]">
               <CalendarClock size={12} />
               Next hearing {describeTiming(reading.daysToNextHearing)}
             </span>
@@ -119,7 +119,7 @@ export const CaseEventsCard: React.FC<Props> = ({
         <div className="rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] p-4 space-y-3">
           <div className="grid sm:grid-cols-2 gap-3">
             <label className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D]">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#68625D]">
                 What happened
               </span>
               <select
@@ -136,7 +136,7 @@ export const CaseEventsCard: React.FC<Props> = ({
               </select>
             </label>
             <label className="space-y-1">
-              <span className="text-[10px] font-black uppercase tracking-wider text-[#7F8C8D]">
+              <span className="text-[10px] font-black uppercase tracking-wider text-[#68625D]">
                 Date {type === "hearing" ? "(may be in the future)" : ""}
               </span>
               <input
@@ -180,7 +180,7 @@ export const CaseEventsCard: React.FC<Props> = ({
       )}
 
       {ordered.length === 0 ? (
-        <p className="text-xs text-[#7F8C8D] italic">
+        <p className="text-xs text-[#68625D] italic">
           Nothing recorded yet. Adding a hearing date is the single most useful thing here.
         </p>
       ) : (
@@ -206,13 +206,13 @@ export const CaseEventsCard: React.FC<Props> = ({
                       {CASE_EVENT_LABELS[e.type]}{" "}
                       <span
                         className={`text-xs font-semibold ${
-                          upcoming ? "text-[#B0713C]" : "text-[#7F8C8D]"
+                          upcoming ? "text-[#8A4A20]" : "text-[#68625D]"
                         }`}
                       >
                         · {describeTiming(days)}
                       </span>
                     </p>
-                    <p className="text-[11px] text-[#7F8C8D]">
+                    <p className="text-[11px] text-[#68625D]">
                       {new Date(e.date).toLocaleDateString()}
                       {e.note && <span data-no-translate> — {e.note}</span>}
                     </p>
@@ -222,7 +222,7 @@ export const CaseEventsCard: React.FC<Props> = ({
                   type="button"
                   onClick={() => onRemove(e.id)}
                   aria-label={`Remove ${CASE_EVENT_LABELS[e.type]}`}
-                  className="shrink-0 p-1.5 rounded-lg text-[#A99A8A] hover:text-[#A55D25] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+                  className="shrink-0 p-1.5 rounded-lg text-[#6F5F4F] hover:text-[#A55D25] hover:bg-[#FDF9F5] transition-colors cursor-pointer"
                 >
                   <Trash2 size={13} />
                 </button>

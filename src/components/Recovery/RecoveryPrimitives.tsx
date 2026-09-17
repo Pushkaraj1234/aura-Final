@@ -350,7 +350,7 @@ export const TextField: React.FC<{
         aria-required={needed ? true : undefined}
         aria-describedby={[hint ? hintId : "", showNeed ? needId : ""].filter(Boolean).join(" ") || undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] text-[#3A2A1E] placeholder:text-[#A99A8A] ${
+        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] text-[#3A2A1E] placeholder:text-[#6F5F4F] ${
           showNeed ? "border-[#C9A184]" : "border-[#E4D7C6]"
         }`}
       />
@@ -395,7 +395,7 @@ export const TextArea: React.FC<{
         aria-required={needed ? true : undefined}
         aria-describedby={[hint ? hintId : "", showNeed ? needId : ""].filter(Boolean).join(" ") || undefined}
         onChange={(e) => onChange(e.target.value)}
-        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] leading-[1.7] text-[#3A2A1E] placeholder:text-[#A99A8A] ${
+        className={`w-full rounded-xl border bg-white px-4 py-3.5 text-[1rem] leading-[1.7] text-[#3A2A1E] placeholder:text-[#6F5F4F] ${
           showNeed ? "border-[#C9A184]" : "border-[#E4D7C6]"
         }`}
       />

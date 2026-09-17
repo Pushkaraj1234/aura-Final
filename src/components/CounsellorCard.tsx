@@ -71,7 +71,7 @@ export const CounsellorCard: React.FC<Props> = ({
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-[#7A726C]">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-xs text-[#6B635C]">
             {counsellor.yearsExperience != null && (
               <span>
                 {counsellor.yearsExperience} year{counsellor.yearsExperience === 1 ? "" : "s"} experience
@@ -81,7 +81,7 @@ export const CounsellorCard: React.FC<Props> = ({
               <span className="inline-flex items-center gap-1 text-[#8A5A2B] font-semibold">
                 <Star size={12} className="fill-current" />
                 {counsellor.ratingAvg.toFixed(1)}
-                <span className="font-normal text-[#7A726C]">({counsellor.ratingCount})</span>
+                <span className="font-normal text-[#6B635C]">({counsellor.ratingCount})</span>
               </span>
             ) : (
               <span className="text-[#9A928C]">Not enough reviews yet</span>
@@ -109,7 +109,7 @@ export const CounsellorCard: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#7A726C]">
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-[#6B635C]">
         {counsellor.languages.length > 0 && (
           <span className="inline-flex items-center gap-1.5">
             <Globe size={13} />

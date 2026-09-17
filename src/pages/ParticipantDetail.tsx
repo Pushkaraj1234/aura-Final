@@ -440,7 +440,7 @@ export const ParticipantDetail: React.FC<Props> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <button
           onClick={onBack}
-          className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 self-start cursor-pointer"
+          className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 self-start cursor-pointer"
         >
           <ArrowLeft size={14} />
           <span>Back to Case Hub</span>
@@ -463,7 +463,7 @@ export const ParticipantDetail: React.FC<Props> = ({
               <span>Emergency Protocols</span>
             </button>
           )}
-          <span className="text-xs font-mono font-bold text-[#7F8C8D]">
+          <span className="text-xs font-mono font-bold text-[#68625D]">
             Case ID: {participant.id}
           </span>
         </div>
@@ -500,7 +500,7 @@ export const ParticipantDetail: React.FC<Props> = ({
               isUrgent ? "bg-[#A55D25]/15 text-[#A55D25] border border-[#A55D25]/30" :
               participant.status === "Needs follow-up" ? "bg-[#D49B6A]/15 text-[#D49B6A] border border-[#D49B6A]/30" :
               participant.status === "Improving" ? "bg-[#DBC3B2]/25 text-[#5A5049]" :
-              "bg-[#EFE8E2] text-[#7A726C]"
+              "bg-[#EFE8E2] text-[#6B635C]"
             }`}>
               {participant.status}
             </span>
@@ -517,7 +517,7 @@ export const ParticipantDetail: React.FC<Props> = ({
             </p>
           )}
 
-          <div className="flex flex-wrap items-center gap-4 text-xs text-[#7F8C8D] pt-1">
+          <div className="flex flex-wrap items-center gap-4 text-xs text-[#68625D] pt-1">
             <span>Language: <strong className="text-[#3C3530]">{participant.language}</strong></span>
             <span>Age Group: <strong className="text-[#3C3530]">{participant.ageGroup}</strong></span>
             <span>Support Preference: <strong className="text-[#3C3530]">{participant.preferredSupport}</strong></span>
@@ -528,7 +528,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                   {participant.caseReference}
                 </strong>
                 {participant.intakeSource && (
-                  <span className="text-[#A99A8A]"> · {participant.intakeSource}</span>
+                  <span className="text-[#6F5F4F]"> · {participant.intakeSource}</span>
                 )}
               </span>
             )}
@@ -539,29 +539,29 @@ export const ParticipantDetail: React.FC<Props> = ({
         {/* Score & Change Stats */}
         <div className="flex items-center space-x-4 border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-8 border-[#EFE8E2] shrink-0">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#68625D] block">
               Current Distress Indicator
             </span>
             {checkIns.length === 0 ? (
-              <div className="text-xl font-black text-[#7F8C8D]">
+              <div className="text-xl font-black text-[#68625D]">
                 Not assessed
               </div>
             ) : (
               <div className="text-3xl font-black text-[#3C3530]">
                 {trajectory.currentScore || (riskAnalysis?.score ?? 0)}
-                <span className="text-sm font-semibold text-[#7F8C8D]">/100</span>
+                <span className="text-sm font-semibold text-[#68625D]">/100</span>
               </div>
             )}
           </div>
 
           <div className={`p-3 rounded-2xl ${
             checkIns.length === 0
-              ? "bg-[#FDF9F5] text-[#7F8C8D] border border-[#EFE8E2]"
+              ? "bg-[#FDF9F5] text-[#68625D] border border-[#EFE8E2]"
               : riskAnalysis && riskAnalysis.change > 0
               ? "bg-[#A55D25]/15 text-[#A55D25] border border-[#A55D25]/30"
               : riskAnalysis && riskAnalysis.change < 0
               ? "bg-[#DBC3B2]/20 text-[#5A5049] border border-[#DBC3B2]/40"
-              : "bg-[#FDF9F5] text-[#7F8C8D] border border-[#EFE8E2]"
+              : "bg-[#FDF9F5] text-[#68625D] border border-[#EFE8E2]"
           }`}>
             <div className="text-xs font-bold flex items-center">
               {checkIns.length === 0 ? (
@@ -618,7 +618,7 @@ export const ParticipantDetail: React.FC<Props> = ({
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="text-lg font-bold text-[#3C3530]">Multi-Check-in Trend Trajectory</h3>
-                <p className="text-xs text-[#7F8C8D]">Dynamic score calculation across consecutive voluntary reflections</p>
+                <p className="text-xs text-[#68625D]">Dynamic score calculation across consecutive voluntary reflections</p>
               </div>
               <span className="text-xs font-bold text-[#5A5049] bg-[#DBC3B2]/20 px-2.5 py-1 rounded-lg">
                 {checkIns.length} Entries
@@ -633,7 +633,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                 <p className="text-sm font-bold text-[#3C3530]">
                   Participant has not submitted any check-ins yet.
                 </p>
-                <p className="text-xs text-[#7F8C8D] max-w-sm mx-auto">
+                <p className="text-xs text-[#68625D] max-w-sm mx-auto">
                   Distress indicator signals and trend trajectories will appear here once reflections are recorded.
                 </p>
               </div>
@@ -653,11 +653,11 @@ export const ParticipantDetail: React.FC<Props> = ({
                       tickFormatter={trendLabel}
                       interval="preserveStartEnd"
                       minTickGap={24}
-                      stroke="#7F8C8D"
+                      stroke="#68625D"
                       fontSize={11}
                       tickLine={false}
                     />
-                    <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
+                    <YAxis domain={[0, 100]} stroke="#68625D" fontSize={11} tickLine={false} />
                     <Tooltip
                       contentStyle={{ backgroundColor: "#3C3530", border: "1px solid #3F4E4E", borderRadius: "1rem", color: "#fff", fontSize: "12px" }}
                       // Recharts colours the value with the series stroke,
@@ -777,7 +777,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                 <div className="flex items-center justify-between gap-2">
                   <div>
                     <p className="text-xs font-bold text-[#3C3530]">Escalate to admin / crisis team</p>
-                    <p className="text-[11px] text-[#7A726C]">For a high-risk case that needs attention beyond this caseload.</p>
+                    <p className="text-[11px] text-[#6B635C]">For a high-risk case that needs attention beyond this caseload.</p>
                   </div>
                   <button
                     onClick={() => setEscalateOpen(true)}
@@ -805,7 +805,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                     </button>
                     <button
                       onClick={() => { setEscalateOpen(false); setEscalateNote(""); }}
-                      className="px-2 py-2 text-xs font-bold text-[#7A726C] hover:text-[#3C3530] cursor-pointer"
+                      className="px-2 py-2 text-xs font-bold text-[#6B635C] hover:text-[#3C3530] cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -817,13 +817,13 @@ export const ParticipantDetail: React.FC<Props> = ({
             {/* Manual AI Override Form (Requirement #3) */}
             <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-4">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider flex items-center space-x-1.5">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider flex items-center space-x-1.5">
                   <Activity size={14} />
                   <span>Clinical Risk Score Calibration</span>
                 </label>
                 <div className="flex items-center space-x-2 text-xs font-bold">
                   {isOverridden && (
-                    <span className="line-through text-[#7F8C8D] opacity-60">AI: {trajectory.currentScore}</span>
+                    <span className="line-through text-[#68625D] opacity-60">AI: {trajectory.currentScore}</span>
                   )}
                   <span className={`text-[#A55D25] ${isOverridden ? 'text-sm' : ''}`}>Active: {activeScore || trajectory.currentScore}</span>
                 </div>
@@ -873,7 +873,7 @@ export const ParticipantDetail: React.FC<Props> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider">
                 Case Disposition Status
               </label>
               <select
@@ -891,7 +891,7 @@ export const ParticipantDetail: React.FC<Props> = ({
 
             {/* Notes Log */}
             <div className="space-y-3 pt-2 border-t border-[#EFE8E2]">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#7F8C8D] flex items-center justify-between">
+              <h4 className="text-xs font-bold uppercase tracking-wider text-[#68625D] flex items-center justify-between">
                 <span>Support Case Notes ({(participant?.notes || []).length})</span>
                 <MessageSquare size={13} />
               </h4>
@@ -900,7 +900,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                 {(participant?.notes || []).length > 0 ? (
                   (participant.notes || []).map((n) => (
                     <div key={n.id} className="p-3 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs space-y-1">
-                                            <div className="flex items-center justify-between text-[10px] text-[#7F8C8D] font-bold">
+                                            <div className="flex items-center justify-between text-[10px] text-[#68625D] font-bold">
                         <div className="flex space-x-2">
                           <span>{n.author}</span>
                           <span>{new Date(n.timestamp).toLocaleDateString()}</span>
@@ -908,7 +908,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                         {onDeleteNote && (
                           <button
                             onClick={() => setNoteToDelete(n.id)}
-                            className="text-[#7F8C8D] hover:text-[#A55D25] transition-colors cursor-pointer"
+                            className="text-[#68625D] hover:text-[#A55D25] transition-colors cursor-pointer"
                             title="Delete note"
                           >
                             <Trash2 size={12} />
@@ -924,7 +924,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                     </div>
                   ))
                 ) : (
-                  <p className="text-xs text-[#7F8C8D] italic">No notes recorded yet for this participant.</p>
+                  <p className="text-xs text-[#68625D] italic">No notes recorded yet for this participant.</p>
                 )}
               </div>
 

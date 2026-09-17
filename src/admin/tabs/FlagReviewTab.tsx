@@ -120,7 +120,7 @@ export const FlagReviewTab: React.FC = () => {
                 <p className="text-xl font-black" style={{ color: s.tone }}>
                   {s.value}
                 </p>
-                <p className="text-[11px] text-[#7F8C8D] font-semibold mt-0.5">{s.label}</p>
+                <p className="text-[11px] text-[#68625D] font-semibold mt-0.5">{s.label}</p>
               </Card>
             ))}
           </div>
@@ -145,7 +145,7 @@ export const FlagReviewTab: React.FC = () => {
                   {fnBusy ? "Saving..." : "Log FN"}
                 </PrimaryButton>
               </div>
-              <p className="text-[11px] text-[#7F8C8D] mt-2">
+              <p className="text-[11px] text-[#68625D] mt-2">
                 You can copy a participant ID from the User Assignments tab.
               </p>
             </Card>
@@ -170,7 +170,7 @@ export const FlagReviewTab: React.FC = () => {
                           </Badge>
                           <span className="text-sm font-bold text-[#3C3530]">{item.participantName}</span>
                           {typeof item.score === "number" && (
-                            <span className="text-xs font-semibold text-[#7F8C8D]">{item.score}/100</span>
+                            <span className="text-xs font-semibold text-[#68625D]">{item.score}/100</span>
                           )}
                           {vm && (
                             <span className="inline-flex items-center gap-1">
@@ -180,7 +180,7 @@ export const FlagReviewTab: React.FC = () => {
                           )}
                         </div>
                         <p className="text-xs text-[#5A5049] mt-1">{item.title || item.reason}</p>
-                        <p className="text-[11px] text-[#7F8C8D] mt-0.5">
+                        <p className="text-[11px] text-[#68625D] mt-0.5">
                           {new Date(item.createdAt).toLocaleDateString()} · status {item.status}
                           {item.reviewNote ? ` · note: ${item.reviewNote}` : ""}
                         </p>
@@ -244,9 +244,9 @@ export const FlagReviewTab: React.FC = () => {
                   <div key={m.id} className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]">
                     <div>
                       <span className="text-sm font-bold text-[#3C3530]">{m.participantName}</span>
-                      {m.note && <span className="text-xs text-[#7F8C8D] ml-2">— {m.note}</span>}
+                      {m.note && <span className="text-xs text-[#68625D] ml-2">— {m.note}</span>}
                     </div>
-                    <span className="text-[11px] text-[#7F8C8D]">{new Date(m.reviewedAt).toLocaleDateString()}</span>
+                    <span className="text-[11px] text-[#68625D]">{new Date(m.reviewedAt).toLocaleDateString()}</span>
                   </div>
                 ))}
               </div>

@@ -54,7 +54,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
             These are your things, not ours. A song you want to hear, a place you go, the person you would
             message. You are writing them now so that a harder day does not have to think of them.
           </p>
-          <p className="text-xs text-[#7F8C8D] leading-relaxed">
+          <p className="text-xs text-[#68625D] leading-relaxed">
             Add as much or as little as you want. One line is enough, everything is optional, and you can change
             any of it whenever you like.
           </p>
@@ -75,13 +75,13 @@ export const FirstAidKitEditor: React.FC<Props> = ({
                 <div className="flex items-baseline justify-between gap-3">
                   <h4 className="text-sm font-bold text-[#3C3530]">{prompt.label}</h4>
                   {items.length > 0 && (
-                    <span className="text-[10px] font-mono text-[#A99A8A] shrink-0">
+                    <span className="text-[10px] font-mono text-[#6F5F4F] shrink-0">
                       {items.length}/{MAX_ITEMS_PER_CATEGORY}
                     </span>
                   )}
                 </div>
                 <p className="text-xs text-[#5A5049]">{prompt.question}</p>
-                <p className="text-[11px] text-[#7F8C8D] italic">{prompt.why}</p>
+                <p className="text-[11px] text-[#68625D] italic">{prompt.why}</p>
               </div>
 
               {items.length > 0 && (
@@ -98,7 +98,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
                         type="button"
                         onClick={() => onChange(removeItem(kit, item.id))}
                         aria-label={`Remove "${item.text}"`}
-                        className="shrink-0 mt-0.5 text-[#A99A8A] hover:text-[#A55D25] transition-colors cursor-pointer"
+                        className="shrink-0 mt-0.5 text-[#6F5F4F] hover:text-[#A55D25] transition-colors cursor-pointer"
                       >
                         <X size={13} />
                       </button>
@@ -108,7 +108,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
               )}
 
               {full ? (
-                <p className="text-[11px] text-[#7F8C8D]">
+                <p className="text-[11px] text-[#68625D]">
                   That is plenty for this one. Remove something above if you want to swap it.
                 </p>
               ) : (
@@ -149,7 +149,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
             <Lock size={15} className="text-[#5A5049] shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="text-sm font-bold text-[#3C3530]">This is private</p>
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 Only you can see your kit. Your counsellor cannot, unless you decide otherwise below, and you can
                 change that back at any time.
               </p>
@@ -180,7 +180,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
         </div>
       )}
 
-      <div className="flex items-start gap-2 text-[11px] text-[#7F8C8D] leading-relaxed">
+      <div className="flex items-start gap-2 text-[11px] text-[#68625D] leading-relaxed">
         <HeartPulse size={13} className="text-[#A55D25] shrink-0 mt-0.5" />
         <p>
           A kit is for the hard hours, not for emergencies. If you are in danger or thinking of hurting yourself,
@@ -189,7 +189,7 @@ export const FirstAidKitEditor: React.FC<Props> = ({
       </div>
 
       {total > 0 && (
-        <p className="text-[11px] text-[#7F8C8D] text-center">
+        <p className="text-[11px] text-[#68625D] text-center">
           {total} {total === 1 ? "thing" : "things"} in your kit. Saved as you go.
         </p>
       )}

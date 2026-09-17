@@ -44,7 +44,7 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
         <button
           type="button"
           onClick={onBack}
-          className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
+          className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
         >
           <ArrowLeft size={14} />
           <span>Back to Role Selection</span>
@@ -58,7 +58,7 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
               Participant Log In
             </h2>
-            <p className="text-xs sm:text-sm text-[#7F8C8D]">
+            <p className="text-xs sm:text-sm text-[#68625D]">
               Access your daily wellbeing check-ins and reflection trends.
             </p>
           </div>
@@ -86,7 +86,7 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
           
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <input
@@ -103,10 +103,10 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
 
             <div>
               <div className="flex justify-between items-center mb-1.5">
-                <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider">
                   Password
                 </label>
-                <span className="text-[11px] text-[#7F8C8D]">
+                <span className="text-[11px] text-[#68625D]">
                   (Demo: any text or Demo@123)
                 </span>
               </div>
@@ -133,7 +133,7 @@ export const ParticipantLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToSig
             </button>
           </form>
 
-          <div className="pt-2 border-t border-[#EFE8E2] text-center text-xs text-[#7F8C8D]">
+          <div className="pt-2 border-t border-[#EFE8E2] text-center text-xs text-[#68625D]">
             <span>Don't have an account yet? </span>
             <button
               type="button"

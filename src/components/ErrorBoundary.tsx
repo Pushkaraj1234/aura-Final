@@ -37,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
               <ShieldAlert size={24} />
             </div>
             <h2 className="text-lg font-bold text-[#3C3530] mb-2">Insufficient Permissions</h2>
-            <p className="text-sm text-[#7A726C] mb-6">
+            <p className="text-sm text-[#6B635C] mb-6">
               You do not have the required permissions to view this data. This may happen if your session expired or your account role has changed.
             </p>
             <button 
@@ -59,7 +59,7 @@ export class ErrorBoundary extends Component<Props, State> {
             <ShieldAlert size={24} />
           </div>
           <h2 className="text-lg font-bold text-[#3C3530] mb-2">Something went wrong</h2>
-          <p className="text-sm text-[#7A726C] mb-6 whitespace-pre-wrap">
+          <p className="text-sm text-[#6B635C] mb-6 whitespace-pre-wrap">
             {this.state.errorMessage || "An unexpected error occurred in the application."}
           </p>
           <button 

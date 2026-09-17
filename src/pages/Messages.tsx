@@ -47,7 +47,7 @@ function initials(name: string): string {
 }
 
 const SafetyBanner: React.FC<{ onOpenEmergency: () => void }> = ({ onOpenEmergency }) => (
-  <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#FDF9F5] border-b border-[#EFE8E2] text-[11px] text-[#7A726C]">
+  <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-[#FDF9F5] border-b border-[#EFE8E2] text-[11px] text-[#6B635C]">
     <span className="flex items-center gap-1.5">
       <ShieldAlert size={13} className="text-[#A55D25] shrink-0" />
       This chat isn't monitored in real time. If you're in immediate danger, don't wait for a reply.
@@ -213,11 +213,11 @@ const WorkerMessages: React.FC<{ currentUser: User; participants: Participant[];
   if (!loading && assigned.length === 0) {
     return (
       <div className="max-w-3xl mx-auto py-16 px-4 text-center space-y-3">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-[#EFE8E2] text-[#7F8C8D] flex items-center justify-center">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-[#EFE8E2] text-[#68625D] flex items-center justify-center">
           <MessageCircle size={26} />
         </div>
         <h2 className="text-lg font-black text-[#3C3530]">No conversations yet</h2>
-        <p className="text-sm text-[#7F8C8D] max-w-md mx-auto">
+        <p className="text-sm text-[#68625D] max-w-md mx-auto">
           You'll be able to message a participant here once they're assigned to your caseload.
         </p>
       </div>
@@ -258,7 +258,7 @@ const WorkerMessages: React.FC<{ currentUser: User; participants: Participant[];
                     <p className="text-xs font-bold text-[#3C3530] truncate">{participant.name || participant.id}</p>
                     {last && <span className="text-[10px] text-[#B9B0A6] shrink-0">{formatTimestamp(last.createdAt)}</span>}
                   </div>
-                  <p className="text-[11px] text-[#7F8C8D] truncate mt-0.5">
+                  <p className="text-[11px] text-[#68625D] truncate mt-0.5">
                     {last ? (
                       <>
                         {last.senderRole === "support_worker" ? "You: " : ""}
@@ -397,11 +397,11 @@ const ParticipantMessages: React.FC<{
   if (!hasAssignedWorker) {
     return (
       <div className="max-w-3xl mx-auto py-16 px-4 text-center space-y-3">
-        <div className="w-14 h-14 mx-auto rounded-2xl bg-[#EFE8E2] text-[#7F8C8D] flex items-center justify-center">
+        <div className="w-14 h-14 mx-auto rounded-2xl bg-[#EFE8E2] text-[#68625D] flex items-center justify-center">
           <MessageCircle size={26} />
         </div>
         <h2 className="text-lg font-black text-[#3C3530]">No counselor assigned yet</h2>
-        <p className="text-sm text-[#7F8C8D] max-w-md mx-auto">
+        <p className="text-sm text-[#68625D] max-w-md mx-auto">
           {onChooseCounsellor
             ? "You can pick a counsellor yourself and start messaging straight away, or wait for your support team to assign one."
             : "Once a counselor is assigned to you, you'll be able to message them directly here."}
@@ -423,7 +423,7 @@ const ParticipantMessages: React.FC<{
         <div>
           <button
             onClick={onOpenEmergency}
-            className="inline-flex items-center gap-1.5 mt-2 px-4 py-2 rounded-xl bg-[#A55D25]/15 text-[#A55D25] text-xs font-bold hover:bg-[#A55D25]/25 transition-colors cursor-pointer"
+            className="inline-flex items-center gap-1.5 mt-2 px-4 py-2 rounded-xl bg-[#A55D25]/15 text-[#7A3F18] text-xs font-bold hover:bg-[#A55D25]/25 transition-colors cursor-pointer"
           >
             <LifeBuoy size={14} />
             Need help right now? View Emergency Resources
@@ -442,7 +442,7 @@ const ParticipantMessages: React.FC<{
           </div>
           <div>
             <p className="text-sm font-black text-[#3C3530]">{workerName || "Your Counselor"}</p>
-            <p className="text-[10px] text-[#7F8C8D]">Your assigned counselor</p>
+            <p className="text-[10px] text-[#68625D]">Your assigned counselor</p>
           </div>
         </div>
         <SafetyBanner onOpenEmergency={onOpenEmergency} />

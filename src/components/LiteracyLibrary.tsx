@@ -204,7 +204,7 @@ export const LiteracyLibrary: React.FC<Props> = ({
                     className={`shrink-0 self-center flex items-center justify-center h-9 w-9 rounded-full border transition-colors duration-200 ease-out ${
                       isOpen
                         ? "border-[#A85D2E] bg-[#A85D2E] text-white"
-                        : "border-[#E0D0BB] text-[#8A7A6B] group-hover:border-[#C9B69C] group-hover:text-[#3A2A1E]"
+                        : "border-[#E0D0BB] text-[#6F5F4F] group-hover:border-[#C9B69C] group-hover:text-[#3A2A1E]"
                     }`}
                   >
                     {isOpen ? <Minus size={16} /> : <Plus size={16} />}

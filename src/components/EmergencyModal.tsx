@@ -188,8 +188,8 @@ export const EmergencyModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
           {/* Region filter */}
           <div>
-            <label className="text-xs font-bold text-[#7F8C8D] uppercase tracking-wider block mb-2 flex items-center">
-              <Globe size={14} className="mr-1.5 text-[#7F8C8D]" /> Filter Resources by Region
+            <label className="text-xs font-bold text-[#68625D] uppercase tracking-wider block mb-2 flex items-center">
+              <Globe size={14} className="mr-1.5 text-[#68625D]" /> Filter Resources by Region
             </label>
             <div className="flex flex-wrap gap-1.5">
               {regions.map(r => (
@@ -199,7 +199,7 @@ export const EmergencyModal: React.FC<Props> = ({ isOpen, onClose }) => {
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                     selectedRegion === r
                       ? "bg-[#3C3530] text-white shadow-xs"
-                      : "bg-[#FDF9F5] border border-[#EFE8E2] text-[#7A726C] hover:bg-[#EFE8E2]"
+                      : "bg-[#FDF9F5] border border-[#EFE8E2] text-[#6B635C] hover:bg-[#EFE8E2]"
                   }`}
                 >
                   {r}
@@ -217,12 +217,12 @@ export const EmergencyModal: React.FC<Props> = ({ isOpen, onClose }) => {
               >
                 <div className="space-y-1">
                   <div className="flex items-center space-x-2">
-                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#FDF9F5] border border-[#EFE8E2] text-[#7A726C]">
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-md bg-[#FDF9F5] border border-[#EFE8E2] text-[#6B635C]">
                       {item.region}
                     </span>
                   </div>
                   <h4 className="font-bold text-[#3C3530] text-base">{item.name}</h4>
-                  <p className="text-xs text-[#7F8C8D]">{item.detail}</p>
+                  <p className="text-xs text-[#68625D]">{item.detail}</p>
                 </div>
                 <div className="sm:text-right shrink-0">
                   <div className="inline-flex items-center space-x-2 px-3.5 py-2 rounded-xl bg-[#A55D25] text-white font-bold text-sm shadow-xs hover:bg-[#c26d4e] transition-colors">
@@ -239,7 +239,7 @@ export const EmergencyModal: React.FC<Props> = ({ isOpen, onClose }) => {
             <h4 className="font-bold text-[#3C3530] text-sm flex items-center">
               <HeartHandshake className="text-[#5A5049] mr-2" size={18} /> Immediate Grounding Steps
             </h4>
-            <ul className="text-xs text-[#7A726C] space-y-1.5 pl-2 list-disc list-inside leading-relaxed">
+            <ul className="text-xs text-[#6B635C] space-y-1.5 pl-2 list-disc list-inside leading-relaxed">
               <li>Move to a safe, quiet space if physically possible.</li>
               <li>Connect with a trusted friend, family member, or community leader.</li>
               <li>Practice slow 4-count diaphragmatic breathing (inhale 4s, hold 4s, exhale 4s).</li>
@@ -249,7 +249,7 @@ export const EmergencyModal: React.FC<Props> = ({ isOpen, onClose }) => {
 
         {/* Footer */}
         <div className="p-4 sm:p-6 bg-[#FDF9F5] border-t border-[#EFE8E2] flex items-center justify-between">
-          <span className="text-xs text-[#7F8C8D] font-medium">
+          <span className="text-xs text-[#68625D] font-medium">
             Demo Prototype • Emergency Directory
           </span>
           <button

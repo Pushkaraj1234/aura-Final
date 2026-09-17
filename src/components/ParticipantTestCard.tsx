@@ -81,8 +81,8 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
   return (
     <div className="bg-white p-6 rounded-3xl border border-[#EFE8E2] shadow-xs space-y-4">
       <div className="flex items-center gap-2">
-        <ClipboardList size={15} className="text-[#9A5B33]" />
-        <h3 className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+        <ClipboardList size={15} className="text-[#8A4A20]" />
+        <h3 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
           From your counsellor
         </h3>
       </div>
@@ -102,11 +102,11 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
         <div key={t.id} className="rounded-2xl border border-[#DBC3B2]/60 bg-[#FFF6EC] p-4">
           <p className="text-sm font-bold text-[#3C3530]" data-no-translate>{t.title}</p>
           {t.instructions && (
-            <p className="text-xs text-[#7A726C] mt-1 leading-relaxed" data-no-translate>
+            <p className="text-xs text-[#6B635C] mt-1 leading-relaxed" data-no-translate>
               {t.instructions}
             </p>
           )}
-          <p className="text-[11px] text-[#7A726C] mt-1.5">
+          <p className="text-[11px] text-[#6B635C] mt-1.5">
             {t.questions.length} question{t.questions.length === 1 ? "" : "s"}. You can take as long
             as you need, and you do not have to answer everything.
           </p>
@@ -122,7 +122,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
       {reviews.map((rv) => (
         <div key={rv.testId} className="rounded-2xl border border-[#EFE8E2] p-4">
           <div className="flex items-center gap-2">
-            <MessageSquareQuote size={14} className="text-[#9A5B33]" />
+            <MessageSquareQuote size={14} className="text-[#8A4A20]" />
             <p className="text-sm font-bold text-[#3C3530]" data-no-translate>{rv.title}</p>
           </div>
           {rv.reviewText && (
@@ -160,7 +160,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
               to the wrong person being asked. What was said goes to the
               counsellor only. An answer the person it is about will read is
               not the honest answer. */}
-          <p className="text-[11px] text-[#7A726C] mt-2 leading-relaxed">
+          <p className="text-[11px] text-[#6B635C] mt-2 leading-relaxed">
             What they said goes only to your counsellor. If you would rather someone was not asked,
             tell your counsellor and they will withdraw it.
           </p>
@@ -172,7 +172,7 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
           <div className="bg-white rounded-3xl p-6 max-w-xl w-full space-y-4 my-8">
             <h3 className="font-bold text-[#3C3530]" data-no-translate>{taking.title}</h3>
             {taking.instructions && (
-              <p className="text-xs text-[#7A726C] leading-relaxed" data-no-translate>
+              <p className="text-xs text-[#6B635C] leading-relaxed" data-no-translate>
                 {taking.instructions}
               </p>
             )}
@@ -245,12 +245,12 @@ export const ParticipantTestCard: React.FC<Props> = ({ participantId }) => {
               </button>
               <button
                 onClick={() => setTaking(null)}
-                className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+                className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
               >
                 Not now
               </button>
             </div>
-            <p className="text-[11px] text-[#7A726C]">
+            <p className="text-[11px] text-[#6B635C]">
               Only the counsellor who set this can read your answers.
             </p>
           </div>

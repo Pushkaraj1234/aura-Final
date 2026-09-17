@@ -197,7 +197,7 @@ export const AlertsPage: React.FC<Props> = ({
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "pending"
                 ? "bg-[#3C3530] text-white shadow-xs"
-                : "bg-[#FDF9F5] text-[#7A726C] hover:bg-[#EFE8E2]"
+                : "bg-[#FDF9F5] text-[#6B635C] hover:bg-[#EFE8E2]"
             }`}
           >
             Pending Review ({pendingCount})
@@ -237,7 +237,7 @@ export const AlertsPage: React.FC<Props> = ({
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "all"
                 ? "bg-[#3C3530] text-white shadow-xs"
-                : "bg-[#FDF9F5] text-[#7A726C] hover:bg-[#EFE8E2]"
+                : "bg-[#FDF9F5] text-[#6B635C] hover:bg-[#EFE8E2]"
             }`}
           >
             All Alerts ({scopedAlerts.length})
@@ -285,7 +285,7 @@ export const AlertsPage: React.FC<Props> = ({
                       {nameFor(alt)}
                     </span>
 
-                    <span className="text-xs font-bold text-[#7A726C]">
+                    <span className="text-xs font-bold text-[#6B635C]">
                       Distress Indicator: <strong className="text-[#3C3530]">{alt.score}/100</strong>
                     </span>
 
@@ -308,9 +308,9 @@ export const AlertsPage: React.FC<Props> = ({
                   {/* XAI Contributing Factors Chips */}
                   {alt.contributingFactors && alt.contributingFactors.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                      <span className="text-[10px] font-bold text-[#7F8C8D]">Flagged Factors:</span>
+                      <span className="text-[10px] font-bold text-[#68625D]">Flagged Factors:</span>
                       {alt.contributingFactors.map((f, i) => (
-                        <span key={i} className="text-[10px] bg-white border border-[#EFE8E2] px-2 py-0.5 rounded-md text-[#7A726C] font-medium">
+                        <span key={i} className="text-[10px] bg-white border border-[#EFE8E2] px-2 py-0.5 rounded-md text-[#6B635C] font-medium">
                           {f}
                         </span>
                       ))}
@@ -318,7 +318,7 @@ export const AlertsPage: React.FC<Props> = ({
                   )}
 
                   {/* Footer review metadata */}
-                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#7F8C8D]">
+                  <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#68625D]">
                     <span className="flex items-center">
                       <Clock size={12} className="mr-1" /> {new Date(alt.createdAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" })}
                     </span>
@@ -334,7 +334,7 @@ export const AlertsPage: React.FC<Props> = ({
 
                   {/* Decision notes if reviewed */}
                   {alt.decisionNotes && (
-                    <div className="p-3 rounded-xl bg-white/80 border border-[#EFE8E2] text-xs text-[#7A726C] mt-2">
+                    <div className="p-3 rounded-xl bg-white/80 border border-[#EFE8E2] text-xs text-[#6B635C] mt-2">
                       <strong className="text-[#3C3530] block text-[11px]">Human Review Decision Notes:</strong>
                       {alt.decisionNotes}
                     </div>
@@ -369,7 +369,7 @@ export const AlertsPage: React.FC<Props> = ({
           <div className="bg-white rounded-3xl p-12 text-center border border-[#EFE8E2] space-y-3">
             <CheckCircle2 size={32} className="text-[#5A5049] mx-auto" />
             <h3 className="text-base font-bold text-[#3C3530]">Queue Clear</h3>
-            <p className="text-xs text-[#7F8C8D] max-w-sm mx-auto">
+            <p className="text-xs text-[#68625D] max-w-sm mx-auto">
               No alerts matching the selected tab filter. All cases are currently triaged or in active monitoring.
             </p>
           </div>
@@ -391,19 +391,19 @@ export const AlertsPage: React.FC<Props> = ({
               </div>
               <button
                 onClick={() => setSelectedAlert(null)}
-                className="p-2 rounded-xl text-[#7F8C8D] hover:text-[#3C3530] cursor-pointer"
+                className="p-2 rounded-xl text-[#68625D] hover:text-[#3C3530] cursor-pointer"
               >
                 <X size={18} />
               </button>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#7A726C] space-y-1">
+            <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#6B635C] space-y-1">
               <strong className="block text-[#3C3530]">Signal Trigger & Factors:</strong>
               <p>{selectedAlert.reason}</p>
             </div>
 
             <div className="space-y-3">
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider">
                 Select Human Review Decision *
               </label>
               <div className="space-y-2">
@@ -429,7 +429,7 @@ export const AlertsPage: React.FC<Props> = ({
                       />
                       <span className="font-bold">{opt.label}</span>
                     </div>
-                    <span className={`text-[10px] ${selectedAction === opt.status ? "text-[#DBC3B2]" : "text-[#7F8C8D]"}`}>
+                    <span className={`text-[10px] ${selectedAction === opt.status ? "text-[#DBC3B2]" : "text-[#68625D]"}`}>
                       {opt.actionText}
                     </span>
                   </label>
@@ -438,7 +438,7 @@ export const AlertsPage: React.FC<Props> = ({
             </div>
 
             <div className="space-y-2">
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider">
                 Reviewer / Counselor Notes
               </label>
               <textarea
@@ -453,7 +453,7 @@ export const AlertsPage: React.FC<Props> = ({
             <div className="pt-2 flex items-center justify-end space-x-3">
               <button
                 onClick={() => setSelectedAlert(null)}
-                className="px-4 py-2.5 rounded-xl border border-[#EFE8E2] text-[#7A726C] font-bold text-xs hover:bg-[#FDF9F5] transition-colors cursor-pointer"
+                className="px-4 py-2.5 rounded-xl border border-[#EFE8E2] text-[#6B635C] font-bold text-xs hover:bg-[#FDF9F5] transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -470,7 +470,7 @@ export const AlertsPage: React.FC<Props> = ({
 
       {/* Responsible AI Disclaimer Footer */}
       <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-center space-y-1">
-        <p className="text-[11px] text-[#7F8C8D]">
+        <p className="text-[11px] text-[#68625D]">
           {ALERT_CONFIG.DISCLAIMER}
         </p>
       </div>

@@ -42,7 +42,7 @@ export const AuditLogTab: React.FC = () => {
         <Card className="overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#7F8C8D]">
+              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#68625D]">
                 <th className="px-5 py-3">When</th>
                 <th className="px-5 py-3">Action</th>
                 <th className="px-5 py-3">Description</th>
@@ -51,7 +51,7 @@ export const AuditLogTab: React.FC = () => {
             <tbody>
               {entries.map((e) => (
                 <tr key={e.id} className="border-b border-[#EFE8E2] last:border-0 align-top">
-                  <td className="px-5 py-3 text-xs text-[#7F8C8D] whitespace-nowrap">
+                  <td className="px-5 py-3 text-xs text-[#68625D] whitespace-nowrap">
                     {new Date(e.occurred_at).toLocaleString()}
                   </td>
                   <td className="px-5 py-3">

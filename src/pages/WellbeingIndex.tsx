@@ -110,7 +110,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
       <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
         <button
           onClick={onCancel}
-          className="inline-flex items-center gap-2 text-sm font-semibold text-[#7A726C] hover:text-[#3C3530] transition-colors"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-[#6B635C] hover:text-[#3C3530] transition-colors"
         >
           <ArrowLeft size={16} aria-hidden="true" />
           Back
@@ -123,7 +123,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
             </span>
             <div>
               <h1 className="text-2xl font-bold text-[#3C3530]">Five questions about your wellbeing</h1>
-              <p className="text-sm text-[#7A726C]">Takes about a minute.</p>
+              <p className="text-sm text-[#6B635C]">Takes about a minute.</p>
             </div>
           </div>
 
@@ -145,7 +145,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
           </div>
 
           {history.length > 0 && (
-            <p className="text-[13px] text-[#7A726C]">
+            <p className="text-[13px] text-[#6B635C]">
               You've answered these {history.length === 1 ? "once" : `${history.length} times`}{" "}
               before. The last time was{" "}
               {new Date(history[history.length - 1]!.administeredAt).toLocaleDateString()}.
@@ -167,7 +167,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
             </button>
           </div>
 
-          <p className="text-[11px] text-[#9A8E82] pt-2" data-no-translate>
+          <p className="text-[11px] text-[#6B635C] pt-2" data-no-translate>
             {WHO5.attribution}
           </p>
         </div>
@@ -191,14 +191,14 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
           </div>
 
           <div className="rounded-2xl border border-[#EFE8E2] p-5">
-            <p className="text-xs font-black uppercase tracking-wider text-[#7F8C8D]">
+            <p className="text-xs font-black uppercase tracking-wider text-[#68625D]">
               {WHO5.name}
             </p>
             <p className="text-4xl font-bold text-[#3C3530] mt-2">
               {score.scaled}
-              <span className="text-lg text-[#9A8E82] font-semibold"> / 100</span>
+              <span className="text-lg text-[#6B635C] font-semibold"> / 100</span>
             </p>
-            <p className="text-[13px] text-[#7A726C] mt-1">
+            <p className="text-[13px] text-[#6B635C] mt-1">
               Raw total {score.raw} out of {WHO5.rawRange.max}, multiplied by four. That's how
               this questionnaire is normally reported.
             </p>
@@ -210,7 +210,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
               : "Nothing here needs acting on. We'll ask again later so there's more than one point to compare."}
           </p>
 
-          <p className="text-[13px] text-[#7A726C] leading-relaxed">
+          <p className="text-[13px] text-[#6B635C] leading-relaxed">
             This sits beside your distress score rather than changing it. Keeping them separate
             is what lets us check one against the other.
           </p>
@@ -232,7 +232,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
     <div className="max-w-2xl mx-auto px-4 py-10 space-y-6">
       <div className="bg-white rounded-3xl border border-[#EFE8E2] shadow-xs p-7 sm:p-9 space-y-6">
         <div className="space-y-3">
-          <div className="flex items-center justify-between text-xs font-semibold text-[#7A726C]">
+          <div className="flex items-center justify-between text-xs font-semibold text-[#6B635C]">
             <span>
               Question {index + 1} of {WHO5.items.length}
             </span>
@@ -248,7 +248,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
           </div>
         </div>
 
-        <p className="text-[13px] text-[#7A726C] leading-relaxed" data-no-translate>
+        <p className="text-[13px] text-[#6B635C] leading-relaxed" data-no-translate>
           {WHO5.instruction}
         </p>
 
@@ -328,7 +328,7 @@ export const WellbeingIndex: React.FC<Props> = ({ participantId, onDone, onCance
         </div>
 
         {isLast && !progress.complete && (
-          <p className="text-[13px] text-[#7A726C]">
+          <p className="text-[13px] text-[#6B635C]">
             {progress.total - progress.answered} still to answer. All five are needed, because
             leaving one blank isn't the same as answering "At no time".
           </p>

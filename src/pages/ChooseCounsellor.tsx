@@ -312,7 +312,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
 
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-[#3C3530]">Choose your counsellor</h1>
-        <p className="text-sm text-[#7A726C] mt-2 max-w-2xl">
+        <p className="text-sm text-[#6B635C] mt-2 max-w-2xl">
           You can pick someone yourself, or leave it to your support team. Either is fine, and you
           can change your mind later without giving a reason.
         </p>
@@ -335,7 +335,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 rounded-xl text-sm font-bold transition-colors cursor-pointer ${
-              tab === t ? "bg-white text-[#3C3530] shadow-xs" : "text-[#7A726C] hover:text-[#3C3530]"
+              tab === t ? "bg-white text-[#3C3530] shadow-xs" : "text-[#6B635C] hover:text-[#3C3530]"
             }`}
           >
             {t === "find" ? "Find a counsellor" : "Your sessions"}
@@ -354,7 +354,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
               <h2 className="font-bold text-[#3C3530] text-sm">
                 {shortlistFor ? "Your shortlist is ready" : "Answer a few questions to narrow this down"}
               </h2>
-              <p className="text-xs text-[#7A726C] mt-1">
+              <p className="text-xs text-[#6B635C] mt-1">
                 Five quick preference questions: what you want help with, language, format. It is
                 not an assessment, and nothing you pick here is shared with your counsellor or added
                 to your health record.
@@ -373,7 +373,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                     setShortlistFor(null);
                     setQuizOpen(false);
                   }}
-                  className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+                  className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
                 >
                   Browse all instead
                 </button>
@@ -384,13 +384,13 @@ export const ChooseCounsellor: React.FC<Props> = ({
           {quizOpen && (
             <div className="bg-white rounded-3xl border border-[#EFE8E2] p-6 space-y-6 shadow-xs">
               <div className="flex items-start justify-between gap-4">
-                <p className="text-xs text-[#7A726C] flex items-start gap-2">
+                <p className="text-xs text-[#6B635C] flex items-start gap-2">
                   <ShieldCheck size={14} className="text-[#2F6B4F] mt-0.5 shrink-0" />
                   Every question is optional. Skip the whole thing and browse everyone if you prefer.
                 </p>
                 <button
                   onClick={() => setQuizOpen(false)}
-                  className="text-xs font-bold text-[#7A726C] hover:text-[#3C3530] cursor-pointer shrink-0"
+                  className="text-xs font-bold text-[#6B635C] hover:text-[#3C3530] cursor-pointer shrink-0"
                 >
                   Skip quiz
                 </button>
@@ -493,7 +493,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 </button>
                 <button
                   onClick={() => setAnswers(EMPTY_ANSWERS)}
-                  className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer inline-flex items-center gap-1.5"
+                  className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer inline-flex items-center gap-1.5"
                 >
                   <RotateCcw size={13} />
                   Clear answers
@@ -506,7 +506,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                     setQuizOpen(false);
                     setNotice("Your saved answers have been deleted.");
                   }}
-                  className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer ml-auto"
+                  className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer ml-auto"
                 >
                   Delete my saved answers
                 </button>
@@ -515,13 +515,13 @@ export const ChooseCounsellor: React.FC<Props> = ({
           )}
 
           {loading ? (
-            <p className="text-sm text-[#7A726C]">Loading counsellors…</p>
+            <p className="text-sm text-[#6B635C]">Loading counsellors…</p>
           ) : counsellors.length === 0 ? (
             <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center">
               <p className="text-sm text-[#5A5049] font-semibold">
                 No counsellors have published a profile yet.
               </p>
-              <p className="text-xs text-[#7A726C] mt-2">
+              <p className="text-xs text-[#6B635C] mt-2">
                 Your support team will assign someone to you in the meantime. You do not need to do
                 anything.
               </p>
@@ -534,7 +534,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 </h2>
               </div>
               {widened && (
-                <p className="text-xs text-[#7A726C] flex items-start gap-2 -mt-3">
+                <p className="text-xs text-[#6B635C] flex items-start gap-2 -mt-3">
                   <Info size={13} className="mt-0.5 shrink-0" />
                   Too few counsellors matched everything you asked for, so this list is wider than
                   your preferences. Nothing was hidden from you.
@@ -607,7 +607,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                   />
                   Accepting new clients
                 </label>
-                <span className="ml-auto text-xs text-[#7A726C]">
+                <span className="ml-auto text-xs text-[#6B635C]">
                   {filtered.length} of {counsellors.length}
                 </span>
               </div>
@@ -624,7 +624,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 ))}
               </div>
               {filtered.length === 0 && (
-                <p className="text-sm text-[#7A726C]">
+                <p className="text-sm text-[#6B635C]">
                   No counsellor matches those filters. Try clearing one.
                 </p>
               )}
@@ -635,7 +635,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
 
       {tab === "sessions" && (
         <div className="space-y-4">
-          <p className="text-sm text-[#7A726C] max-w-2xl">
+          <p className="text-sm text-[#6B635C] max-w-2xl">
             You can review a counsellor after a session you have actually had with them. Your name is
             never shown with a review. Not to the counsellor, and not to anyone else using AURA.
           </p>
@@ -643,7 +643,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
           {sessions.length === 0 && (
             <div className="bg-white rounded-3xl border border-[#EFE8E2] p-8 text-center">
               <p className="text-sm text-[#5A5049] font-semibold">No sessions recorded yet.</p>
-              <p className="text-xs text-[#7A726C] mt-2">
+              <p className="text-xs text-[#6B635C] mt-2">
                 Once you have had a session, it will appear here and you can leave a review.
               </p>
             </div>
@@ -661,7 +661,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                     <p className="text-sm font-semibold text-[#3C3530]">
                       Session on {s.heldAt ? new Date(s.heldAt).toLocaleDateString() : "an earlier date"}
                     </p>
-                    <p className="text-xs text-[#7A726C]">{s.format || "session"}</p>
+                    <p className="text-xs text-[#6B635C]">{s.format || "session"}</p>
                   </div>
                   <button
                     onClick={() => {
@@ -723,7 +723,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
             {/* This has to match where the note actually goes. It used to say the
                 counsellor was not told anything, which stopped being true when
                 the note started reaching them. */}
-            <p className="text-xs text-[#7A726C] leading-relaxed">
+            <p className="text-xs text-[#6B635C] leading-relaxed">
               This is optional. You have already changed counsellor and nothing here
               affects that.{" "}
               {counsellors.find((c) => c.workerId === leftWorkerId)?.displayName ||
@@ -769,7 +769,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 data-no-translate
                 className="w-full px-3 py-2 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530] resize-none"
               />
-              <p className="text-[11px] text-[#7A726C] mt-1.5">
+              <p className="text-[11px] text-[#6B635C] mt-1.5">
                 {600 - leftBody.length} characters left.
               </p>
             </div>
@@ -784,7 +784,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
               </button>
               <button
                 onClick={() => setLeftWorkerId(null)}
-                className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+                className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
               >
                 No thanks
               </button>
@@ -823,7 +823,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
                 data-no-translate
                 className="w-full px-3 py-2 rounded-xl border border-[#EFE8E2] text-sm text-[#3C3530] resize-none"
               />
-              <p className="text-[11px] text-[#7A726C] mt-1.5">
+              <p className="text-[11px] text-[#6B635C] mt-1.5">
                 Please don't include your name, phone number, or details of your case. Reviews are
                 public once checked. {600 - reviewBody.length} characters left.
               </p>
@@ -839,7 +839,7 @@ export const ChooseCounsellor: React.FC<Props> = ({
               </button>
               <button
                 onClick={() => setReviewFor(null)}
-                className="px-3 py-2 rounded-xl text-[#7A726C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
+                className="px-3 py-2 rounded-xl text-[#6B635C] hover:text-[#3C3530] text-xs font-bold cursor-pointer"
               >
                 Cancel
               </button>

@@ -45,11 +45,11 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
         <div className="flex items-start justify-between mb-1">
           <div>
             <h3 className="text-lg font-black text-[#3C3530]">{workerName}'s Caseload Trends</h3>
-            <p className="text-xs text-[#7F8C8D] mt-0.5">
+            <p className="text-xs text-[#68625D] mt-0.5">
               Aggregated distress indicator across their assigned caseload — anonymized by default.
             </p>
           </div>
-          <button onClick={onClose} className="text-[#7F8C8D] hover:text-[#3C3530] cursor-pointer">
+          <button onClick={onClose} className="text-[#68625D] hover:text-[#3C3530] cursor-pointer">
             <X size={18} />
           </button>
         </div>
@@ -60,7 +60,7 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
           <Spinner label="Loading trends..." />
         ) : data ? (
           <>
-            <p className="text-xs text-[#7F8C8D] mb-4">
+            <p className="text-xs text-[#68625D] mb-4">
               {data.caseloadCount} user{data.caseloadCount === 1 ? "" : "s"} currently assigned.
             </p>
 
@@ -77,8 +77,8 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#EFE8E2" vertical={false} />
-                    <XAxis dataKey="date" stroke="#7F8C8D" fontSize={11} tickLine={false} />
-                    <YAxis domain={[0, 100]} stroke="#7F8C8D" fontSize={11} tickLine={false} />
+                    <XAxis dataKey="date" stroke="#68625D" fontSize={11} tickLine={false} />
+                    <YAxis domain={[0, 100]} stroke="#68625D" fontSize={11} tickLine={false} />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "#3C3530",
@@ -126,14 +126,14 @@ export const WorkerTrendsModal: React.FC<Props> = ({ workerId, workerName, onClo
                           className="flex items-center justify-between px-4 py-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2]"
                         >
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono text-[#7F8C8D]">{p.participantId}</span>
+                            <span className="text-xs font-mono text-[#68625D]">{p.participantId}</span>
                             <Badge tone={p.status === "Urgent safety signal" ? "bad" : p.status === "Human review pending" || p.status === "Needs follow-up" ? "warn" : "neutral"}>
                               {p.status}
                             </Badge>
                           </div>
                           <span className="text-xs font-bold text-[#3C3530]">
                             Latest: {latest ? `${latest.score}/100` : "—"}{" "}
-                            <span className="text-[#7F8C8D] font-medium">({p.points.length} check-ins)</span>
+                            <span className="text-[#68625D] font-medium">({p.points.length} check-ins)</span>
                           </span>
                         </div>
                       );

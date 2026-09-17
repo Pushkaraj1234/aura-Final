@@ -57,7 +57,7 @@ export const AdminDashboard: React.FC<Props> = ({ onLogout }) => {
             </div>
             <div>
               <p className="text-sm font-black text-[#3C3530] leading-tight">AURA Admin</p>
-              <p className="text-[10px] text-[#7F8C8D] uppercase tracking-wider font-bold">Control Panel</p>
+              <p className="text-[10px] text-[#68625D] uppercase tracking-wider font-bold">Control Panel</p>
             </div>
           </div>
         </div>

@@ -53,12 +53,12 @@ export const ResponseClockPanel: React.FC<Props> = ({
     <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-1.5">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A4A20]">
             <Clock size={13} aria-hidden="true" />
             Response times
           </span>
           <h2 className="font-serif text-2xl text-[#3A2A1E]">How quickly alerts get picked up</h2>
-          <p className="text-[14px] text-[#8A7A6B] leading-relaxed max-w-2xl">
+          <p className="text-[14px] text-[#6F5F4F] leading-relaxed max-w-2xl">
             The clock stops when someone opens the alert, not when the case closes. That is the
             part the team actually controls.
           </p>
@@ -67,20 +67,20 @@ export const ResponseClockPanel: React.FC<Props> = ({
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         <div className="rounded-2xl bg-[#FAF7F4] px-5 py-4">
-          <span className="text-[12px] text-[#8A7A6B] block">Answered in time</span>
+          <span className="text-[12px] text-[#6F5F4F] block">Answered in time</span>
           <span className="font-serif text-2xl text-[#3A2A1E]">
             {summary.metRate === null ? (
-              <span className="text-base text-[#8A7A6B]">nothing judged yet</span>
+              <span className="text-base text-[#6F5F4F]">nothing judged yet</span>
             ) : (
               `${summary.metRate}%`
             )}
           </span>
         </div>
         <div className="rounded-2xl bg-[#FAF7F4] px-5 py-4">
-          <span className="text-[12px] text-[#8A7A6B] block">Typical pick-up</span>
+          <span className="text-[12px] text-[#6F5F4F] block">Typical pick-up</span>
           <span className="font-serif text-2xl text-[#3A2A1E]">
             {summary.medianMinutesToAcknowledge === null ? (
-              <span className="text-base text-[#8A7A6B]">no data</span>
+              <span className="text-base text-[#6F5F4F]">no data</span>
             ) : summary.medianMinutesToAcknowledge < 60 ? (
               `${summary.medianMinutesToAcknowledge}m`
             ) : (
@@ -89,7 +89,7 @@ export const ResponseClockPanel: React.FC<Props> = ({
           </span>
         </div>
         <div className="rounded-2xl bg-[#FAF7F4] px-5 py-4">
-          <span className="text-[12px] text-[#8A7A6B] block">Still waiting</span>
+          <span className="text-[12px] text-[#6F5F4F] block">Still waiting</span>
           <span className="font-serif text-2xl text-[#3A2A1E]">{summary.pending}</span>
         </div>
         <div
@@ -97,7 +97,7 @@ export const ResponseClockPanel: React.FC<Props> = ({
             summary.breached > 0 ? "bg-[#FBEDE7]" : "bg-[#FAF7F4]"
           }`}
         >
-          <span className="text-[12px] text-[#8A7A6B] block">Overdue</span>
+          <span className="text-[12px] text-[#6F5F4F] block">Overdue</span>
           <span
             className={`font-serif text-2xl ${
               summary.breached > 0 ? "text-[#9A3E1E]" : "text-[#3A2A1E]"
@@ -129,13 +129,13 @@ export const ResponseClockPanel: React.FC<Props> = ({
                       <p className="text-[14px] font-semibold text-[#3A2A1E] truncate">
                         {alert.participantName || alert.participantId}
                       </p>
-                      <p className="text-[13px] text-[#8A7A6B] truncate">{alert.reason}</p>
+                      <p className="text-[13px] text-[#6F5F4F] truncate">{alert.reason}</p>
                     </div>
                     <div className="shrink-0 text-right">
                       <p className="text-[13px] font-semibold text-[#9A3E1E]">
                         {overdueLabel(status.minutesRemaining)}
                       </p>
-                      <p className="text-[11px] text-[#8A7A6B]">
+                      <p className="text-[11px] text-[#6F5F4F]">
                         promised {bandLabel[status.band]}
                       </p>
                     </div>
@@ -165,7 +165,7 @@ export const ResponseClockPanel: React.FC<Props> = ({
         </div>
       )}
 
-      <p className="text-[12px] text-[#9A8E82] leading-relaxed pt-1 border-t border-[#EFE8E2]">
+      <p className="text-[12px] text-[#6B635C] leading-relaxed pt-1 border-t border-[#EFE8E2]">
         Closed and still-waiting alerts are left out of the answered-in-time figure. Leaving an
         alert open, or resolving one without reading it, cannot improve the number.
       </p>

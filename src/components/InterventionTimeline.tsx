@@ -144,7 +144,7 @@ export const InterventionTimeline: React.FC<Props> = ({ participant, trajectory 
           </h3>
         </div>
 
-        <span className="text-xs font-semibold text-[#7F8C8D]">
+        <span className="text-xs font-semibold text-[#68625D]">
           {events.length} Milestones Recorded
         </span>
       </div>
@@ -162,7 +162,7 @@ export const InterventionTimeline: React.FC<Props> = ({ participant, trajectory 
             <div className="bg-[#FDF9F5] rounded-2xl p-4 sm:p-5 border border-[#EFE8E2] hover:border-[#DBC3B2] transition-colors space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center space-x-2">
-                  <span className="text-xs font-black font-mono text-[#7F8C8D]">
+                  <span className="text-xs font-black font-mono text-[#68625D]">
                     {ev.dayLabel}
                   </span>
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md border uppercase tracking-wider ${getEventBadge(ev.type)}`}>
@@ -182,12 +182,12 @@ export const InterventionTimeline: React.FC<Props> = ({ participant, trajectory 
                 {ev.title}
               </h4>
 
-              <p className="text-xs text-[#7A726C] leading-relaxed">
+              <p className="text-xs text-[#6B635C] leading-relaxed">
                 {ev.details}
               </p>
 
               {ev.actor && (
-                <div className="pt-2 border-t border-[#EFE8E2]/60 flex items-center justify-between text-[11px] text-[#7F8C8D]">
+                <div className="pt-2 border-t border-[#EFE8E2]/60 flex items-center justify-between text-[11px] text-[#68625D]">
                   <span className="flex items-center">
                     <UserCheck size={12} className="mr-1 text-[#5A5049]" />
                     Action taken by: <strong className="ml-1 text-[#3C3530]">{ev.actor}</strong>

@@ -40,7 +40,7 @@ const DimensionTable: React.FC<{ report: SliceReport }> = ({ report }) => (
     <div className="flex items-start justify-between gap-4 mb-4">
       <div>
         <h3 className="font-bold text-[#3C3530]">{report.label}</h3>
-        <p className="text-xs text-[#7A726C] mt-0.5">
+        <p className="text-xs text-[#6B635C] mt-0.5">
           {report.widestGap === null
             ? "Not enough reportable slices to compare."
             : `Widest gap between slices: ${report.widestGap} percentage points.`}
@@ -54,7 +54,7 @@ const DimensionTable: React.FC<{ report: SliceReport }> = ({ report }) => (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left text-[11px] font-black uppercase tracking-wider text-[#7F8C8D] border-b border-[#EFE8E2]">
+          <tr className="text-left text-[11px] font-black uppercase tracking-wider text-[#68625D] border-b border-[#EFE8E2]">
             <th className="py-2 pr-4">Slice</th>
             <th className="py-2 pr-4 text-right">Pairs</th>
             <th className="py-2 pr-4 text-right">Flagged by WHO-5</th>
@@ -68,14 +68,14 @@ const DimensionTable: React.FC<{ report: SliceReport }> = ({ report }) => (
               <td className="py-2.5 pr-4 font-semibold text-[#3C3530]">
                 {slice.value}
                 {slice.suppressed && (
-                  <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#9A8E82]">
+                  <span className="ml-2 inline-flex items-center gap-1 text-[11px] font-semibold text-[#6B635C]">
                     <EyeOff size={12} aria-hidden="true" />
                     withheld
                   </span>
                 )}
               </td>
               {slice.suppressed ? (
-                <td className="py-2.5 text-[13px] text-[#9A8E82]" colSpan={4}>
+                <td className="py-2.5 text-[13px] text-[#6B635C]" colSpan={4}>
                   Fewer than {MIN_GROUP_SIZE} pairs. Reporting a rate over this few people
                   would describe those people.
                 </td>
@@ -86,7 +86,7 @@ const DimensionTable: React.FC<{ report: SliceReport }> = ({ report }) => (
                   <td className="py-2.5 pr-4 text-right tabular-nums text-[#5A5049]">{slice.missed}</td>
                   <td className="py-2.5 text-right tabular-nums font-bold text-[#3C3530]">
                     {slice.falseNegativeRate === null ? (
-                      <span className="font-semibold text-[#9A8E82]">no cases</span>
+                      <span className="font-semibold text-[#6B635C]">no cases</span>
                     ) : (
                       `${slice.falseNegativeRate}%`
                     )}
@@ -162,7 +162,7 @@ export const FairnessTab: React.FC = () => {
               let a group with a bad miss rate hide behind a large number of correct quiet
               readings.
             </p>
-            <p className="text-[#7A726C]">
+            <p className="text-[#6B635C]">
               Pairs are matched within {PAIRING_WINDOW_DAYS} days. Anything under {MIN_GROUP_SIZE}{" "}
               is withheld.
             </p>
@@ -173,7 +173,7 @@ export const FairnessTab: React.FC = () => {
       {report.suppressed ? (
         <Card>
           <div className="flex gap-3">
-            <EyeOff size={18} className="shrink-0 mt-0.5 text-[#9A8E82]" aria-hidden="true" />
+            <EyeOff size={18} className="shrink-0 mt-0.5 text-[#6B635C]" aria-hidden="true" />
             <div className="space-y-2">
               <h3 className="font-bold text-[#3C3530]">Not enough data to report yet</h3>
               <p className="text-sm text-[#5A5049] leading-relaxed">
@@ -184,7 +184,7 @@ export const FairnessTab: React.FC = () => {
                 a rate over that few describes the people themselves.
               </p>
               {report.unpaired > 0 && (
-                <p className="text-[13px] text-[#7A726C]">
+                <p className="text-[13px] text-[#6B635C]">
                   {report.unpaired} questionnaire answer{report.unpaired === 1 ? "" : "s"} had no
                   check-in within {PAIRING_WINDOW_DAYS} days and could not be paired.
                 </p>
@@ -197,23 +197,23 @@ export const FairnessTab: React.FC = () => {
           <Card>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#7F8C8D]">Pairs</p>
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#68625D]">Pairs</p>
                 <p className="text-2xl font-bold text-[#3C3530] tabular-nums">{report.pairs}</p>
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#7F8C8D]">
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#68625D]">
                   Flagged by WHO-5
                 </p>
                 <p className="text-2xl font-bold text-[#3C3530] tabular-nums">{report.flagged}</p>
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#7F8C8D]">
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#68625D]">
                   Missed by AURA
                 </p>
                 <p className="text-2xl font-bold text-[#3C3530] tabular-nums">{report.missed}</p>
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-[#7F8C8D]">
+                <p className="text-[11px] font-black uppercase tracking-wider text-[#68625D]">
                   Overall miss rate
                 </p>
                 <p className="text-2xl font-bold text-[#3C3530] tabular-nums">
@@ -224,7 +224,7 @@ export const FairnessTab: React.FC = () => {
               </div>
             </div>
             {report.unpaired > 0 && (
-              <p className="text-[13px] text-[#7A726C] mt-4 pt-4 border-t border-[#EFE8E2]">
+              <p className="text-[13px] text-[#6B635C] mt-4 pt-4 border-t border-[#EFE8E2]">
                 {report.unpaired} questionnaire answer{report.unpaired === 1 ? "" : "s"} could not
                 be paired with a check-in inside {PAIRING_WINDOW_DAYS} days. They are excluded from
                 every figure above, and counted here rather than dropped, because quietly

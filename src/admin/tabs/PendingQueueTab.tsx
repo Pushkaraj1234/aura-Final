@@ -36,7 +36,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
 
   if (!analysis) {
     return (
-      <p className="text-[11px] text-[#7F8C8D] mt-2 flex items-center gap-1.5">
+      <p className="text-[11px] text-[#68625D] mt-2 flex items-center gap-1.5">
         Document screening not run for this application.
       </p>
     );
@@ -44,7 +44,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
 
   if (analysis.status === "unavailable") {
     return (
-      <p className="text-[11px] text-[#7F8C8D] mt-2 flex items-center gap-1.5">
+      <p className="text-[11px] text-[#68625D] mt-2 flex items-center gap-1.5">
         <ShieldQuestion size={12} /> AI document screening unavailable{analysis.reason ? ` — ${analysis.reason}` : ""}. Review the document manually.
       </p>
     );
@@ -64,7 +64,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
         <div className="flex items-center gap-2">
           <meta.Icon size={14} className="text-[#5A5049]" />
           <Badge tone={meta.tone}>{meta.label}</Badge>
-          <span className="text-[10px] text-[#7F8C8D] uppercase tracking-wider">
+          <span className="text-[10px] text-[#68625D] uppercase tracking-wider">
             {analysis.documentType || "document"} · {analysis.confidence || "low"} confidence
           </span>
         </div>
@@ -81,13 +81,13 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
       {open && (
         <div className="mt-2 space-y-2 text-[11px] text-[#5A5049]">
           <div className="grid sm:grid-cols-3 gap-2">
-            <div><span className="text-[#7F8C8D]">Field:</span> {analysis.field || "—"}</div>
-            <div><span className="text-[#7F8C8D]">Issuer:</span> {analysis.issuingBody || "—"}</div>
-            <div><span className="text-[#7F8C8D]">Name on doc:</span> {analysis.holderName || "—"}</div>
+            <div><span className="text-[#68625D]">Field:</span> {analysis.field || "—"}</div>
+            <div><span className="text-[#68625D]">Issuer:</span> {analysis.issuingBody || "—"}</div>
+            <div><span className="text-[#68625D]">Name on doc:</span> {analysis.holderName || "—"}</div>
           </div>
           {(analysis.matchedIndicators?.length || 0) > 0 && (
             <div>
-              <span className="text-[#7F8C8D]">Supporting features:</span>
+              <span className="text-[#68625D]">Supporting features:</span>
               <ul className="list-disc list-inside mt-0.5">
                 {analysis.matchedIndicators!.map((m, i) => <li key={i}>{m}</li>)}
               </ul>
@@ -103,7 +103,7 @@ const CredentialAnalysisPanel: React.FC<{ analysis: CredentialAnalysis | null }>
           )}
           {(analysis.keywordHits?.length || 0) > 0 && (
             <div>
-              <span className="text-[#7F8C8D]">Keyword matches:</span> {analysis.keywordHits!.join(", ")}
+              <span className="text-[#68625D]">Keyword matches:</span> {analysis.keywordHits!.join(", ")}
             </div>
           )}
           <p className="text-[10px] text-[#B9B0A6]">
@@ -189,7 +189,7 @@ export const PendingQueueTab: React.FC = () => {
               </p>
               <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-[#CFE6D6] font-mono">
                 <span>{result.email}</span>
-                <span className="text-[#7F8C8D]">/</span>
+                <span className="text-[#68625D]">/</span>
                 <span>{result.password}</span>
                 <button
                   onClick={() => navigator.clipboard?.writeText(`${result.email} / ${result.password}`)}
@@ -223,7 +223,7 @@ export const PendingQueueTab: React.FC = () => {
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="space-y-1.5">
                   <p className="text-base font-black text-[#3C3530]">{app.name}</p>
-                  <div className="flex items-center gap-4 flex-wrap text-xs text-[#7F8C8D] font-medium">
+                  <div className="flex items-center gap-4 flex-wrap text-xs text-[#68625D] font-medium">
                     <span className="flex items-center gap-1">
                       <Mail size={12} /> {app.email}
                     </span>
@@ -246,7 +246,7 @@ export const PendingQueueTab: React.FC = () => {
                       <FileText size={13} /> View credential document{app.credential_filename ? ` (${app.credential_filename})` : ""}
                     </a>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs text-[#7F8C8D] mt-1">
+                    <span className="inline-flex items-center gap-1.5 text-xs text-[#68625D] mt-1">
                       <FileText size={13} /> Credential document unavailable
                     </span>
                   )}

@@ -98,7 +98,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
               : "Language-Based Reflection Signal"}
           </h4>
         </div>
-        <span className="text-[10px] font-bold text-[#7F8C8D] uppercase tracking-wider">
+        <span className="text-[10px] font-bold text-[#68625D] uppercase tracking-wider">
           Assistive NLP Processing
         </span>
       </div>
@@ -124,12 +124,12 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
       {/* Contributing Patterns */}
       {hasLanguageSignal && analysis.contributingPatterns && analysis.contributingPatterns.length > 0 && (
         <div className="space-y-1.5">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-[#68625D] block">
             Contributing Language Patterns:
           </span>
           <ul className="space-y-1">
             {analysis.contributingPatterns.map((pattern, idx) => (
-              <li key={idx} className="text-xs text-[#7A726C] flex items-start space-x-2">
+              <li key={idx} className="text-xs text-[#6B635C] flex items-start space-x-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5A5049] mt-1.5 shrink-0" />
                 <span className="capitalize">{pattern}</span>
               </li>
@@ -140,7 +140,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
 
       {/* Plain Language Explanation */}
       {hasLanguageSignal && (
-        <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#7A726C] space-y-1">
+        <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-xs text-[#6B635C] space-y-1">
           <span className="font-bold text-[#3C3530] block text-[11px]">Why this signal?</span>
           <p data-no-translate className="leading-relaxed">{analysis.explanation}</p>
         </div>
@@ -232,7 +232,7 @@ export const ReflectionAnalysis: React.FC<ReflectionAnalysisProps> = ({
       )}
 
       {/* Non-Diagnostic Disclaimer */}
-      <div className="flex items-start space-x-2 text-[10px] text-[#7F8C8D] pt-1">
+      <div className="flex items-start space-x-2 text-[10px] text-[#68625D] pt-1">
         <Info size={13} className="text-[#DBC3B2] shrink-0 mt-0.5" />
         <p>
           <strong>Non-Diagnostic Notice:</strong> These signals are screening aids derived from your voluntary reflection

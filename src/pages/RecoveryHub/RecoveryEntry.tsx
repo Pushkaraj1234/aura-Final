@@ -257,7 +257,7 @@ export const RecoveryEntry: React.FC<Props> = ({
           reporting an incident, understanding your FIR, finding legal
           assistance, organizing documents, and exploring financial support.
         </p>
-        <p className="max-w-[60ch] font-serif italic text-[1.0625rem] leading-[1.7] text-[#7A6A5A]">
+        <p className="max-w-[60ch] font-serif italic text-[1.0625rem] leading-[1.7] text-[#6B5B4C]">
           Let&rsquo;s take this one step at a time.
         </p>
       </header>

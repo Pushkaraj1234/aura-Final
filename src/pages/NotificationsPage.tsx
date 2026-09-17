@@ -158,7 +158,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
     if (n.category === "FOLLOW_UP_DUE") {
       return <Clock size={18} className="text-[#5A5049]" />;
     }
-    return <Bell size={18} className="text-[#7F8C8D]" />;
+    return <Bell size={18} className="text-[#68625D]" />;
   };
 
   const getSeverityBadge = (n: AppNotification) => {
@@ -191,7 +191,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
       );
     }
     return (
-      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#EFE8E2] text-[#7A726C]">
+      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#EFE8E2] text-[#6B635C]">
         Monitoring
       </span>
     );
@@ -233,7 +233,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
               filter === "all"
                 ? "bg-[#3C3530] text-white shadow-xs"
-                : "bg-[#FDF9F5] text-[#7A726C] hover:bg-[#EFE8E2]"
+                : "bg-[#FDF9F5] text-[#6B635C] hover:bg-[#EFE8E2]"
             }`}
           >
             All ({notifications.length})
@@ -243,7 +243,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
               filter === "unread"
                 ? "bg-[#3C3530] text-white shadow-xs"
-                : "bg-[#FDF9F5] text-[#7A726C] hover:bg-[#EFE8E2]"
+                : "bg-[#FDF9F5] text-[#6B635C] hover:bg-[#EFE8E2]"
             }`}
           >
             Unread ({unreadCount})
@@ -304,7 +304,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
           {notifications.length > 0 && (
             <button
               onClick={handleClearAll}
-              className="p-2 rounded-xl text-xs font-bold text-[#7F8C8D] hover:text-[#A55D25] hover:bg-[#A55D25]/10 transition-all cursor-pointer"
+              className="p-2 rounded-xl text-xs font-bold text-[#68625D] hover:text-[#A55D25] hover:bg-[#A55D25]/10 transition-all cursor-pointer"
               title="Clear all notifications"
             >
               <Trash2 size={14} />
@@ -348,7 +348,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
                       {getSeverityBadge(notification)}
                       <h3
                         className={`text-sm font-bold ${
-                          isUnread ? "text-[#3C3530]" : "text-[#7A726C]"
+                          isUnread ? "text-[#3C3530]" : "text-[#6B635C]"
                         }`}
                       >
                         {notification.title}
@@ -358,13 +358,13 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
                       )}
                     </div>
 
-                    <p className="text-xs text-[#7A726C] leading-relaxed max-w-2xl">
+                    <p className="text-xs text-[#6B635C] leading-relaxed max-w-2xl">
                       {notification.message}
                     </p>
 
                     {/* Metadata pill details if available */}
                     {notification.metadata && (notification.metadata.score !== undefined || notification.metadata.factors) && (
-                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#7F8C8D]">
+                      <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] text-[#68625D]">
                         {notification.metadata.score !== undefined && (
                           <span className="bg-[#EFE8E2] px-2 py-0.5 rounded-md font-mono font-bold text-[#3C3530]">
                             Indicator: {notification.metadata.score}/100
@@ -376,14 +376,14 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
                           </span>
                         )}
                         {notification.metadata.factors && notification.metadata.factors.length > 0 && (
-                          <span className="hidden md:inline text-[#7F8C8D]">
+                          <span className="hidden md:inline text-[#68625D]">
                             • {notification.metadata.factors.slice(0, 2).join(", ")}
                           </span>
                         )}
                       </div>
                     )}
 
-                    <div className="flex items-center space-x-2 text-[11px] text-[#7F8C8D]">
+                    <div className="flex items-center space-x-2 text-[11px] text-[#68625D]">
                       <Clock size={11} />
                       <span>{new Date(notification.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>
                       <span>•</span>
@@ -406,7 +406,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
                   {isUnread && (
                     <button
                       onClick={() => handleMarkAsRead(notification.id)}
-                      className="p-2 rounded-xl text-[#7F8C8D] hover:text-[#3C3530] hover:bg-[#EFE8E2] transition-all cursor-pointer"
+                      className="p-2 rounded-xl text-[#68625D] hover:text-[#3C3530] hover:bg-[#EFE8E2] transition-all cursor-pointer"
                       title="Mark as read"
                     >
                       <Check size={14} />
@@ -418,11 +418,11 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
           })
         ) : (
           <div className="bg-white rounded-3xl p-12 text-center border border-[#EFE8E2] space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-[#FDF9F5] text-[#7F8C8D] flex items-center justify-center mx-auto border border-[#EFE8E2]">
+            <div className="w-12 h-12 rounded-2xl bg-[#FDF9F5] text-[#68625D] flex items-center justify-center mx-auto border border-[#EFE8E2]">
               <Bell size={20} />
             </div>
             <h3 className="text-base font-bold text-[#3C3530]">No notifications</h3>
-            <p className="text-xs text-[#7F8C8D] max-w-sm mx-auto">
+            <p className="text-xs text-[#68625D] max-w-sm mx-auto">
               {filter === "all"
                 ? "No notification alerts recorded for your account."
                 : `No notifications matching the "${filter.replace("_", " ")}" filter.`}
@@ -433,7 +433,7 @@ export const NotificationsPage: React.FC<Props> = ({ user, onNavigate, participa
 
       {/* Responsible AI Disclaimer Footer */}
       <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] text-center space-y-1">
-        <p className="text-[11px] text-[#7F8C8D]">
+        <p className="text-[11px] text-[#68625D]">
           {ALERT_CONFIG.DISCLAIMER}
         </p>
       </div>

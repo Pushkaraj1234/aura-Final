@@ -260,7 +260,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             </h4>
           </div>
 
-          <ul className="text-xs text-[#7A726C] space-y-2 leading-relaxed">
+          <ul className="text-xs text-[#6B635C] space-y-2 leading-relaxed">
             <li className="flex items-start space-x-2">
               <span className="text-[#5A5049] font-bold">•</span>
               <span>Your microphone will be active <strong>only while you choose to record</strong>.</span>
@@ -289,7 +289,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             </button>
             <button
               onClick={() => setShowPrivacyNotice(false)}
-              className="px-4 py-2.5 rounded-xl border border-[#EFE8E2] bg-white text-[#7F8C8D] hover:text-[#3C3530] text-xs font-bold transition-all cursor-pointer"
+              className="px-4 py-2.5 rounded-xl border border-[#EFE8E2] bg-white text-[#68625D] hover:text-[#3C3530] text-xs font-bold transition-all cursor-pointer"
             >
               Cancel
             </button>
@@ -330,7 +330,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
         {/* Choice / Idle State */}
         {mode === "choice" && !transcript && (
           <div className="space-y-4">
-            <p className="text-xs text-[#7A726C]">
+            <p className="text-xs text-[#6B635C]">
               Choose how you would like to share your voluntary reflection:
             </p>
 
@@ -345,10 +345,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                   </div>
                   <div>
                     <h5 className="text-xs font-bold text-[#3C3530]">Start Voice Reflection</h5>
-                    <span className="text-[10px] text-[#7F8C8D]">Speak naturally into microphone</span>
+                    <span className="text-[10px] text-[#68625D]">Speak naturally into microphone</span>
                   </div>
                 </div>
-                <p className="text-[11px] text-[#7F8C8D]">
+                <p className="text-[11px] text-[#68625D]">
                   Audio is recorded locally with assistive transcription where supported.
                 </p>
               </button>
@@ -363,10 +363,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                   </div>
                   <div>
                     <h5 className="text-xs font-bold text-[#3C3530]">Type a Reflection</h5>
-                    <span className="text-[10px] text-[#7F8C8D]">Write in your own words</span>
+                    <span className="text-[10px] text-[#68625D]">Write in your own words</span>
                   </div>
                 </div>
-                <p className="text-[11px] text-[#7F8C8D]">
+                <p className="text-[11px] text-[#68625D]">
                   Enter free-form thoughts, feelings, or situational context.
                 </p>
               </button>
@@ -374,7 +374,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
             {/* SIH Demonstration Helper */}
             <div className="pt-2 flex items-center justify-between border-t border-[#EFE8E2]">
-              <span className="text-[10px] text-[#7F8C8D]">Presentation / Evaluator Tools:</span>
+              <span className="text-[10px] text-[#68625D]">Presentation / Evaluator Tools:</span>
               <button
                 onClick={handleLoadDemoSample}
                 className="text-[11px] font-bold text-[#5A5049] hover:text-[#3C3530] bg-white border border-[#EFE8E2] px-3 py-1 rounded-lg transition-colors flex items-center space-x-1 cursor-pointer"
@@ -408,7 +408,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {(transcript || interimText) && (
               <div className="p-3 rounded-xl bg-[#FDF9F5] border border-[#EFE8E2] text-left text-xs text-[#3C3530] max-h-24 overflow-y-auto">
                 <span data-no-translate className="font-semibold">{transcript}</span>{" "}
-                <span className="text-[#7F8C8D] italic">{interimText}</span>
+                <span className="text-[#68625D] italic">{interimText}</span>
               </div>
             )}
 
@@ -447,14 +447,14 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                   </button>
                   <div className="text-xs">
                     <span className="font-bold text-[#3C3530] block">Your Audio Recording</span>
-                    <span className="text-[10px] text-[#7F8C8D]">{formatTime(recordingSeconds)} length</span>
+                    <span className="text-[10px] text-[#68625D]">{formatTime(recordingSeconds)} length</span>
                   </div>
                 </div>
 
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={handleRecordAgain}
-                    className="px-2.5 py-1.5 rounded-lg border border-[#EFE8E2] text-[#7A726C] hover:text-[#3C3530] text-xs font-bold flex items-center space-x-1 cursor-pointer"
+                    className="px-2.5 py-1.5 rounded-lg border border-[#EFE8E2] text-[#6B635C] hover:text-[#3C3530] text-xs font-bold flex items-center space-x-1 cursor-pointer"
                   >
                     <RotateCcw size={12} />
                     <span>Record Again</span>
@@ -473,7 +473,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {/* Transcript & Text Editing */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <label className="text-[11px] font-bold uppercase tracking-wider text-[#7F8C8D] block">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-[#68625D] block">
                   {audioUrl ? "Transcript (Editable):" : "Reflection Text:"}
                 </label>
                 <div className="flex items-center space-x-2">
@@ -484,7 +484,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                         setTranscript("");
                         setIsDemoSample(false);
                       }}
-                      className="text-[10px] text-[#7F8C8D] hover:text-[#3C3530] underline cursor-pointer"
+                      className="text-[10px] text-[#68625D] hover:text-[#3C3530] underline cursor-pointer"
                     >
                       Switch to Voice
                     </button>
@@ -529,7 +529,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                   Share this reflection with my designated humanitarian counselor
                 </span>
               </label>
-              <span className="text-[10px] text-[#7F8C8D]">Consent Controlled</span>
+              <span className="text-[10px] text-[#68625D]">Consent Controlled</span>
             </div>
 
             {/* Voice tone analysis in progress / unavailable notice */}
@@ -566,10 +566,10 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
               Active for voice recordings
             </span>
           </div>
-          <p className="text-xs text-[#7A726C] leading-relaxed">
+          <p className="text-xs text-[#6B635C] leading-relaxed">
             When you record a voice reflection, AURA measures how it was spoken directly from the audio on your device: pitch variability, speaking pace, pauses, and loudness. Nothing here works by scanning for keywords: your transcript and these measured delivery numbers are both given to an LLM, which reasons about your emotional tone from the two together, including cases where your words and your tone disagree (e.g. saying "I'm fine" in a flat, quiet voice).
           </p>
-          <div className="pt-1 text-[11px] text-[#7F8C8D] border-t border-[#EFE8E2]">
+          <div className="pt-1 text-[11px] text-[#68625D] border-t border-[#EFE8E2]">
             <strong className="text-[#5A5049]">Notice:</strong> This is a screening aid, not a clinical or diagnostic tool. Raw audio never leaves your device. Only the transcript and numeric delivery measurements are sent for analysis, and a human reviewer always makes the final call.
           </div>
         </div>
@@ -591,7 +591,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           </button>
 
           {showWhyCard && (
-            <div className="p-4 pt-0 text-xs text-[#7A726C] space-y-2 border-t border-[#EFE8E2]/60 bg-[#FDF9F5]">
+            <div className="p-4 pt-0 text-xs text-[#6B635C] space-y-2 border-t border-[#EFE8E2]/60 bg-[#FDF9F5]">
               <p className="text-[11px] leading-relaxed">
                 Some people find speaking easier than typing. A voluntary voice reflection can provide additional context that may not appear in structured check-in questions.
               </p>
@@ -601,7 +601,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 <li>Enrich your voluntary wellbeing timeline</li>
                 <li>Help a counselor understand what you want to share</li>
               </ul>
-              <p className="text-[10px] text-[#7F8C8D] pt-1">
+              <p className="text-[10px] text-[#68625D] pt-1">
                 <strong>Notice:</strong> Voice reflections never diagnose conditions and are not automated conclusions about you.
               </p>
             </div>
@@ -622,7 +622,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
           </button>
 
           {showHowItWorksCard && (
-            <div className="p-4 pt-0 text-xs text-[#7A726C] space-y-2 border-t border-[#EFE8E2]/60 bg-[#FDF9F5]">
+            <div className="p-4 pt-0 text-xs text-[#6B635C] space-y-2 border-t border-[#EFE8E2]/60 bg-[#FDF9F5]">
               <ol className="space-y-1 text-[11px] list-decimal list-inside leading-relaxed">
                 <li>You voluntarily record or type a reflection.</li>
                 <li>Voice is converted to text where supported.</li>
@@ -631,7 +631,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 <li>The result becomes an additional wellbeing signal, combined with your voluntary check-in history.</li>
                 <li>Important signals are reviewed by a human counselor.</li>
               </ol>
-              <p className="text-[10px] text-[#7F8C8D] pt-1">
+              <p className="text-[10px] text-[#68625D] pt-1">
                 Voice tone/emotion inference is not clinically validated and is not used as a diagnosis.
               </p>
             </div>

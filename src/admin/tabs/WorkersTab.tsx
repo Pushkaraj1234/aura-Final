@@ -105,7 +105,7 @@ export const WorkersTab: React.FC = () => {
           {!resetResult.emailSent && (
             <div className="flex items-center gap-2 bg-white rounded-lg px-3 py-2 border border-[#CFE6D6] font-mono text-xs text-[#2F6B4F] mt-2">
               <span>{resetResult.email}</span>
-              <span className="text-[#7F8C8D]">/</span>
+              <span className="text-[#68625D]">/</span>
               <span>{resetResult.password}</span>
               <button
                 onClick={() => navigator.clipboard?.writeText(`${resetResult.email} / ${resetResult.password}`)}
@@ -131,7 +131,7 @@ export const WorkersTab: React.FC = () => {
         <Card className="overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#7F8C8D]">
+              <tr className="bg-[#FDF9F5] border-b border-[#EFE8E2] text-left text-[10px] font-bold uppercase tracking-wider text-[#68625D]">
                 <th className="px-5 py-3">Name</th>
                 <th className="px-5 py-3">Email</th>
                 <th className="px-5 py-3">Status</th>

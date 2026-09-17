@@ -93,10 +93,10 @@ export const SettingsTab: React.FC = () => {
       ) : (
         <div className="space-y-6">
           <Card className="p-6 max-w-md">
-            <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
               Default Max Caseload per Counselor
             </label>
-            <p className="text-xs text-[#7F8C8D] mb-3">
+            <p className="text-xs text-[#68625D] mb-3">
               Assigning a user beyond this limit will prompt admins for confirmation before proceeding.
             </p>
             <div className="flex items-center gap-3">
@@ -120,7 +120,7 @@ export const SettingsTab: React.FC = () => {
             <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
               <div>
                 <h3 className="text-sm font-black text-[#3C3530] uppercase tracking-wider">AI Alert Thresholds — Sensitivity</h3>
-                <p className="text-xs text-[#7F8C8D] mt-1 max-w-xl">
+                <p className="text-xs text-[#68625D] mt-1 max-w-xl">
                   Tunes the client-side alert engine that decides when a distress signal is raised for human review.
                   Lower thresholds = more alerts (fewer missed cases, more noise); higher = fewer alerts. Applied the
                   next time the app loads. Prototype rules — not clinically validated.
@@ -151,7 +151,7 @@ export const SettingsTab: React.FC = () => {
                         </span>
                       )}
                     </div>
-                    <p className="text-[10px] text-[#7F8C8D] mt-0.5 leading-snug">{meta.hint}</p>
+                    <p className="text-[10px] text-[#68625D] mt-0.5 leading-snug">{meta.hint}</p>
                     <div className="flex items-center gap-2 mt-2">
                       <input
                         type="number"
@@ -163,7 +163,7 @@ export const SettingsTab: React.FC = () => {
                         }
                         className="w-20 px-2.5 py-1.5 rounded-lg border border-[#EFE8E2] bg-white text-sm font-bold text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049]"
                       />
-                      <span className="text-[10px] text-[#7F8C8D]">
+                      <span className="text-[10px] text-[#68625D]">
                         {meta.unit} · default {meta.def}
                         {meta.unit}
                       </span>

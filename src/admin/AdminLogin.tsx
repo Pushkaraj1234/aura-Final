@@ -96,7 +96,7 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
               </span>{" "}
               <span className="text-[#3C3530] font-semibold">{row.label}</span>
               {!row.ok && row.hint && (
-                <span className="block text-[10px] text-[#7F8C8D] pl-3.5">{row.hint}</span>
+                <span className="block text-[10px] text-[#68625D] pl-3.5">{row.hint}</span>
               )}
             </li>
           ))}
@@ -129,14 +129,14 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
               <span>Restricted Administrator Access</span>
             </div>
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">AURA Admin Panel</h2>
-            <p className="text-xs sm:text-sm text-[#7F8C8D]">
+            <p className="text-xs sm:text-sm text-[#68625D]">
               Enter the administrator passcode to manage counselor credentialing and user assignments.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Passcode
               </label>
               <input
@@ -167,7 +167,7 @@ export const AdminLogin: React.FC<Props> = ({ onSuccess }) => {
             </button>
           </form>
 
-          <p className="text-[11px] text-[#7F8C8D] text-center pt-2 border-t border-[#EFE8E2]">
+          <p className="text-[11px] text-[#68625D] text-center pt-2 border-t border-[#EFE8E2]">
             Repeated failed attempts will temporarily lock this device out.
             <span className="block mt-1 text-[10px] text-[#B9B0A6] font-mono">build {__BUILD_ID__}</span>
           </p>

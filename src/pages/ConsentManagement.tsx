@@ -185,7 +185,7 @@ export const ConsentManagement: React.FC<Props> = ({
       {/* Back Button */}
       <button
         onClick={onBack}
-        className="inline-flex items-center space-x-2 text-xs font-bold text-[#7A726C] hover:text-[#3C3530] transition-colors cursor-pointer"
+        className="inline-flex items-center space-x-2 text-xs font-bold text-[#6B635C] hover:text-[#3C3530] transition-colors cursor-pointer"
       >
         <ArrowLeft size={16} />
         <span>Back to My Profile</span>
@@ -198,14 +198,14 @@ export const ConsentManagement: React.FC<Props> = ({
             <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-[#DBC3B2]/20 text-[#5A5049]">
               Participant Control
             </span>
-            <span className="text-xs text-[#7F8C8D] font-mono">
+            <span className="text-xs text-[#68625D] font-mono">
               Granular Permission Matrix
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-[#3C3530] mt-1 tracking-tight">
             Consent & Privacy Preferences
           </h1>
-          <p className="text-sm text-[#7A726C] mt-1 leading-relaxed">
+          <p className="text-sm text-[#6B635C] mt-1 leading-relaxed">
             You retain absolute sovereignty over your reflection data. Turn features on or off anytime with zero penalties.
           </p>
         </div>
@@ -237,7 +237,7 @@ export const ConsentManagement: React.FC<Props> = ({
               <h3 className="text-lg font-black text-[#3C3530]">
                 Active Consent Status
               </h3>
-              <p className="text-xs text-[#7F8C8D]">
+              <p className="text-xs text-[#68625D]">
                 Last updated: {new Date(preferences.updatedAt).toLocaleDateString()}
               </p>
             </div>
@@ -264,7 +264,7 @@ export const ConsentManagement: React.FC<Props> = ({
                 <span className="text-sm font-black text-[#3C3530] block">
                   Daily Wellbeing Check-ins
                 </span>
-                <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
+                <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">
                   Allows saving your daily ratings for stress, sleep, safety, and mood.
                 </p>
               </div>
@@ -293,7 +293,7 @@ export const ConsentManagement: React.FC<Props> = ({
                 <span className="text-sm font-black text-[#3C3530] block">
                   Counselor Sharing
                 </span>
-                <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
+                <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">
                   Lets a trained case worker see raised distress signals and offer a one-to-one check-in.
                 </p>
               </div>
@@ -322,7 +322,7 @@ export const ConsentManagement: React.FC<Props> = ({
                 <span className="text-sm font-black text-[#3C3530] block">
                   Optional Free-Text Notes Sharing
                 </span>
-                <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
+                <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">
                   Enables sharing voluntary text reflections directly with your counselor.
                 </p>
               </div>
@@ -362,7 +362,7 @@ export const ConsentManagement: React.FC<Props> = ({
                 </div>
                 <div>
                   <span className="text-sm font-black text-[#3C3530] block">{title}</span>
-                  <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">{description}</p>
+                  <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">{description}</p>
                 </div>
               </div>
               <button
@@ -393,7 +393,7 @@ export const ConsentManagement: React.FC<Props> = ({
                 <span className="text-sm font-black text-[#3C3530] block">
                   Anonymous Community Aggregation
                 </span>
-                <p className="text-xs text-[#7A726C] mt-0.5 leading-relaxed">
+                <p className="text-xs text-[#6B635C] mt-0.5 leading-relaxed">
                   Includes your anonymized counts in regional planning totals (zero identity disclosure).
                 </p>
               </div>
@@ -432,7 +432,7 @@ export const ConsentManagement: React.FC<Props> = ({
       </div>
 
       {/* Production Architecture Clarification Note */}
-      <div className="p-5 rounded-3xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2 text-xs text-[#7A726C]">
+      <div className="p-5 rounded-3xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2 text-xs text-[#6B635C]">
         {/* Was: "In full production deployment, selecting Withdraw Consent
             triggers an automated cryptographic erasure pipeline: all
             historical check-in vectors are deleted from active databases,
@@ -463,13 +463,13 @@ export const ConsentManagement: React.FC<Props> = ({
                 Withdraw All Participation Consent?
               </h4>
             </div>
-            <p className="text-xs text-[#7A726C] leading-relaxed">
+            <p className="text-xs text-[#6B635C] leading-relaxed">
               This will disable daily check-ins, remove you from counselor queues, and pause all trend monitoring. You can rejoin anytime.
             </p>
             <div className="flex justify-end space-x-2 pt-2">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-[#7F8C8D] hover:bg-[#FDF9F5]"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-[#68625D] hover:bg-[#FDF9F5]"
               >
                 Cancel
               </button>

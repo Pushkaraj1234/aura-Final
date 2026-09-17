@@ -43,7 +43,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
         <button
           type="button"
           onClick={onBack}
-          className="text-xs font-bold text-[#7F8C8D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
+          className="text-xs font-bold text-[#68625D] hover:text-[#3C3530] transition-colors flex items-center space-x-1.5 mb-6 cursor-pointer"
         >
           <ArrowLeft size={14} />
           <span>Back to Role Selection</span>
@@ -61,7 +61,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
             <h2 className="text-2xl sm:text-3xl font-black text-[#3C3530]">
               Counselor Portal
             </h2>
-            <p className="text-xs sm:text-sm text-[#7F8C8D]">
+            <p className="text-xs sm:text-sm text-[#68625D]">
               Access the clinical distress monitoring dashboard and case review queue.
             </p>
           </div>
@@ -88,7 +88,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Staff Email Address
               </label>
               <input
@@ -104,7 +104,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-[#7F8C8D] uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <input
@@ -131,7 +131,7 @@ export const SupportLogin: React.FC<Props> = ({ onSuccess, onBack, onGoToApply }
           </form>
 
           <div className="pt-2 border-t border-[#EFE8E2] text-center space-y-2">
-            <p className="text-[11px] text-[#7F8C8D]">
+            <p className="text-[11px] text-[#68625D]">
               Humanitarian staff must abide by ethical guidelines and strict data protection protocols.
             </p>
             {onGoToApply && (

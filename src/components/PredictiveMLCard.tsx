@@ -68,7 +68,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
           <h3 className="font-bold text-[#3C3530]">Predictive ML Horizon</h3>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="text-[10px] uppercase font-bold tracking-wider text-[#7F8C8D] bg-[#FDF9F5] px-2 py-1 rounded-md border border-[#EFE8E2]">
+          <span className="text-[10px] uppercase font-bold tracking-wider text-[#68625D] bg-[#FDF9F5] px-2 py-1 rounded-md border border-[#EFE8E2]">
             {metadata.name} {metadata.version}
           </span>
           <button 
@@ -95,19 +95,19 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
         </div>
 
         <div className="p-4 rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] flex flex-col">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#7F8C8D] mb-1 flex items-center">
+          <span className="text-xs font-bold uppercase tracking-wider text-[#68625D] mb-1 flex items-center">
             <Database size={12} className="mr-1" /> Data Completeness
           </span>
           <div className="flex items-baseline space-x-2 text-[#3C3530]">
             <span className="text-3xl font-black">{Math.round(prediction.dataCompleteness * 100)}%</span>
           </div>
-          <span className="text-[10px] font-medium text-[#7F8C8D] mt-1">
+          <span className="text-[10px] font-medium text-[#68625D] mt-1">
             {prediction.confidence === "Low" ? "Low confidence because insufficient historical observations are available." : `Confidence: ${prediction.confidence}`}
           </span>
         </div>
 
         <div className="p-4 rounded-2xl border border-[#EFE8E2] bg-[#FDF9F5] flex flex-col">
-           <span className="text-xs font-bold uppercase tracking-wider text-[#7F8C8D] mb-1 flex items-center">
+           <span className="text-xs font-bold uppercase tracking-wider text-[#68625D] mb-1 flex items-center">
             <Target size={12} className="mr-1" /> Primary Contributors
           </span>
           <div className="flex-1 overflow-y-auto space-y-1.5 mt-1">
@@ -116,7 +116,7 @@ export const PredictiveMLCard: React.FC<Props> = ({ participantId }) => {
             ) : (
               prediction.majorContributingFeatures.map((f: any, i: number) => (
                 <div key={i} className="flex justify-between items-center text-xs">
-                  <span className="text-[#7A726C] truncate mr-2">{f.name}</span>
+                  <span className="text-[#6B635C] truncate mr-2">{f.name}</span>
                   <span className={`font-semibold ${f.impact === 'Increased' ? 'text-rose-500' : f.impact === 'Decreased' ? 'text-emerald-500' : 'text-slate-400'}`}>
                     {f.impact}
                   </span>

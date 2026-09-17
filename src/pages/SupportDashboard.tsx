@@ -324,9 +324,9 @@ export const SupportDashboard: React.FC<Props> = ({
   // Calm, non-alarming wording for a wellbeing score band.
   const scoreBand = (score: number) =>
     score >= 70
-      ? { label: "Needs attention", cls: "bg-[#F3E1DC] text-[#A65D52]" }
+      ? { label: "Needs attention", cls: "bg-[#F3E1DC] text-[#8A3F35]" }
       : score >= 45
-      ? { label: "Worth a look", cls: "bg-[#F4E7D2] text-[#8A6338]" }
+      ? { label: "Worth a look", cls: "bg-[#F4E7D2] text-[#8A4A20]" }
       : { label: "Steady", cls: "bg-[#E9EFE2] text-[#5E7148]" };
 
   // Filtered & Sorted participants
@@ -431,13 +431,15 @@ export const SupportDashboard: React.FC<Props> = ({
     <div className="max-w-7xl mx-auto py-10 sm:py-14 px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-14 font-sans">
       {/* Header — warm, personal, not an ops centre */}
       <header className="pt-2 space-y-3">
-        <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#B0713C]">
+        <p className="text-[11px] font-semibold tracking-[0.14em] uppercase text-[#8A4A20]">
           {header.dateLine}
         </p>
         <h1 className="font-serif text-[2.5rem] sm:text-[3rem] leading-[1.08] text-[#3A2A1E]">
           {header.greeting}, {header.firstName}
         </h1>
-        <p className="text-[15px] sm:text-base text-[#8A7A6B] max-w-xl leading-relaxed">
+        {/* #6B5B4C, not the #6F5F4F used on cards: this line sits on the body
+            gradient, whose darker band takes #6F5F4F to 4.498:1. */}
+        <p className="text-[15px] sm:text-base text-[#6B5B4C] max-w-xl leading-relaxed">
           Here&rsquo;s a calm overview of the people you&rsquo;re supporting. {header.subtitle}
         </p>
       </header>
@@ -452,7 +454,7 @@ export const SupportDashboard: React.FC<Props> = ({
             <div className="font-serif text-4xl text-[#3A2A1E]">
               {participants.filter(p => p.status === "Urgent safety signal" || p.status === "Human review pending").length}
             </div>
-            <p className="text-[13px] text-[#8A7A6B]">People who may need attention</p>
+            <p className="text-[13px] text-[#6F5F4F]">People who may need attention</p>
           </div>
         </div>
 
@@ -470,10 +472,10 @@ export const SupportDashboard: React.FC<Props> = ({
           <div className="space-y-1">
             <div className="font-serif text-4xl text-[#3A2A1E]">
               {cohortChange.deltaPoints === null
-                ? <span className="text-xl text-[#8A7A6B]">not enough yet</span>
+                ? <span className="text-xl text-[#6F5F4F]">not enough yet</span>
                 : `${cohortChange.deltaPoints > 0 ? "+" : ""}${cohortChange.deltaPoints}`}
             </div>
-            <p className="text-[13px] text-[#8A7A6B]">
+            <p className="text-[13px] text-[#6F5F4F]">
               {cohortChange.deltaPoints === null
                 ? `Needs check-ins in both of the last two ${cohortChange.windowDays}-day windows`
                 : cohortChange.deltaPoints > 0
@@ -493,7 +495,7 @@ export const SupportDashboard: React.FC<Props> = ({
             <div className="font-serif text-4xl text-[#3A2A1E]">
               {participants.filter(p => p.status === "Needs follow-up").length}
             </div>
-            <p className="text-[13px] text-[#8A7A6B]">Support plans in review</p>
+            <p className="text-[13px] text-[#6F5F4F]">Support plans in review</p>
           </div>
         </div>
 
@@ -508,7 +510,7 @@ export const SupportDashboard: React.FC<Props> = ({
           </div>
           <button
             onClick={onNavigateAlerts}
-            className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-white text-[#9A5B33] px-4 py-2.5 text-[13px] font-semibold hover:bg-[#FBF3EA] transition-colors cursor-pointer"
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-white text-[#8A4A20] px-4 py-2.5 text-[13px] font-semibold hover:bg-[#FBF3EA] transition-colors cursor-pointer"
           >
             <span>Review support</span>
             <ArrowRight size={14} />
@@ -526,16 +528,16 @@ export const SupportDashboard: React.FC<Props> = ({
       <section className="flex flex-wrap gap-4">
         {/* Was a hardcoded "96%". */}
         <div className="card-elev rounded-2xl px-5 py-4 flex items-center gap-3 min-w-[160px]">
-          <Shield size={16} className="text-[#B0713C]" />
+          <Shield size={16} className="text-[#8A4A20]" />
           <div>
-            <span className="text-[12px] text-[#8A7A6B] block">Consent coverage</span>
+            <span className="text-[12px] text-[#6F5F4F] block">Consent coverage</span>
             <span className="font-serif text-xl text-[#3A2A1E]">
               {consentCoverage.percent === null
                 ? "too few to report"
                 : `${consentCoverage.percent}%`}
             </span>
             {consentCoverage.percent !== null && (
-              <span className="text-[11px] text-[#8A7A6B] block">
+              <span className="text-[11px] text-[#6F5F4F] block">
                 {consentCoverage.consented} of {consentCoverage.total}
               </span>
             )}
@@ -546,9 +548,9 @@ export const SupportDashboard: React.FC<Props> = ({
             This is the median time from an alert being raised to a human
             opening it, computed from the alerts on this screen. */}
         <div className="card-elev rounded-2xl px-5 py-4 flex items-center gap-3 min-w-[160px]">
-          <Clock size={16} className="text-[#B0713C]" />
+          <Clock size={16} className="text-[#8A4A20]" />
           <div>
-            <span className="text-[12px] text-[#8A7A6B] block">Typical pick-up</span>
+            <span className="text-[12px] text-[#6F5F4F] block">Typical pick-up</span>
             <span className="font-serif text-xl text-[#3A2A1E]">
               {responseClocks.medianMinutesToAcknowledge === null
                 ? "no data yet"
@@ -573,14 +575,14 @@ export const SupportDashboard: React.FC<Props> = ({
       {escalationQueue.length > 0 && (
         <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
           <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A4A20]">
               <ScanSearch size={13} />
               Escalation detected
             </span>
             <h2 className="font-serif text-2xl text-[#3A2A1E]">
               Changes in how people are using the app
             </h2>
-            <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
+            <p className="text-[13px] text-[#6F5F4F] max-w-2xl leading-relaxed">
               Read from check-in rhythm rather than from anything anyone reported, so someone who
               has stopped answering altogether still appears here, which is the one case every
               other list on this page will miss. Each carries the facts behind it; open the person
@@ -600,7 +602,7 @@ export const SupportDashboard: React.FC<Props> = ({
                     <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
                       <span data-no-translate>{participant.name || participant.id}</span>
                     </p>
-                    <p className="text-[13px] text-[#8A7A6B] leading-snug">{escalation.headline}</p>
+                    <p className="text-[13px] text-[#6F5F4F] leading-snug">{escalation.headline}</p>
                   </div>
                   <span
                     className={`shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full ${
@@ -629,14 +631,14 @@ export const SupportDashboard: React.FC<Props> = ({
       {secondLookQueue.length > 0 && (
         <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
           <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A4A20]">
               <ScanSearch size={13} />
               Worth a second look
             </span>
             <h2 className="font-serif text-2xl text-[#3A2A1E]">
               The self-report may not be the whole picture
             </h2>
-            <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
+            <p className="text-[13px] text-[#6F5F4F] max-w-2xl leading-relaxed">
               These people did not report high distress. That is exactly why they are here. What they
               said and what everything else suggests do not line up, so the usual queue would never
               have shown them to you. Nothing here says anyone is being untruthful; it is a prompt to
@@ -656,7 +658,7 @@ export const SupportDashboard: React.FC<Props> = ({
                     <p className="font-semibold text-[15px] text-[#3A2A1E] truncate">
                       <span data-no-translate>{participant.name || participant.id}</span>
                     </p>
-                    <p className="text-[13px] text-[#8A7A6B] leading-snug">{concordance!.summary}</p>
+                    <p className="text-[13px] text-[#6F5F4F] leading-snug">{concordance!.summary}</p>
                   </div>
                   <span
                     className={`shrink-0 text-[10px] font-bold uppercase tracking-[0.08em] px-2.5 py-1 rounded-full ${
@@ -699,12 +701,12 @@ export const SupportDashboard: React.FC<Props> = ({
       <section className="card-elev rounded-3xl p-6 sm:p-8 space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div className="space-y-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#B0713C]">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A4A20]">
               <HeartHandshake size={13} />
               Needs your attention
             </span>
             <h2 className="font-serif text-2xl text-[#3A2A1E]">People who may need a check-in</h2>
-            <p className="text-[13px] text-[#8A7A6B] max-w-2xl leading-relaxed">
+            <p className="text-[13px] text-[#6F5F4F] max-w-2xl leading-relaxed">
               Ordered by what looks most time-sensitive. Safety signals first, then sustained changes, then people who asked for support.
             </p>
           </div>
@@ -716,9 +718,9 @@ export const SupportDashboard: React.FC<Props> = ({
 
         {priorityQueue.length > 0 ? (
           <div className="overflow-x-auto -mx-2 px-2">
-            <table className="w-full text-left text-[13px] text-[#8A7A6B]">
+            <table className="w-full text-left text-[13px] text-[#6F5F4F]">
               <thead>
-                <tr className="text-[11px] uppercase tracking-[0.08em] text-[#A99A8A] border-b border-[#ECE1D3]">
+                <tr className="text-[11px] uppercase tracking-[0.08em] text-[#6F5F4F] border-b border-[#ECE1D3]">
                   <th className="py-3 pr-4 font-semibold">Person</th>
                   <th className="py-3 px-4 font-semibold">Signal</th>
                   <th className="py-3 px-4 font-semibold">Wellbeing signal</th>
@@ -739,7 +741,7 @@ export const SupportDashboard: React.FC<Props> = ({
                       className="hover:bg-[#F8F0E5] transition-colors cursor-pointer group"
                     >
                       <td className="py-4 pr-4 align-top">
-                        <span className="font-semibold text-[#3A2A1E] group-hover:text-[#9A5B33] transition-colors">
+                        <span className="font-semibold text-[#3A2A1E] group-hover:text-[#8A4A20] transition-colors">
                           {alertName(alert)}
                         </span>
                         <span className="block font-mono text-[10px] text-[#B7A996] mt-0.5">{alert.participantId}</span>
@@ -749,10 +751,10 @@ export const SupportDashboard: React.FC<Props> = ({
                         <span
                           className={`px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide inline-block ${
                             isUrgent
-                              ? "bg-[#F3E1DC] text-[#A65D52]"
+                              ? "bg-[#F3E1DC] text-[#8A3F35]"
                               : isElevated
-                              ? "bg-[#F4E7D2] text-[#8A6338]"
-                              : "bg-[#EFEAE1] text-[#82796B]"
+                              ? "bg-[#F4E7D2] text-[#8A4A20]"
+                              : "bg-[#EFEAE1] text-[#6B635C]"
                           }`}
                         >
                           {alert.category ? alert.category.replace("_", " ") : alert.severity}
@@ -762,10 +764,10 @@ export const SupportDashboard: React.FC<Props> = ({
                       <td className="py-4 px-4 align-top">
                         <div className="flex items-center gap-2">
                           <span className="text-sm font-semibold text-[#3A2A1E]">
-                            {alert.score}<span className="text-[11px] text-[#A99A8A]">/100</span>
+                            {alert.score}<span className="text-[11px] text-[#6F5F4F]">/100</span>
                           </span>
                           {alert.changeDelta !== undefined && alert.changeDelta !== 0 && (
-                            <span className={`text-[11px] font-semibold ${alert.changeDelta > 0 ? "text-[#A65D52]" : "text-[#5E7148]"}`}>
+                            <span className={`text-[11px] font-semibold ${alert.changeDelta > 0 ? "text-[#8A3F35]" : "text-[#5E7148]"}`}>
                               {alert.changeDelta > 0 ? `+${alert.changeDelta}` : alert.changeDelta}
                             </span>
                           )}
@@ -777,7 +779,7 @@ export const SupportDashboard: React.FC<Props> = ({
                         {alert.contributingFactors && alert.contributingFactors.length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-1">
                             {alert.contributingFactors.slice(0, 2).map((f, i) => (
-                              <span key={i} className="text-[10px] bg-[#F1E7DA] px-1.5 py-0.5 rounded text-[#8A7A6B]">
+                              <span key={i} className="text-[10px] bg-[#F1E7DA] px-1.5 py-0.5 rounded text-[#6F5F4F]">
                                 {f}
                               </span>
                             ))}
@@ -815,7 +817,7 @@ export const SupportDashboard: React.FC<Props> = ({
               <CheckCircle2 size={20} />
             </div>
             <h4 className="font-serif text-lg text-[#3A2A1E]">You&rsquo;re all caught up</h4>
-            <p className="text-[13px] text-[#8A7A6B]">No one in your caseload needs review right now.</p>
+            <p className="text-[13px] text-[#6F5F4F]">No one in your caseload needs review right now.</p>
           </div>
         )}
       </section>
@@ -823,11 +825,11 @@ export const SupportDashboard: React.FC<Props> = ({
       {/* How AURA works — light explainer */}
       <section className="rounded-3xl p-6 sm:p-8 bg-[#F6ECE0] border border-[#ECE1D3] space-y-5">
         <div className="space-y-2">
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#9A5B33]">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-[#8A4A20]">
             How AURA supports your work
           </span>
           <h3 className="font-serif text-xl sm:text-2xl text-[#3A2A1E]">From a gentle signal to real support</h3>
-          <p className="text-[13px] text-[#8A7A6B] max-w-3xl leading-relaxed">
+          <p className="text-[13px] text-[#6F5F4F] max-w-3xl leading-relaxed">
             AURA watches how answers change over time and explains why something stood out. A person on the support team decides what to do about it.
           </p>
         </div>
@@ -849,7 +851,7 @@ export const SupportDashboard: React.FC<Props> = ({
               }`}
             >
               <div className="text-[12px] font-semibold">{item.step}</div>
-              <p className="text-[10px] text-[#8A7A6B] leading-tight">{item.desc}</p>
+              <p className="text-[10px] text-[#6F5F4F] leading-tight">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -862,10 +864,10 @@ export const SupportDashboard: React.FC<Props> = ({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
               <h2 className="font-serif text-2xl text-[#3A2A1E] flex items-center gap-2">
-                <Activity size={19} className="text-[#B0713C]" />
+                <Activity size={19} className="text-[#8A4A20]" />
                 Wellbeing signals
               </h2>
-              <p className="text-[13px] text-[#8A7A6B]">A gentle view of how the group has been trending.</p>
+              <p className="text-[13px] text-[#6F5F4F]">A gentle view of how the group has been trending.</p>
             </div>
             <div className="flex items-center gap-1 bg-[#F4EADF] rounded-full p-1">
               {([14, 30] as const).map((d) => (
@@ -875,7 +877,7 @@ export const SupportDashboard: React.FC<Props> = ({
                   className={`px-3 py-1 rounded-full text-[11px] font-semibold transition-colors cursor-pointer ${
                     rangeDays === d
                       ? "bg-white text-[#3A2A1E] ring-1 ring-[#ECE1D3]"
-                      : "text-[#8A7A6B] hover:text-[#3A2A1E]"
+                      : "text-[#6F5F4F] hover:text-[#3A2A1E]"
                   }`}
                 >
                   {d}d
@@ -887,7 +889,7 @@ export const SupportDashboard: React.FC<Props> = ({
           {cohort.total === 0 ? (
             <div className="h-48 w-full flex flex-col items-center justify-center text-center px-6">
               <p className="text-sm font-semibold text-[#3A2A1E]">No check-ins in the last {rangeDays} days</p>
-              <p className="text-[13px] text-[#8A7A6B] mt-1">
+              <p className="text-[13px] text-[#6F5F4F] mt-1">
                 Bars appear here once people submit check-ins within the selected window.
               </p>
             </div>
@@ -909,7 +911,7 @@ export const SupportDashboard: React.FC<Props> = ({
                         title={b.score == null ? "No check-ins" : `${b.label}: avg ${b.score}/100 · ${b.count} check-in(s)`}
                       />
                     </div>
-                    <span className="text-[10px] text-[#A99A8A]">{b.label}</span>
+                    <span className="text-[10px] text-[#6F5F4F]">{b.label}</span>
                   </div>
                 );
               })}
@@ -918,12 +920,16 @@ export const SupportDashboard: React.FC<Props> = ({
 
           <div className="pt-6 border-t border-[#EEE3D4] grid grid-cols-1 sm:grid-cols-3 gap-6">
             {[
-              { label: "Sleep disruption", value: cohort.sleepLabel, pct: cohort.sleepDeficit, color: "#A8763F", soft: "#F1E5D3" },
-              { label: "Social withdrawal", value: cohort.socialLabel, pct: cohort.socialWithdrawal, color: "#C0855A", soft: "#F3E7DA" },
-              { label: "Self-report intensity", value: cohort.intensityTrend, pct: null as number | null, color: "#C58077", soft: "#F3E1DC", meta: `${cohort.total} check-ins` },
+              // Each colour is used for a dot, a bar and the reading itself, so
+              // it has to clear 4.5:1 as text, not only 3:1 as a mark. The
+              // originals were 3.05, 2.41 and 2.41 against the card. Darkened
+              // while staying three distinguishable hues.
+              { label: "Sleep disruption", value: cohort.sleepLabel, pct: cohort.sleepDeficit, color: "#8A5A20", soft: "#F1E5D3" },
+              { label: "Social withdrawal", value: cohort.socialLabel, pct: cohort.socialWithdrawal, color: "#7A4A2E", soft: "#F3E7DA" },
+              { label: "Self-report intensity", value: cohort.intensityTrend, pct: null as number | null, color: "#8A3F35", soft: "#F3E1DC", meta: `${cohort.total} check-ins` },
             ].map((f) => (
               <div key={f.label}>
-                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#A99A8A] flex items-center gap-1.5 mb-1.5">
+                <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#6F5F4F] flex items-center gap-1.5 mb-1.5">
                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: f.color }} />
                   {f.label}
                 </span>
@@ -950,7 +956,7 @@ export const SupportDashboard: React.FC<Props> = ({
             {priorityQueue.length > 2 && (
               <button
                 onClick={onNavigateAlerts}
-                className="text-[12px] font-semibold text-[#9A5B33] hover:text-[#7E4420] cursor-pointer"
+                className="text-[12px] font-semibold text-[#8A4A20] hover:text-[#7E4420] cursor-pointer"
               >
                 See all
               </button>
@@ -966,12 +972,12 @@ export const SupportDashboard: React.FC<Props> = ({
             return (
               <div key={a.id} className="card-elev rounded-3xl p-5 space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#F3E7D8] text-[#9A5B33] flex items-center justify-center text-[12px] font-semibold shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-[#F3E7D8] text-[#8A4A20] flex items-center justify-center text-[12px] font-semibold shrink-0">
                     {initialsOf(name)}
                   </div>
                   <div className="min-w-0 flex-1">
                     <h4 className="text-[14px] font-semibold text-[#3A2A1E] truncate">{name}</h4>
-                    <p className="text-[11px] text-[#8A7A6B] mt-0.5 line-clamp-2">{a.reason}</p>
+                    <p className="text-[11px] text-[#6F5F4F] mt-0.5 line-clamp-2">{a.reason}</p>
                   </div>
                   <span className={`px-2 py-1 rounded-full text-[9px] font-semibold uppercase tracking-wide shrink-0 ${band.cls}`}>
                     {band.label}
@@ -1001,7 +1007,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 <CheckCircle2 size={18} />
               </div>
               <p className="text-[13px] font-semibold text-[#3A2A1E]">Nothing to follow up</p>
-              <p className="text-[12px] text-[#8A7A6B]">Your caseload looks settled right now.</p>
+              <p className="text-[12px] text-[#6F5F4F]">Your caseload looks settled right now.</p>
             </div>
           )}
         </div>
@@ -1012,7 +1018,7 @@ export const SupportDashboard: React.FC<Props> = ({
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <h3 className="font-serif text-xl text-[#3A2A1E]">People you&rsquo;re supporting</h3>
-            <p className="text-[13px] text-[#8A7A6B]">
+            <p className="text-[13px] text-[#6F5F4F]">
               Open anyone to see their trend, the factors behind it, and to add a follow-up note.
             </p>
           </div>
@@ -1023,7 +1029,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 <button
                   onClick={() => setCaseloadScope("mine")}
                   className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                    caseloadScope === "mine" ? "bg-[#A85D2E] text-white" : "text-[#8A7A6B] hover:text-[#3A2A1E]"
+                    caseloadScope === "mine" ? "bg-[#A85D2E] text-white" : "text-[#6F5F4F] hover:text-[#3A2A1E]"
                   }`}
                 >
                   My caseload ({assignedCount})
@@ -1031,7 +1037,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 <button
                   onClick={() => setCaseloadScope("all")}
                   className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
-                    caseloadScope === "all" ? "bg-[#A85D2E] text-white" : "text-[#8A7A6B] hover:text-[#3A2A1E]"
+                    caseloadScope === "all" ? "bg-[#A85D2E] text-white" : "text-[#6F5F4F] hover:text-[#3A2A1E]"
                   }`}
                 >
                   All ({participants.length})
@@ -1040,7 +1046,7 @@ export const SupportDashboard: React.FC<Props> = ({
             )}
 
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A99A8A]" size={15} />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#6F5F4F]" size={15} />
               <input
                 type="text"
                 placeholder="Search name, ID, counselor, language…"
@@ -1075,9 +1081,9 @@ export const SupportDashboard: React.FC<Props> = ({
         </div>
 
         <div className="overflow-x-auto -mx-2 px-2">
-          <table className="w-full text-left text-[13px] text-[#8A7A6B]">
+          <table className="w-full text-left text-[13px] text-[#6F5F4F]">
             <thead>
-              <tr className="text-[11px] uppercase tracking-[0.08em] text-[#A99A8A] border-b border-[#ECE1D3]">
+              <tr className="text-[11px] uppercase tracking-[0.08em] text-[#6F5F4F] border-b border-[#ECE1D3]">
                 <th className="py-3 pr-4 font-semibold">Person</th>
                 <th className="py-3 px-4 font-semibold">Wellbeing signal</th>
                 <th className="py-3 px-4 font-semibold">Recent change</th>
@@ -1106,10 +1112,10 @@ export const SupportDashboard: React.FC<Props> = ({
                     >
                       <td className="py-4 pr-4 align-top">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-[#3A2A1E] group-hover:text-[#9A5B33] transition-colors">
+                          <span className="font-semibold text-[#3A2A1E] group-hover:text-[#8A4A20] transition-colors">
                             {p.name || p.id}
                           </span>
-                          <span className="text-[10px] font-normal px-1.5 py-0.5 rounded bg-[#F1E7DA] text-[#8A7A6B]">
+                          <span className="text-[10px] font-normal px-1.5 py-0.5 rounded bg-[#F1E7DA] text-[#6F5F4F]">
                             {p.language}
                           </span>
                         </div>
@@ -1120,11 +1126,11 @@ export const SupportDashboard: React.FC<Props> = ({
 
                       <td className="py-4 px-4 align-top">
                         {count === 0 ? (
-                          <span className="text-[12px] text-[#A99A8A]">Not assessed yet</span>
+                          <span className="text-[12px] text-[#6F5F4F]">Not assessed yet</span>
                         ) : (
                           <div className="flex items-center gap-2">
                             <span className="text-[15px] font-semibold text-[#3A2A1E]">
-                              {score}<span className="text-[11px] text-[#A99A8A]">/100</span>
+                              {score}<span className="text-[11px] text-[#6F5F4F]">/100</span>
                             </span>
                             {band && (
                               <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${band.cls}`}>
@@ -1137,14 +1143,14 @@ export const SupportDashboard: React.FC<Props> = ({
 
                       <td className="py-4 px-4 align-top">
                         {count === 0 ? (
-                          <span className="text-[12px] text-[#A99A8A] italic">Awaiting check-in</span>
+                          <span className="text-[12px] text-[#6F5F4F] italic">Awaiting check-in</span>
                         ) : count === 1 ? (
                           <span className="text-[12px] font-medium text-[#5E7148] bg-[#E9EFE2] px-2 py-0.5 rounded-md">
                             Baseline
                           </span>
                         ) : delta !== null ? (
                           delta > 0 ? (
-                            <span className="text-[#A65D52] font-semibold flex items-center gap-1">
+                            <span className="text-[#8A3F35] font-semibold flex items-center gap-1">
                               <TrendingUp size={14} /> +{delta} pts
                             </span>
                           ) : delta < 0 ? (
@@ -1152,10 +1158,10 @@ export const SupportDashboard: React.FC<Props> = ({
                               <TrendingDown size={14} /> {delta} pts
                             </span>
                           ) : (
-                            <span className="text-[#A99A8A] font-medium">Steady</span>
+                            <span className="text-[#6F5F4F] font-medium">Steady</span>
                           )
                         ) : (
-                          <span className="text-[#A99A8A]">—</span>
+                          <span className="text-[#6F5F4F]">—</span>
                         )}
                       </td>
 
@@ -1163,22 +1169,22 @@ export const SupportDashboard: React.FC<Props> = ({
                         <span
                           className={`text-[11px] font-medium px-2.5 py-1 rounded-lg inline-block ${
                             count === 0
-                              ? "bg-[#F1E7DA] text-[#A99A8A]"
+                              ? "bg-[#F1E7DA] text-[#6F5F4F]"
                               : p.status === "Urgent safety signal"
-                              ? "bg-[#F3E1DC] text-[#A65D52]"
+                              ? "bg-[#F3E1DC] text-[#8A3F35]"
                               : p.status === "Needs follow-up" || p.status === "Human review pending"
-                              ? "bg-[#F4E7D2] text-[#8A6338]"
+                              ? "bg-[#F4E7D2] text-[#8A4A20]"
                               : p.status === "Improving"
                               ? "bg-[#E9EFE2] text-[#5E7148]"
-                              : "bg-[#EFEAE1] text-[#82796B]"
+                              : "bg-[#EFEAE1] text-[#6B635C]"
                           }`}
                         >
                           {count === 0 ? "Awaiting check-in" : p.status}
                         </span>
                       </td>
 
-                      <td className="py-4 px-4 align-top text-[#8A7A6B]">
-                        {workerLabel(p.assignedWorker) || <span className="text-[#A99A8A] italic">Unassigned</span>}
+                      <td className="py-4 px-4 align-top text-[#6F5F4F]">
+                        {workerLabel(p.assignedWorker) || <span className="text-[#6F5F4F] italic">Unassigned</span>}
                       </td>
 
                       <td className="py-4 pl-4 text-right align-top">
@@ -1198,7 +1204,7 @@ export const SupportDashboard: React.FC<Props> = ({
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="py-10 text-center text-[13px] text-[#A99A8A]">
+                  <td colSpan={6} className="py-10 text-center text-[13px] text-[#6F5F4F]">
                     No one matches your search and filters.
                   </td>
                 </tr>
@@ -1210,8 +1216,8 @@ export const SupportDashboard: React.FC<Props> = ({
 
       {/* Responsible-AI note */}
       <div className="p-4 rounded-2xl bg-[#F6ECE0] border border-[#ECE1D3] text-center space-y-1">
-        <p className="text-[12px] text-[#8A7A6B]">{ALERT_CONFIG.DISCLAIMER}</p>
-        <p className="text-[11px] text-[#A99A8A]">
+        <p className="text-[12px] text-[#6F5F4F]">{ALERT_CONFIG.DISCLAIMER}</p>
+        <p className="text-[11px] text-[#6F5F4F]">
           Prototype thresholds are demonstration rules and are not clinically validated.
         </p>
       </div>
