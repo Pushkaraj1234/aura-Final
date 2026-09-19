@@ -37,6 +37,7 @@ import { EmptyWellbeingState } from "../components/EmptyWellbeingState";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { MyRecordings } from "../components/MyRecordings";
 import { CheckInDayPanel } from "../components/CheckInDayPanel";
+import { useChartDayOpener, SCORE_DOT_CLASS } from "../hooks/useChartDayOpener";
 import { ParticipantTestCard } from "../components/ParticipantTestCard";
 import { supabaseService } from "../services/supabaseService";
 import { who5Due, type InstrumentAdministration, type InstrumentDue } from "../services/instruments";
@@ -357,68 +358,15 @@ ${
   const chartLabel = (i: number) => chartData[i]?.timestamp ?? "";
 
   /**
-   * Which day's breakdown is open, as an index into checkIns.
+   * Which day's breakdown is open, plus the wiring that opens it.
    *
-   * Held here rather than in the chart because the graph is only one way in:
-   * the same panel opens from the keyboard list below it, and both must show
-   * the same day.
+   * The chart quirks live in useChartDayOpener because the counsellor's view
+   * of this same trajectory needs identical behaviour, and two copies of a
+   * recharts workaround is two places for it to rot.
    */
-  const [openDay, setOpenDay] = useState<number | null>(null);
+  const { chartRef, openDay, setOpenDay, openDayFromChart } = useChartDayOpener(checkIns.length);
 
   const openDayCheckIn = openDay !== null ? checkIns[openDay] : null;
-
-  /**
-   * Opens whichever point the chart currently has active.
-   *
-   * Recharts reports it as activeTooltipIndex — the same index driving the
-   * tooltip — so the target is the whole vertical band around a point rather
-   * than a 2.5px dot, which is the difference between a feature that works on
-   * a phone and one that does not.
-   *
-   * Two things this has to survive, both found by testing rather than by
-   * reading the types.
-   *
-   * The index is `number | string | null` in recharts 3 (TooltipIndex is a
-   * string), so it is coerced rather than type-checked; a
-   * `typeof === "number"` guard silently dropped every click.
-   *
-   * And on touch, recharts hands external handlers `activeTooltipIndex: null`
-   * even while its own tooltip is on screen showing the point. So a tap fell
-   * through entirely and the feature worked on a mouse only. Where the index
-   * is missing it is recovered from the rendered dots, which are in data
-   * order and are the very things the person is aiming at.
-   */
-  const chartRef = React.useRef<HTMLDivElement>(null);
-
-  /** The dot nearest this x position, or null if there is nothing to measure. */
-  const nearestPointTo = (clientX: number): number | null => {
-    const dots = chartRef.current?.querySelectorAll(".recharts-area-dot");
-    if (!dots || dots.length === 0) return null;
-    let best = -1;
-    let bestGap = Infinity;
-    dots.forEach((dot, idx) => {
-      const r = dot.getBoundingClientRect();
-      const gap = Math.abs(r.left + r.width / 2 - clientX);
-      if (gap < bestGap) {
-        bestGap = gap;
-        best = idx;
-      }
-    });
-    return best >= 0 && best < checkIns.length ? best : null;
-  };
-
-  const openDayFromChart = (state: any, event?: any) => {
-    const raw = state?.activeTooltipIndex ?? state?.activeIndex;
-    const i = Number(raw);
-    if (raw !== null && raw !== undefined && Number.isInteger(i) && i >= 0 && i < checkIns.length) {
-      setOpenDay(i);
-      return;
-    }
-    const clientX = event?.changedTouches?.[0]?.clientX ?? event?.clientX;
-    if (typeof clientX !== "number") return;
-    const nearest = nearestPointTo(clientX);
-    if (nearest !== null) setOpenDay(nearest);
-  };
 
   // Lightweight session request — no calendar/table, just a message to the
   // assigned counsellor plus a notification they can act on from Messages.
@@ -723,7 +671,7 @@ ${
                     strokeWidth={3}
                     fillOpacity={1}
                     fill="url(#scoreGradient)"
-                    dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0 }}
+                    dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0, className: SCORE_DOT_CLASS }}
                     activeDot={{ r: 6, fill: "#5A5049", stroke: "#FFFFFF", strokeWidth: 2 }}
                   />
                 </AreaChart>

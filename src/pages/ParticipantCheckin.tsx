@@ -183,6 +183,18 @@ export const ParticipantCheckin: React.FC<Props> = ({
   const [showVoiceRecorder, setShowVoiceRecorder] = useState<boolean>(false);
 
   /**
+   * Step 9 records separately from step 8, deliberately.
+   *
+   * Both questions can be answered by voice, and a single shared reflection
+   * object would mean the second recording silently replaced the first — two
+   * different things a person said about two different questions, with one of
+   * them thrown away. They are combined at submit instead, where both
+   * transcripts survive.
+   */
+  const [publicReflection, setPublicReflection] = useState<ParticipantReflection | null>(null);
+  const [showPublicVoiceRecorder, setShowPublicVoiceRecorder] = useState<boolean>(false);
+
+  /**
    * Stress, now measured instead of inferred.
    *
    * This used to be `round(6 - (wellbeing + sleep) / 2)`, which meant the
@@ -213,6 +225,21 @@ export const ParticipantCheckin: React.FC<Props> = ({
 
   const [isProcessingAI, setIsProcessingAI] = useState(false);
 
+  /**
+   * The review screen's view of both open answers, resolved the same way the
+   * submit path resolves them so the person is shown what will actually be
+   * stored rather than a different join of the same fields.
+   */
+  const previewTranscript = [
+    currentReflection?.transcript?.trim() || copingReflection.trim(),
+    publicReflection?.transcript?.trim() || publicUnderstandingReflection.trim(),
+  ]
+    .filter(Boolean)
+    .join("\n\n");
+  const previewSpokeAloud = [currentReflection, publicReflection].some(
+    (r) => r?.type === "voice" || r?.audioRecorded
+  );
+
   // Compile summary of answers for notes
   const compiledNotes = [
     selectedViolations.length > 0 ? `Violations / Circumstances: ${selectedViolations.join("; ")}` : "",
@@ -230,12 +257,32 @@ export const ParticipantCheckin: React.FC<Props> = ({
       setIsProcessingAI(true);
       try {
         const isSafetyConcern = safetyOverride !== undefined ? safetyOverride : immediateSafetyConcern;
-        const transcript = currentReflection?.transcript || [copingReflection, publicUnderstandingReflection].filter(Boolean).join("\n\n");
+        /**
+         * Both open questions, whichever way each was answered.
+         *
+         * This used to read `currentReflection?.transcript || [both texts]`,
+         * so recording step 8 by voice discarded step 9 entirely from the
+         * transcript the model reads and from the stored reflection — the
+         * person answered and the answer went nowhere. Each part now resolves
+         * on its own, and they are joined.
+         */
+        const copingPart = currentReflection?.transcript?.trim() || copingReflection.trim();
+        const publicPart = publicReflection?.transcript?.trim() || publicUnderstandingReflection.trim();
+        const transcript = [copingPart, publicPart].filter(Boolean).join("\n\n");
+
+        const reflections = [currentReflection, publicReflection].filter(Boolean) as ParticipantReflection[];
+        /**
+         * The stricter choice wins. Each recorder carries its own
+         * share-with-worker switch, and someone who withheld one of the two
+         * has not agreed to share the pair.
+         */
+        const shareWithWorker = reflections.every((r) => r.shareWithWorker !== false);
+        const spokeAloud = reflections.some((r) => r.type === "voice" || r.audioRecorded);
         let aiAnalysis = undefined;
         let aiComprehensiveAnalysis = undefined;
 
         // Only run Gemini AI if there is text and it's being shared
-        if (transcript.length > 5 && (currentReflection ? currentReflection.shareWithWorker : true)) {
+        if (transcript.length > 5 && shareWithWorker) {
           try {
             const { apiService } = await import('../services/apiService');
             aiAnalysis = await apiService.ai.analyzeReflection(transcript);
@@ -248,17 +295,35 @@ export const ParticipantCheckin: React.FC<Props> = ({
           }
         }
 
-        let updatedReflection = currentReflection || (transcript ? {
-          id: `ref-${Date.now()}`,
-          participantId,
-          type: "text" as const,
-          transcript: transcript,
-          audioRecorded: false,
-          shareWithWorker: true,
-          sentiment: "none",
-          timestamp: new Date().toISOString(),
-          analysis: analyzeReflection(transcript)
-        } : undefined);
+        /**
+         * One reflection carrying both answers.
+         *
+         * The first recorder's object is used as the base so its voice-tone
+         * and acoustic analysis survive, but its transcript is replaced with
+         * the combined one — otherwise the stored reflection would again hold
+         * only half of what the person said.
+         */
+        const base = reflections[0];
+        let updatedReflection = transcript
+          ? {
+              ...(base ?? {
+                id: `ref-${Date.now()}`,
+                participantId,
+                audioRecorded: false,
+                sentiment: "none",
+                timestamp: new Date().toISOString(),
+              }),
+              id: base?.id ?? `ref-${Date.now()}`,
+              participantId,
+              type: (spokeAloud ? "voice" : "text") as "voice" | "text",
+              transcript,
+              audioRecorded: base?.audioRecorded ?? false,
+              shareWithWorker,
+              sentiment: base?.sentiment ?? "none",
+              timestamp: base?.timestamp ?? new Date().toISOString(),
+              analysis: analyzeReflection(transcript),
+            }
+          : undefined;
 
         if (updatedReflection && aiAnalysis) {
           updatedReflection = { ...updatedReflection, aiAnalysis };
@@ -277,8 +342,8 @@ export const ParticipantCheckin: React.FC<Props> = ({
           immediateSafetyConcern: isSafetyConcern,
           scoreVersion: SCORE_VERSION,
           notes: compiledNotes || transcript || undefined,
-          voiceInputUsed: currentReflection?.type === "voice" || currentReflection?.audioRecorded,
-          shareNoteWithWorker: currentReflection ? currentReflection.shareWithWorker : true,
+          voiceInputUsed: spokeAloud,
+          shareNoteWithWorker: shareWithWorker,
           reflection: updatedReflection,
           aiComprehensiveAnalysis,
           functional: {
@@ -582,7 +647,7 @@ export const ParticipantCheckin: React.FC<Props> = ({
           )}
 
           {/* Free text / voice reflection NLP feedback if submitted */}
-          {(currentReflection || copingReflection || publicUnderstandingReflection) && (
+          {previewTranscript && (
             <div className="space-y-3">
               <div className="p-4 rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] space-y-2 text-xs">
                 <div className="flex items-center justify-between">
@@ -591,15 +656,15 @@ export const ParticipantCheckin: React.FC<Props> = ({
                     Submitted Voluntary Reflection:
                   </span>
                   <span className="text-[10px] font-mono font-bold text-[#5A5049] bg-[#DBC3B2]/20 px-2 py-0.5 rounded-md">
-                    {currentReflection?.type === "voice" ? "Voice Transcript" : "Text Input"}
+                    {previewSpokeAloud ? "Voice Transcript" : "Text Input"}
                   </span>
                 </div>
-                <p className="text-[#6B635C] italic">"{currentReflection?.transcript || [copingReflection, publicUnderstandingReflection].filter(Boolean).join(" • ")}"</p>
+                <p className="text-[#6B635C] italic">"{previewTranscript}"</p>
               </div>
 
               <ReflectionAnalysis
-                analysis={currentReflection?.analysis || analyzeReflection([copingReflection, publicUnderstandingReflection].filter(Boolean).join("\n\n"))}
-                isDemoSample={currentReflection?.analysis?.isDemoSample}
+                analysis={analyzeReflection(previewTranscript)}
+                isDemoSample={currentReflection?.analysis?.isDemoSample || publicReflection?.analysis?.isDemoSample}
               />
             </div>
           )}
@@ -1352,14 +1417,53 @@ export const ParticipantCheckin: React.FC<Props> = ({
               </div>
             </div>
 
-            <div className="pt-2">
-              <textarea
-                rows={5}
-                value={publicUnderstandingReflection}
-                onChange={(e) => setPublicUnderstandingReflection(e.target.value)}
-                placeholder="Share what you believe the world needs to hear about survivors and the aftermath of atrocities..."
-                className="w-full p-4 rounded-2xl border border-[#EFE8E2] bg-white text-sm text-[#3C3530] focus:ring-2 focus:ring-[#5A5049] focus:outline-none leading-relaxed"
-              />
+            {/* Voice or Text Switch. Same offer as step 8: this is a question
+                about what someone wishes were understood, and speaking it is
+                often easier than typing it — particularly for anyone who finds
+                writing hard, or who would rather say it than see it written. */}
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setShowPublicVoiceRecorder(!showPublicVoiceRecorder)}
+                  className="text-xs font-bold text-[#5A5049] hover:underline flex items-center space-x-1 cursor-pointer"
+                >
+                  <Mic size={14} />
+                  <span>
+                    {showPublicVoiceRecorder
+                      ? "Hide Voice Recorder"
+                      : "Use Spoken Voice Recording Instead"}
+                  </span>
+                </button>
+                <span className="text-xs text-[#68625D]">
+                  {publicUnderstandingReflection.length} characters
+                </span>
+              </div>
+
+              {showPublicVoiceRecorder ? (
+                <div className="border border-[#EFE8E2] rounded-2xl p-4 bg-[#FDF9F5]">
+                  <VoiceRecorder
+                    participantId={participantId}
+                    initialTranscript={publicUnderstandingReflection}
+                    onSaveReflection={(ref) => {
+                      setPublicReflection(ref);
+                      if (ref?.transcript) setPublicUnderstandingReflection(ref.transcript);
+                    }}
+                    onClearReflection={() => {
+                      setPublicReflection(null);
+                      setPublicUnderstandingReflection("");
+                    }}
+                  />
+                </div>
+              ) : (
+                <textarea
+                  rows={5}
+                  value={publicUnderstandingReflection}
+                  onChange={(e) => setPublicUnderstandingReflection(e.target.value)}
+                  placeholder="Share what you believe the world needs to hear about survivors and the aftermath of atrocities..."
+                  className="w-full p-4 rounded-2xl border border-[#EFE8E2] bg-white text-sm text-[#3C3530] focus:ring-2 focus:ring-[#5A5049] focus:outline-none leading-relaxed"
+                />
+              )}
             </div>
           </div>
         )}

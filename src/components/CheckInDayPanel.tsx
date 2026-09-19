@@ -48,8 +48,44 @@ interface Props {
    * reconcile against it rather than quietly showing a different number.
    */
   chartScore: number;
+  /**
+   * Who is reading. The arithmetic is identical either way; the sentences are
+   * not. A counsellor reading "what you wrote that day" would be reading a
+   * screen that thinks it is talking to the survivor.
+   */
+  voice?: "self" | "counsellor";
   onClose: () => void;
 }
+
+/**
+ * The same panel, addressed to whoever opened it.
+ *
+ * Kept as one component rather than two so the breakdown, the recomputation
+ * and the provenance rules cannot drift apart between the two surfaces. Only
+ * the wording differs.
+ */
+const COPY = {
+  self: {
+    eyebrow: "That day’s check-in",
+    reported: "What you reported that day",
+    wrote: "What you wrote that day",
+    recomputed:
+      "This reading was worked out again just now, from the answers you gave that day, using the same rules that were used then. Your answers themselves are unchanged.",
+    saved: "This is the reading that was saved with this check-in.",
+    footer:
+      "This is a self-reported wellbeing indicator, not a diagnosis. It describes what you told us on this day and nothing more.",
+  },
+  counsellor: {
+    eyebrow: "Their check-in that day",
+    reported: "What they reported that day",
+    wrote: "What they wrote that day",
+    recomputed:
+      "This reading was worked out again just now, from the answers they gave that day, using the same rules that were used then. Their answers themselves are unchanged.",
+    saved: "This is the reading that was saved with this check-in.",
+    footer:
+      "This is a self-reported wellbeing indicator, not a diagnosis. It describes what this person told us on this day and nothing more. A human decision still belongs to you.",
+  },
+} as const;
 
 const LEVEL_TONE: Record<string, string> = {
   LOW: "bg-[#E8F0EA] text-[#17624A] border-[#CADDD0]",
@@ -63,8 +99,10 @@ export const CheckInDayPanel: React.FC<Props> = ({
   previous,
   history,
   chartScore,
+  voice = "self",
   onClose,
 }) => {
+  const copy = COPY[voice];
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -147,6 +185,23 @@ export const CheckInDayPanel: React.FC<Props> = ({
   const reflectionText =
     checkIn.reflection?.transcript?.trim() || checkIn.optionalNote?.trim() || "";
 
+  /**
+   * Whether a counsellor may read what the person wrote.
+   *
+   * A participant can submit a reflection and withhold it from their worker;
+   * shareNoteWithWorker and reflection.shareWithWorker both carry that choice.
+   * The person themselves always sees their own words. Only an explicit false
+   * withholds — an older row with the field absent was written when everything
+   * was shared, and silently hiding it would misreport the past in the other
+   * direction.
+   */
+  const withheld =
+    voice === "counsellor" &&
+    (checkIn.shareNoteWithWorker === false ||
+      checkIn.reflection?.shareWithWorker === false);
+
+  const showReflection = Boolean(reflectionText) && !withheld;
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#3C3530]/55 backdrop-blur-sm"
@@ -165,7 +220,7 @@ export const CheckInDayPanel: React.FC<Props> = ({
           <div className="min-w-0 space-y-1">
             <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#68625D]">
               <Calendar size={12} aria-hidden="true" />
-              That day&rsquo;s check-in
+              {copy.eyebrow}
             </span>
             <h3 id="day-panel-title" className="text-lg sm:text-xl font-black text-[#3C3530] truncate">
               {dayLabel}
@@ -213,9 +268,7 @@ export const CheckInDayPanel: React.FC<Props> = ({
 
           {/* Provenance. Which of the two readings this is. */}
           <p className="text-[11px] leading-relaxed text-[#6B635C] bg-[#FDF9F5] border border-[#EFE8E2] rounded-xl px-3.5 py-2.5">
-            {wasSaved
-              ? "This is the reading that was saved with this check-in."
-              : "This reading was worked out again just now, from the answers you gave that day, using the same rules that were used then. Your answers themselves are unchanged."}
+            {wasSaved ? copy.saved : copy.recomputed}
           </p>
 
           {/* The arithmetic — the same component the results screen uses, so
@@ -233,7 +286,7 @@ export const CheckInDayPanel: React.FC<Props> = ({
           {/* Where it came from */}
           <div className="space-y-3">
             <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
-              What you reported that day
+              {copy.reported}
             </h4>
             <div className="space-y-3">
               {factors.map((f) => (
@@ -284,10 +337,10 @@ export const CheckInDayPanel: React.FC<Props> = ({
           )}
 
           {/* Their own words, if they left any. Never paraphrased. */}
-          {reflectionText && (
+          {showReflection && (
             <div className="space-y-2">
               <h4 className="text-xs font-black uppercase tracking-wider text-[#68625D]">
-                What you wrote that day
+                {copy.wrote}
               </h4>
               <blockquote className="rounded-2xl bg-[#FDF9F5] border border-[#EFE8E2] px-4 py-3 flex gap-2.5">
                 <Quote size={14} className="text-[#DBC3B2] shrink-0 mt-0.5" aria-hidden="true" />
@@ -305,8 +358,7 @@ export const CheckInDayPanel: React.FC<Props> = ({
           )}
 
           <p className="text-[11px] leading-relaxed text-[#68625D] border-t border-[#EFE8E2] pt-4">
-            This is a self-reported wellbeing indicator, not a diagnosis. It
-            describes what you told us on this day and nothing more.
+            {copy.footer}
           </p>
         </div>
       </div>

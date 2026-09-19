@@ -164,18 +164,42 @@ t('the panel is a real dialog, closable and focus-managed', () => {
 // ---- the graph is not the only way in --------------------------------------
 
 const profile = readFileSync(new URL('../src/pages/ParticipantProfile.tsx', import.meta.url), 'utf8');
+const detail = readFileSync(new URL('../src/pages/ParticipantDetail.tsx', import.meta.url), 'utf8');
+const hook = readFileSync(new URL('../src/hooks/useChartDayOpener.ts', import.meta.url), 'utf8');
 
-t('every day is reachable without a mouse', () => {
-  ok(/focus:not-sr-only/.test(profile), 'the keyboard list never becomes visible on focus');
-  ok(/setOpenDay\(d\.i\)/.test(profile), 'the keyboard buttons do not open the panel');
+t('every day is reachable without a mouse, on both charts', () => {
+  for (const [name, src] of [['participant', profile], ['counsellor', detail]]) {
+    ok(/focus:not-sr-only/.test(src), `${name}: keyboard list never becomes visible on focus`);
+    ok(/setOpenDay\(d\.i\)/.test(src), `${name}: keyboard buttons do not open the panel`);
+  }
+});
+
+t('the counsellor chart measures only the distress dots', () => {
+  // ParticipantDetail draws a second area for the counsellor's own marks, and
+  // its dots carry recharts-area-dot too. Measuring against both interleaves
+  // two series and opens the wrong check-in.
+  ok(/SCORE_DOT_CLASS/.test(detail), 'the distress series is not marked on the counsellor chart');
+  const counsellorMark = detail.slice(detail.indexOf('dataKey="counsellorMark"'));
+  const markDot = counsellorMark.slice(0, counsellorMark.indexOf('/>'));
+  ok(!/SCORE_DOT_CLASS/.test(markDot), 'the counsellor-mark dots were marked as distress dots');
+  ok(/SCORE_DOT_CLASS/.test(hook), 'the hook does not scope its query');
+});
+
+t('both charts share one implementation', () => {
+  ok(/useChartDayOpener/.test(profile), 'participant chart does not use the shared hook');
+  ok(/useChartDayOpener/.test(detail), 'counsellor chart does not use the shared hook');
+  ok(!/const nearestPointTo/.test(profile), 'the workaround was copied into a page');
+  ok(!/const nearestPointTo/.test(detail), 'the workaround was copied into a page');
 });
 
 t('the chart click survives recharts 3 string indices', () => {
   // activeTooltipIndex is `number | string | null` in recharts 3. A
   // typeof === "number" guard silently dropped every click.
-  const start = profile.indexOf('const openDayFromChart');
-  const handler = profile.slice(start, start + 600);
-  ok(!/typeof\s+\w+\s*===\s*"number"/.test(handler), 'the numeric guard is back');
+  const start = hook.indexOf('const openDayFromChart');
+  const handler = hook.slice(start, start + 1400);
+  // The coordinate may legitimately be typeof-checked; the recharts index
+  // may not, because it arrives as a string.
+  ok(!/typeof\s+(raw|i)\s*===\s*"number"/.test(handler), 'the numeric guard on the index is back');
   ok(/Number\(/.test(handler), 'the index is not coerced');
   ok(/Number\.isInteger/.test(handler), 'a non-integer index could pass');
 });
@@ -184,20 +208,55 @@ t('touch has its own path, because recharts gives it no index', () => {
   // Measured, not assumed: on tap recharts calls the handler with
   // activeTooltipIndex null while its own tooltip is showing the point. The
   // feature was mouse-only until the index was recovered from the dots.
-  ok(/onTouchEnd=\{openDayFromChart\}/.test(profile), 'touch is not wired at all');
-  ok(/nearestPointTo/.test(profile), 'no fallback when the index is missing');
-  ok(/changedTouches/.test(profile), 'the touch coordinate is never read');
-  ok(/recharts-area-dot/.test(profile), 'the fallback has nothing to measure against');
+  ok(/onTouchEnd=\{openDayFromChart\}/.test(profile), 'touch is not wired on the participant chart');
+  ok(/onTouchEnd=\{openDayFromChart\}/.test(detail), 'touch is not wired on the counsellor chart');
+  ok(/nearestPointTo/.test(hook), 'no fallback when the index is missing');
+  ok(/changedTouches/.test(hook), 'the touch coordinate is never read');
+  ok(/recharts-area-dot/.test(hook), 'the fallback has nothing to measure against');
+});
+
+t('a tap is resolved by where the finger landed, not by the reported index', () => {
+  // Measured on both charts: for a tap recharts reports either null (the
+  // participant chart) or a stale index — the same "5" wherever the finger
+  // lands (the counsellor chart). Trusting it opened the wrong check-in six
+  // times out of seven.
+  const start = hook.indexOf('const openDayFromChart');
+  const body = hook.slice(start, start + 900);
+  const touchIdx = body.indexOf('changedTouches');
+  const indexIdx = body.indexOf('activeTooltipIndex');
+  ok(touchIdx > 0 && indexIdx > 0, 'both paths must exist');
+  ok(touchIdx < indexIdx, 'the reported index is consulted before the touch position');
+  ok(/if \(typeof touchX === "number"\)/.test(body), 'touch is not handled on its own');
+  const touchBranch = body.slice(touchIdx, indexIdx);
+  ok(/return;/.test(touchBranch), 'a tap can fall through to the reported index');
 });
 
 t('the fallback picks a point that exists', () => {
-  const fn = profile.slice(profile.indexOf('const nearestPointTo'), profile.indexOf('const openDayFromChart'));
-  ok(/best < checkIns\.length/.test(fn), 'could return an index past the data');
+  const fn = hook.slice(hook.indexOf('const nearestPointTo'), hook.indexOf('const openDayFromChart'));
+  ok(/best < count/.test(fn), 'could return an index past the data');
   ok(/best >= 0/.test(fn), 'could return -1 when no dot is found');
 });
 
-t('the graph tells the reader the points can be opened', () => {
-  ok(/Tap any point on the line/.test(profile), 'no affordance for the click target');
+t('both graphs tell the reader the points can be opened', () => {
+  ok(/Tap any point on the line/.test(profile), 'participant chart has no affordance');
+  ok(/Click any point/.test(detail), 'counsellor chart has no affordance');
+});
+
+// ---- the counsellor sees a different screen, and less of it ---------------
+
+t('the panel speaks to whoever opened it', () => {
+  ok(/voice\?: "self" \| "counsellor"/.test(panel), 'the panel has one voice only');
+  ok(/What they reported that day/.test(panel), 'no counsellor wording');
+  ok(/What you reported that day/.test(panel), 'the self wording was lost');
+  ok(/voice="counsellor"/.test(detail), 'the counsellor page opens the participant-voiced panel');
+  ok(!/voice="counsellor"/.test(profile), 'the participant page was given counsellor wording');
+});
+
+t('a withheld reflection never reaches a counsellor', () => {
+  ok(/shareNoteWithWorker === false/.test(panel), 'the note-sharing flag is not checked');
+  ok(/shareWithWorker === false/.test(panel), 'the reflection flag is not checked');
+  ok(/voice === "counsellor" &&/.test(panel), 'withholding is not scoped to the counsellor view');
+  ok(/showReflection/.test(panel), 'the gate is computed but never applied');
 });
 
 console.log(`\n${pass} passed, ${fail} failed`);

@@ -40,6 +40,8 @@ import {
   sharedDatesToCaseEvents,
 } from "../services/recoveryDates";
 import type { SharedCaseDate } from "../types/recovery";
+import { CheckInDayPanel } from "../components/CheckInDayPanel";
+import { useChartDayOpener, SCORE_DOT_CLASS } from "../hooks/useChartDayOpener";
 import { assessLatest } from "../services/concordanceEngine";
 import { EscalationCard } from "../components/EscalationCard";
 import { CaseEventsCard } from "../components/CaseEventsCard";
@@ -341,6 +343,13 @@ export const ParticipantDetail: React.FC<Props> = ({
   }));
 
   const trendLabel = (i: number) => trendData[i]?.date ?? "";
+
+  /**
+   * Opening one check-in from this chart. Same behaviour as the participant's
+   * own trajectory, same hook, so the two cannot drift apart.
+   */
+  const { chartRef, openDay, setOpenDay, openDayFromChart } = useChartDayOpener(checkIns.length);
+  const openDayCheckIn = openDay !== null ? checkIns[openDay] : null;
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -683,9 +692,15 @@ export const ParticipantDetail: React.FC<Props> = ({
                 </p>
               </div>
             ) : (
-              <div className="h-60 w-full pt-2">
+              <div className="h-60 w-full pt-2" ref={chartRef}>
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                  <AreaChart
+                    data={trendData}
+                    margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    style={{ cursor: "pointer" }}
+                    onClick={openDayFromChart}
+                    onTouchEnd={openDayFromChart}
+                  >
                     <defs>
                       <linearGradient id="detailGradient" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#5A5049" stopOpacity={0.3} />
@@ -724,7 +739,7 @@ export const ParticipantDetail: React.FC<Props> = ({
                       strokeWidth={3}
                       fillOpacity={1}
                       fill="url(#detailGradient)"
-                      dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0 }}
+                      dot={{ r: 2.5, fill: "#5A5049", strokeWidth: 0, className: SCORE_DOT_CLASS }}
                       activeDot={{ r: 6, fill: "#5A5049", stroke: "#FFFFFF", strokeWidth: 2 }}
                     />
                     {/* The counsellor's own marks. Dashed and unfilled so it
@@ -745,6 +760,34 @@ export const ParticipantDetail: React.FC<Props> = ({
                     />
                   </AreaChart>
                 </ResponsiveContainer>
+              </div>
+            )}
+
+            {checkIns.length >= 2 && (
+              <div className="space-y-2 pt-3">
+                <p className="text-xs text-[#6B635C]">
+                  Click any point to see that check-in and how its indicator was
+                  worked out.
+                </p>
+                {/* The same check-ins, reachable without a mouse. A chart is a
+                    canvas: it cannot be tabbed to and a screen reader finds
+                    nothing in it. These stay out of the layout until focused,
+                    then appear where the focus ring is. */}
+                <h4 className="sr-only" id="detail-day-list-label">
+                  Open a single check-in
+                </h4>
+                <ul aria-labelledby="detail-day-list-label" className="flex flex-wrap gap-1.5">
+                  {trendData.map((d) => (
+                    <li key={d.i}>
+                      <button
+                        onClick={() => setOpenDay(d.i)}
+                        className="sr-only focus:not-sr-only focus:rounded-full focus:border focus:border-[#DBC3B2] focus:bg-[#FDF9F5] focus:px-3 focus:py-1.5 focus:text-xs focus:font-bold focus:text-[#5A5049]"
+                      >
+                        {d.date} — indicator {d.score} out of 100
+                      </button>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
           </div>
@@ -1020,6 +1063,19 @@ export const ParticipantDetail: React.FC<Props> = ({
         }}
         onCancel={() => setNoteToDelete(null)}
       />
+
+      {/* A check-in opened from the trajectory. Addressed to the counsellor,
+          and it withholds a reflection the participant chose not to share. */}
+      {openDayCheckIn && openDay !== null && (
+        <CheckInDayPanel
+          checkIn={openDayCheckIn}
+          previous={openDay > 0 ? checkIns[openDay - 1] : null}
+          history={checkIns.slice(0, openDay + 1)}
+          chartScore={trendData[openDay]?.score ?? openDayCheckIn.calculatedScore ?? 0}
+          voice="counsellor"
+          onClose={() => setOpenDay(null)}
+        />
+      )}
     </div>
   );
 };
