@@ -130,6 +130,11 @@ export const ProctoredAssessment: React.FC<ProctoredAssessmentProps> = ({ partic
     loadHistory();
   }, [loadHistory]);
 
+  // Each step starts at its top, not wherever the previous step was scrolled to
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [currentStage]);
+
   // Log Proctoring Event
   const handleLogEvent = useCallback(
     (eventData: Omit<ProctorEvent, 'id' | 'timestamp'>) => {

@@ -174,7 +174,7 @@ export const Pcl5AssessmentStep: React.FC<Pcl5AssessmentStepProps> = ({
             {currentValue !== undefined && (
               <>
                 <Check className="h-3.5 w-3.5 text-emerald-600" aria-hidden="true" />
-                Saved
+                Answered
               </>
             )}
           </span>

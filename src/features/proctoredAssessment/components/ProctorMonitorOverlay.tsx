@@ -420,7 +420,7 @@ export const ProctorMonitorOverlay: React.FC<ProctorMonitorOverlayProps> = ({
 
           {hasPersistentIssue && (
             <p className="rounded-md bg-amber-50 px-2 py-1.5 text-amber-900">
-              We can't see you clearly. Your answers are still being saved.
+              We can't see you clearly. Your answers so far are kept.
             </p>
           )}
 
