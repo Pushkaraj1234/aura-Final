@@ -200,6 +200,32 @@ class ApiService {
       }),
   };
 
+  // The proctored trauma assessment's two model-backed steps. Sent with the
+  // person's token so the crisis gate can raise an alert about them and the
+  // audit record names who asked.
+  assessment = {
+    contextualChat: async (payload: {
+      messages: { sender: "aura" | "user"; text: string }[];
+      userMessage: string;
+      indexTrauma: string;
+      completedItemsCount: number;
+      participantId?: string;
+      language?: string;
+    }) =>
+      this.request<{
+        response: string;
+        crisis?: { tier: "self_harm" | "imminent_danger"; counsellorNotified: boolean };
+      }>("/assessment/contextual-chat", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+    generateReport: async (payload: Record<string, unknown>) =>
+      this.request<{ userReport: string; sessionReport: string }>("/assessment/generate-report", {
+        method: "POST",
+        body: JSON.stringify(payload),
+      }),
+  };
+
   ml = {
     getPrediction: async (participantId: string) =>
       this.request<{ prediction: any; metadata: any }>(`/ml/predict/${participantId}`),

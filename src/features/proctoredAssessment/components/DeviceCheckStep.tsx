@@ -43,9 +43,15 @@ export const DeviceCheckStep: React.FC<DeviceCheckStepProps> = ({ onComplete, on
   const audioMeterRef = useRef<AudioMeter | null>(null);
   const analyzerRef = useRef<VideoFrameAnalyzer | null>(null);
   const syntheticScreenAnimRef = useRef<number | null>(null);
+  // Inside AURA the person can leave this step for any other page at any time,
+  // so the camera must be switched off here unless the streams were handed on.
+  const unmountedRef = useRef(false);
+  const handedOffRef = useRef(false);
+  const mediaRequestIdRef = useRef(0);
 
   // Request camera and microphone
   const requestMedia = async () => {
+    const requestId = ++mediaRequestIdRef.current;
     setErrorMessage(null);
     setCameraStatus('checking');
     setMicStatus('checking');
@@ -55,6 +61,13 @@ export const DeviceCheckStep: React.FC<DeviceCheckStepProps> = ({ onComplete, on
         video: { width: { ideal: 640 }, height: { ideal: 480 }, facingMode: 'user' },
         audio: true,
       });
+
+      // The step was left, or a newer request replaced this one, while the
+      // browser was asking: release the camera rather than leave it running.
+      if (unmountedRef.current || requestId !== mediaRequestIdRef.current) {
+        stream.getTracks().forEach((t) => t.stop());
+        return;
+      }
 
       videoStreamRef.current = stream;
       audioStreamRef.current = stream;
@@ -124,6 +137,11 @@ export const DeviceCheckStep: React.FC<DeviceCheckStepProps> = ({ onComplete, on
         video: true,
         audio: false,
       });
+
+      if (unmountedRef.current) {
+        screenStream.getTracks().forEach((t) => t.stop());
+        return;
+      }
 
       screenStreamRef.current = screenStream;
       setScreenStatus('ready');
@@ -225,10 +243,20 @@ export const DeviceCheckStep: React.FC<DeviceCheckStepProps> = ({ onComplete, on
   };
 
   useEffect(() => {
+    unmountedRef.current = false;
     requestMedia();
     return () => {
+      unmountedRef.current = true;
       if (syntheticScreenAnimRef.current) cancelAnimationFrame(syntheticScreenAnimRef.current);
       if (audioMeterRef.current) audioMeterRef.current.cleanup();
+      // Left without continuing: nothing else will ever stop these tracks
+      if (!handedOffRef.current) {
+        videoStreamRef.current?.getTracks().forEach((t) => t.stop());
+        screenStreamRef.current?.getTracks().forEach((t) => t.stop());
+        videoStreamRef.current = null;
+        audioStreamRef.current = null;
+        screenStreamRef.current = null;
+      }
     };
   }, []);
 
@@ -240,6 +268,8 @@ export const DeviceCheckStep: React.FC<DeviceCheckStepProps> = ({ onComplete, on
   }, [screenStatus]);
 
   const handleProceed = () => {
+    // From here the assessment owns the streams and stops them itself
+    handedOffRef.current = true;
     onComplete({
       videoStream: videoStreamRef.current,
       audioStream: audioStreamRef.current,

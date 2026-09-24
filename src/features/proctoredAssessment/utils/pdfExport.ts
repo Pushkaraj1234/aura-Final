@@ -197,7 +197,7 @@ export function exportAssessmentReportToPdf({
   doc.setFontSize(7.5);
   doc.setTextColor(100, 116, 139);
   const disclaimer =
-    'The PCL-5 is a screening questionnaire, not a diagnosis. If you are in distress, call or text 988 (Suicide & Crisis Lifeline, free and confidential, any time) or text HOME to 741741.';
+    'The PCL-5 is a screening questionnaire, not a diagnosis. If you are in distress, call Tele MANAS on 14416 (free, confidential, 24 hours) or KIRAN on 1800-599-0019. In an emergency, call 112.';
   doc.splitTextToSize(disclaimer, contentWidth).forEach((l: string) => {
     doc.text(l, margin, y);
     y += 3.6;

@@ -1,0 +1,67 @@
+/*
+ * Styles for the proctored trauma assessment (ProctoredAssessment.tsx).
+ *
+ * The feature's components were written against Tailwind's teal and stone
+ * scales. Rather than rewrite every class, those two scales are re-pointed at
+ * AURA's warm palette (src/index.css @theme) inside .pa-root only, so the
+ * assessment reads as part of AURA and nothing outside it changes. Text
+ * colours keep at least 4.5:1 contrast on white, as the originals did.
+ *
+ * AURA's global focus ring and reduced-motion rule already cover this page,
+ * so the standalone app's versions of those are not repeated here.
+ */
+
+.pa-root {
+  /* teal -> AURA accent (terracotta) */
+  --color-teal-50: #FBF3EC;
+  --color-teal-100: #F3E7D8;
+  --color-teal-200: #E8D2BC;
+  --color-teal-300: #D9B391;
+  --color-teal-400: #C88A5A;
+  --color-teal-500: #B8713F;
+  --color-teal-600: #A85D2E;
+  --color-teal-700: #95512A;
+  --color-teal-800: #8A4A20;
+  --color-teal-900: #6F3B19;
+  --color-teal-950: #4A2711;
+
+  /* stone -> AURA warm neutrals */
+  --color-stone-50: #FBF8F3;
+  --color-stone-100: #F4EEE6;
+  --color-stone-200: #ECE1D3;
+  --color-stone-300: #DDD0C1;
+  --color-stone-400: #A99A8A;
+  --color-stone-500: #7A6A5A;
+  --color-stone-600: #6B5B4C;
+  --color-stone-700: #5A5049;
+  --color-stone-800: #3C3530;
+  --color-stone-900: #302C29;
+}
+
+@keyframes pa-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pa-root .animate-fadeIn {
+  animation: pa-fade-in 0.15s ease-out forwards;
+}
+
+/* Printing the results: only the report, without AURA's navigation, the
+   floating assistant and exit buttons, or the assessment's own controls. */
+@media print {
+  body:has(.pa-root) header,
+  body:has(.pa-root) aside,
+  body:has(.pa-root) button,
+  body:has(.pa-root) .no-print {
+    display: none !important;
+  }
+
+  body:has(.pa-root) {
+    background: white !important;
+  }
+}

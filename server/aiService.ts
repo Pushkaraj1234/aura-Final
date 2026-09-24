@@ -636,3 +636,208 @@ in the answers above.`;
     return null;
   }
 }
+
+// ============================================================================
+// Proctored trauma assessment (src/features/proctoredAssessment)
+//
+// Two jobs only: a short supportive conversation after the questionnaire, and
+// the plain-language write-up of scores the browser has already computed. The
+// PCL-5 total, the four cluster scores and the session checks are all scored
+// deterministically before anything reaches here; the model phrases them and
+// never grades them. The crisis gate in apiRouter runs before the chat call,
+// so a disclosure of self-harm never reaches the model at all.
+// ============================================================================
+
+const ASSESSMENT_HELPLINES = "Tele MANAS on 14416 (free, confidential, 24 hours), or 112 in an emergency";
+
+export interface AssessmentChatTurn {
+  sender: "aura" | "user";
+  text: string;
+}
+
+export async function assessmentChatReply(
+  history: AssessmentChatTurn[],
+  userMessage: string,
+  indexTrauma: string,
+  completedItemsCount: number
+): Promise<string> {
+  const systemInstruction = `You are Aura, a calm, trauma-informed companion within a clinical screening tool.
+You are facilitating a structured trauma evaluation for a user who has voluntarily requested support.
+
+CRITICAL SAFETY & CLINICAL GUARDRAILS:
+1. NEVER diagnose PTSD or any mental disorder.
+2. NEVER claim that facial cues, eye movements, voice pitch, or emotional tears prove trauma or dishonesty.
+3. NEVER accuse the user of lying or faking symptoms.
+4. Speak warmly, clearly, calmly, and empathetically with gentle pacing.
+5. The validated PCL-5 questions are scored deterministically by code. Your role is solely to offer grounding, explain questions if the user asks for clarification, and listen contextually.
+6. If the user mentions active suicidal intent or self-harm, immediately provide warm crisis support (${ASSESSMENT_HELPLINES}).
+7. Keep responses concise (2 to 4 sentences) to keep the user from feeling overwhelmed.
+8. Write plain sentences. Do not use markdown, emojis, or exclamation marks.
+
+Context:
+- Index Trauma Topic: ${indexTrauma || "General traumatic stress"}
+- PCL-5 Assessment Progress: ${completedItemsCount || 0} of 20 items complete.`;
+
+  const contents = history.map((m) => ({
+    role: m.sender === "aura" ? "model" : "user",
+    parts: [{ text: m.text }],
+  }));
+  contents.push({ role: "user", parts: [{ text: userMessage || "Hello Aura" }] });
+
+  const response = await getAI().models.generateContent({
+    model: GEMINI_FLASH_MODEL,
+    contents,
+    config: {
+      systemInstruction,
+      temperature: 0.6,
+      maxOutputTokens: 300,
+    },
+  });
+
+  return response.text || "I am here with you. Take all the time you need.";
+}
+
+export interface AssessmentClusterInput {
+  score: number;
+  symptomSeverity: string;
+}
+
+export interface AssessmentReportInput {
+  totalScore: number;
+  cutPoint: number;
+  isClinicallySignificant: boolean;
+  itemsAnswered: number;
+  clusters: { B: AssessmentClusterInput; C: AssessmentClusterInput; D: AssessmentClusterInput; E: AssessmentClusterInput };
+  functionalImpactAvg: number;
+  indexTrauma: string;
+  sessionIntegrityRating: string;
+  eventsCount: number;
+  sensorStats: {
+    sessionDurationSeconds: number;
+    faceRetentionPercentage: number;
+    blackScreenFrames: number;
+    multiplePersonsSuspectedCount: number;
+    windowFocusPercentage: number;
+    tabSwitchCount: number;
+    screenShareType: string;
+  } | null;
+}
+
+const ASSESSMENT_INTEGRITY_LABELS: Record<string, string> = {
+  VERIFIED: "No issues",
+  MINOR_SESSION_EVENTS: "Minor interruptions",
+  SIGNIFICANT_SESSION_EVENTS: "Several interruptions",
+  UNABLE_TO_VERIFY: "Could not be confirmed",
+};
+
+/**
+ * The report built only from the submitted scores and measured session
+ * figures. Used when Gemini is not configured or the call fails, so a person
+ * who finished the assessment always gets a readable result.
+ */
+export function templateAssessmentReport(input: AssessmentReportInput): { userReport: string; sessionReport: string } {
+  const { totalScore, cutPoint, isClinicallySignificant, clusters, functionalImpactAvg, sensorStats } = input;
+  const integrityLabel = ASSESSMENT_INTEGRITY_LABELS[input.sessionIntegrityRating] || input.sessionIntegrityRating;
+
+  const userReport = `## Your score
+Your answers give a PCL-5 total of ${totalScore} out of 80. ${
+    isClinicallySignificant
+      ? `This is above the screening threshold of ${cutPoint}. It would be worth talking with a licensed mental health professional about a fuller assessment.`
+      : `This is below the screening threshold of ${cutPoint}, which suggests fewer symptoms over the past month.`
+  }
+
+## The four symptom areas
+- Intrusion (${clusters.B.score} of 20): unwanted memories, dreams, or strong reactions to reminders.
+- Avoidance (${clusters.C.score} of 8): keeping away from thoughts, conversations or places linked to what happened.
+- Thoughts and mood (${clusters.D.score} of 28): changes in how you see yourself, others or the world, or feeling cut off.
+- Arousal and reactivity (${clusters.E.score} of 24): feeling on guard, easily startled, or having trouble sleeping or concentrating.
+
+## Daily life
+Your average rating for how much this affects daily life was ${functionalImpactAvg} out of 4.
+
+## Looking after yourself
+- Keep a steady routine for sleep and meals where you can.
+- Try slow breathing when reminders feel overwhelming: in for 4, hold for 7, out for 8.
+- Consider sharing these results with your counsellor or a doctor you trust.
+
+This is a screening, not a diagnosis. If you need to talk to someone now, you can call ${ASSESSMENT_HELPLINES}.`;
+
+  const sessionReport = `Session conditions: ${integrityLabel.toLowerCase()}. ${
+    sensorStats
+      ? `Your face was in view ${sensorStats.faceRetentionPercentage}% of the time, and you were in the assessment window ${sensorStats.windowFocusPercentage}% of the time with ${sensorStats.tabSwitchCount} tab ${sensorStats.tabSwitchCount === 1 ? "switch" : "switches"}.`
+      : "Detailed camera and microphone figures were not recorded."
+  } These checks describe the session only. They are not used to judge your answers.`;
+
+  return { userReport, sessionReport };
+}
+
+export async function generateAssessmentReport(
+  input: AssessmentReportInput
+): Promise<{ userReport: string; sessionReport: string }> {
+  const { totalScore, cutPoint, isClinicallySignificant, clusters, functionalImpactAvg, sensorStats } = input;
+  const integrityLabel = ASSESSMENT_INTEGRITY_LABELS[input.sessionIntegrityRating] || input.sessionIntegrityRating;
+
+  // Only report sensor figures that were actually measured
+  const sensorLines: string[] = sensorStats
+    ? [
+        `- Session length: ${Math.floor(sensorStats.sessionDurationSeconds / 60)} min ${sensorStats.sessionDurationSeconds % 60} s`,
+        `- Face in view: ${sensorStats.faceRetentionPercentage}% of the time`,
+        `- Covered or dark camera frames: ${sensorStats.blackScreenFrames}`,
+        `- Times another person may have been in view: ${sensorStats.multiplePersonsSuspectedCount}`,
+        `- Time spent in the assessment window: ${sensorStats.windowFocusPercentage}%`,
+        `- Tab switches: ${sensorStats.tabSwitchCount}`,
+        `- Window monitoring method: ${sensorStats.screenShareType === "display_stream" ? "screen sharing" : "focus tracking"}`,
+      ]
+    : ["- Detailed camera and microphone figures were not recorded."];
+
+  const prompt = `You are writing two short sections of a report for someone who has just completed a trauma screening in Aura.
+The reader may be a survivor of serious trauma. Write calmly, plainly and respectfully.
+
+INPUT CLINICAL DATA:
+- PCL-5 Total Score: ${totalScore} / 80 (Cut-point: ${cutPoint})
+- Questions answered: ${input.itemsAnswered} of 20${input.itemsAnswered < 20 ? " (the session was ended early, so the total may be lower than it would otherwise be)" : ""}
+- Clinical Significance: ${isClinicallySignificant ? "Positive screen indicating clinically significant trauma symptoms" : "Below standard provisional cutoff threshold"}
+- Cluster B (Intrusion): ${clusters.B.score} / 20 (${clusters.B.symptomSeverity})
+- Cluster C (Avoidance): ${clusters.C.score} / 8 (${clusters.C.symptomSeverity})
+- Cluster D (Negative Cognitions/Mood): ${clusters.D.score} / 28 (${clusters.D.symptomSeverity})
+- Cluster E (Arousal/Reactivity): ${clusters.E.score} / 24 (${clusters.E.symptomSeverity})
+- Functional Impact Average: ${functionalImpactAvg} / 4.0
+- Index Trauma Topic: ${input.indexTrauma || "General traumatic stress"}
+- Session conditions: ${integrityLabel}
+
+SESSION CHECKS (camera, microphone and window focus):
+${sensorLines.join("\n")}
+- Logged session events: ${input.eventsCount}
+
+Return a JSON object with two string fields:
+{
+  "userReport": "Explain the PCL-5 total and the four symptom areas in plain language, without diagnostic labels. Say clearly that this is a screening, not a diagnosis. End with three gentle, practical self-care suggestions and a reminder that ${ASSESSMENT_HELPLINES} is available.",
+  "sessionReport": "Two or three short, neutral sentences describing the session conditions using only the figures above. Do not speculate, accuse, or certify anything. Say that these checks describe the session only and are not used to judge the answers."
+}
+
+Style rules for both fields: short paragraphs; you may use lines starting with '## ' for headings and '- ' for list items; no bold, no emojis, no exclamation marks, no em dashes; never mention AI, algorithms, surveillance, biometrics or forensics.`;
+
+  const response = await getAI().models.generateContent({
+    model: GEMINI_FLASH_MODEL,
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          userReport: { type: Type.STRING },
+          sessionReport: { type: Type.STRING },
+        },
+        required: ["userReport", "sessionReport"],
+      },
+      temperature: 0.25,
+    },
+  });
+
+  if (!response.text) throw new Error("No response from Gemini.");
+  const parsed = JSON.parse(response.text);
+  const userReport = typeof parsed.userReport === "string" ? parsed.userReport.trim() : "";
+  const sessionReport = typeof parsed.sessionReport === "string" ? parsed.sessionReport.trim() : "";
+  if (!userReport) throw new Error("Gemini returned an empty report.");
+  return { userReport, sessionReport };
+}

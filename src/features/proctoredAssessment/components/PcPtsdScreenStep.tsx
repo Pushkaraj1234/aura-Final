@@ -42,7 +42,7 @@ export const PcPtsdScreenStep: React.FC<PcPtsdScreenStepProps> = ({ onComplete, 
             <li key={q.id} className="flex flex-col gap-3 py-4 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
               <div className="flex-1">
                 <span className="mb-1 block text-xs text-stone-500">Question {idx + 1} of 5</span>
-                <p id={`pcptsd-${q.id}`} className="text-sm leading-relaxed text-stone-900">
+                <p id={`pcptsd-${q.id}`} className="text-sm leading-relaxed text-stone-900" data-no-translate>
                   {q.text}
                 </p>
               </div>

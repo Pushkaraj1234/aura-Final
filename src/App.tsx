@@ -38,6 +38,11 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { GeminiChatbot } from "./components/GeminiChatbot";
 import { SafetyExitButton } from "./components/SafetyExitButton";
 import { RecoveryHub } from "./pages/RecoveryHub";
+// Loaded on first open: it brings the PDF export and camera analysis with it,
+// which nobody else needs to download.
+const ProctoredAssessment = React.lazy(() =>
+  import("./features/proctoredAssessment/ProctoredAssessment").then((m) => ({ default: m.ProctoredAssessment }))
+);
 
 export const App: React.FC = () => {
   // Ensure store initialization
@@ -350,6 +355,20 @@ export const App: React.FC = () => {
           />
         )}
 
+        {/* The opt-in, camera-checked PCL-5 trauma screening. Participants
+            only: results are saved to their own record, and the camera is
+            released the moment they leave this view for any other. */}
+        {currentView === "trauma_assessment" && currentUser && participantRecordForUser && (
+          <React.Suspense
+            fallback={<p className="py-16 text-center text-sm text-[#6B635C]">Loading the assessment…</p>}
+          >
+            <ProctoredAssessment
+              participantId={participantRecordForUser.id}
+              onOpenEmergency={() => setEmergencyModalOpen(true)}
+            />
+          </React.Suspense>
+        )}
+
         {/* The Victim Recovery Hub. One route: the sub-screens live inside the
             feature so the case bundle stays in one place and so a case id never
             reaches the address bar. */}
@@ -383,6 +402,7 @@ export const App: React.FC = () => {
             onOpenChooseCounsellor={() => setCurrentView("choose_counsellor")}
             onOpenVoiceCompanion={() => setCurrentView("voice_companion")}
             onOpenWellbeingIndex={() => setCurrentView("wellbeing_index")}
+            onOpenTraumaAssessment={() => setCurrentView("trauma_assessment")}
             onOpenWhatToExpect={() => setCurrentView("what_to_expect")}
             onOpenConsent={() => setCurrentView("consent_mgmt")}
             onLogout={handleLogout}
@@ -562,10 +582,15 @@ export const App: React.FC = () => {
         Without it the assistant still shows crisis lines, but it says plainly
         that nobody here was told.
       */}
-      <GeminiChatbot
-        participantId={participantRecordForUser?.id}
-        onOpenEmergencyResources={() => setEmergencyModalOpen(true)}
-      />
+      {/* Not during the proctored assessment: its floating button would sit
+          over the session monitor, and the assessment has its own
+          conversation step behind the same crisis gate. */}
+      {currentView !== "trauma_assessment" && (
+        <GeminiChatbot
+          participantId={participantRecordForUser?.id}
+          onOpenEmergencyResources={() => setEmergencyModalOpen(true)}
+        />
+      )}
 
       {/* The way out, for the person whose phone may not be their own. Shown
           to participants only: a counsellor at a desk is not the threat model,

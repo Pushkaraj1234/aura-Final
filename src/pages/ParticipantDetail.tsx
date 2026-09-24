@@ -58,6 +58,7 @@ import { AtrocityExposureCard } from "../components/AtrocityExposureCard";
 import { PredictiveMLCard } from "../components/PredictiveMLCard";
 import { CounsellorTestPanel } from "../components/CounsellorTestPanel";
 import { GuardianAssessmentPanel } from "../components/GuardianAssessmentPanel";
+import { ProctoredAssessmentPanel } from "../components/ProctoredAssessmentPanel";
 
 interface Props {
   participant: Participant;
@@ -810,6 +811,11 @@ export const ParticipantDetail: React.FC<Props> = ({
           {currentUser?.id && (
             <GuardianAssessmentPanel participantId={participant.id} workerId={currentUser.id} />
           )}
+
+          {/* The participant's own saved proctored PCL-5 screenings. Read-only,
+              and a separate section from the tests above: a validated
+              instrument the person chose to take, not one set for them. */}
+          <ProctoredAssessmentPanel participantId={participant.id} />
 
           {/* Explainable AI (XAI) Signal Component (Requirement #4) */}
           <ExplainableAISignal

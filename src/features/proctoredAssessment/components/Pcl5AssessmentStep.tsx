@@ -192,7 +192,8 @@ export const Pcl5AssessmentStep: React.FC<Pcl5AssessmentStepProps> = ({
 
       <div className="mb-6">
         <p className="mb-1 text-sm text-stone-600">In the past month, how much were you bothered by:</p>
-        <h2 id="pcl5-question" className="text-xl font-semibold leading-snug text-stone-900 sm:text-2xl">
+        {/* Not machine-translated, like the WHO-5 items: reworded items are not the PCL-5 any more */}
+        <h2 id="pcl5-question" className="text-xl font-semibold leading-snug text-stone-900 sm:text-2xl" data-no-translate>
           {currentQuestion.text}
         </h2>
         {currentQuestion.subtext && (
@@ -259,7 +260,9 @@ export const Pcl5AssessmentStep: React.FC<Pcl5AssessmentStepProps> = ({
                   {opt.value}
                 </span>
                 <span>
-                  <span className="block text-sm font-medium text-stone-900">{opt.label}</span>
+                  <span className="block text-sm font-medium text-stone-900" data-no-translate>
+                    {opt.label}
+                  </span>
                   <span className="block text-xs text-stone-500">{opt.description}</span>
                 </span>
               </span>

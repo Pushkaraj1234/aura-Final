@@ -133,8 +133,8 @@ $$\text{Slope} = \frac{\sum (t_i - \bar{t})(y_i - \bar{y})}{\sum (t_i - \bar{t})
 
 ## 4. Responsible AI, Ethics & Data Dignity Guardrails
 
-- **Non-Diagnostic Mandate**: Explicitly prohibits DSM/ICD psychiatric labels (e.g., PTSD, Depression, Psychosis). Outputs only assistive distress indicators.
-- **Zero Passive Surveillance**: No camera scanning, keystroke telemetry, or location tracking.
+- **Non-Diagnostic Mandate**: Explicitly prohibits DSM/ICD psychiatric labels (e.g., PTSD, Depression, Psychosis). Outputs only assistive distress indicators. The opt-in trauma assessment reports a PCL-5 screening score against the published threshold and always states that it is a screening, not a diagnosis.
+- **Zero Passive Surveillance**: No camera scanning, keystroke telemetry, or location tracking. The single exception is the opt-in, proctored trauma assessment (PCL-5): only after its own consent screen, and only while its questions are open, the camera, microphone and window focus are checked in the browser to describe the session. No video, audio or image is recorded or uploaded by AURA (only summary counts, such as how often the window lost focus, are saved with a result the person chooses to save; the optional voice-answer button uses the browser's own speech recognition, which in some browsers such as Chrome is processed on the browser maker's servers, and the consent screen says so), the checks never change the score, and the camera is switched off as soon as the questions end or the person leaves the page.
 - **Immediate Crisis Bypass**: Acute safety self-reports bypass scoring algorithms and trigger direct 24/7 humanitarian hotlines.
 - **Granular Consent Management**: Participants can revoke check-in tracking, audio features, or counselor sharing anytime.
 - **Immutable Worker Audit Trail**: Every AI suggestion review, status change, and note is logged with timestamps and reviewer IDs.

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Camera, Mic, Monitor, Pause, HeartHandshake, History, Settings } from 'lucide-react';
+import { Shield, Camera, Mic, Monitor, Pause, HeartHandshake, History } from 'lucide-react';
 import { AssessmentStage, DeviceStatus, EventSeverity } from '../types';
 
 interface HeaderProps {
@@ -9,7 +9,6 @@ interface HeaderProps {
   onPause: () => void;
   onOpenCrisis: () => void;
   onViewHistory: () => void;
-  onViewAdmin: () => void;
   completedQuestionsCount: number;
 }
 
@@ -42,7 +41,6 @@ export const Header: React.FC<HeaderProps> = ({
   onPause,
   onOpenCrisis,
   onViewHistory,
-  onViewAdmin,
   completedQuestionsCount,
 }) => {
   const isMonitoredStage =
@@ -52,7 +50,8 @@ export const Header: React.FC<HeaderProps> = ({
   const status = SESSION_STATUS[proctorSeverity];
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-stone-200 bg-stone-50/95 px-4 py-3 backdrop-blur sm:px-6">
+    // z-30 rather than z-40: AURA's own navbar and its menus sit at z-40 above this bar
+    <header className="sticky top-0 z-30 w-full border-b border-stone-200 bg-stone-50/95 px-4 py-3 backdrop-blur sm:px-6">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
         <div className="flex items-center gap-2.5">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-800 text-teal-50">
@@ -132,17 +131,6 @@ export const Header: React.FC<HeaderProps> = ({
             className="rounded-lg p-2 text-stone-600 transition hover:bg-stone-200 hover:text-stone-900"
           >
             <History className="h-4 w-4" aria-hidden="true" />
-          </button>
-
-          <button
-            type="button"
-            onClick={onViewAdmin}
-            id="admin-research-btn"
-            title="Research settings"
-            aria-label="Research settings"
-            className="rounded-lg p-2 text-stone-600 transition hover:bg-stone-200 hover:text-stone-900"
-          >
-            <Settings className="h-4 w-4" aria-hidden="true" />
           </button>
         </div>
       </div>

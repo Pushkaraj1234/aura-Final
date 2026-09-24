@@ -285,30 +285,25 @@ export const FUNCTIONAL_IMPACT_DOMAINS: FunctionalImpactDomain[] = [
   },
 ];
 
+// The same Indian helplines AURA's Emergency modal lists (src/components/EmergencyModal.tsx).
 export const CRISIS_SUPPORT_RESOURCES = [
   {
-    name: '988 Suicide & Crisis Lifeline',
-    contact: 'Call or text 988',
-    details: 'Free, confidential, available 24/7 in English and Spanish across the US and Canada.',
+    name: 'Tele MANAS (Govt. of India)',
+    contact: '14416',
+    details: 'National mental health helpline. Free, confidential, 24/7, in Hindi, English, Marathi and other languages.',
     type: 'National Hotline',
   },
   {
-    name: 'Crisis Text Line',
-    contact: 'Text HOME to 741741',
-    details: 'Free 24/7 support via SMS with a trained crisis counselor.',
-    type: 'Text Service',
+    name: 'KIRAN Mental Health Helpline',
+    contact: '1800-599-0019',
+    details: 'Free, 24/7, in 13 languages.',
+    type: 'National Hotline',
   },
   {
-    name: 'Veterans Crisis Line',
-    contact: 'Dial 988, then press 1',
-    details: 'Dedicated support for veterans, service members, and their loved ones.',
-    type: 'Specialized',
-  },
-  {
-    name: 'International Crisis Support',
-    contact: 'findahelpline.com / befrienders.org',
-    details: 'Free confidential support directories across 130+ countries worldwide.',
-    type: 'Global Resource',
+    name: 'Emergency services',
+    contact: '112',
+    details: 'If you are in immediate danger. Ambulance: 108.',
+    type: 'Emergency',
   },
 ];
 

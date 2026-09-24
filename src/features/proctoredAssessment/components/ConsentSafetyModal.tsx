@@ -3,11 +3,9 @@ import { Camera, Mic, ClipboardList, Pause, AlertCircle } from 'lucide-react';
 import { StepHeader } from './StepHeader';
 
 interface ConsentSafetyModalProps {
-  onAccept: (consentData: {
-    participantId: string;
-    acceptedAt: string;
-    researchConsent: boolean;
-  }) => void;
+  /** The signed-in participant's AURA record id; results are saved against it */
+  participantId: string;
+  onAccept: (consentData: { acceptedAt: string; researchConsent: boolean }) => void;
   onOpenCrisis: () => void;
 }
 
@@ -20,7 +18,7 @@ const WHAT_TO_EXPECT = [
   {
     icon: Mic,
     title: 'Microphone',
-    text: 'Used for optional voice answers and to notice background noise. Your voice is never analyzed for emotion or used in scoring.',
+    text: "Used for optional voice answers and to notice background noise. Your voice is never analyzed for emotion or used in scoring. If you answer by voice, your browser's speech service turns it into text; in some browsers, such as Chrome, that happens on the browser maker's servers.",
   },
   {
     icon: ClipboardList,
@@ -30,25 +28,22 @@ const WHAT_TO_EXPECT = [
   {
     icon: Pause,
     title: 'Your control',
-    text: 'You can pause, skip the optional parts, or stop at any time. Your answers are saved as you go.',
+    text: 'You can pause, skip the optional parts, or stop at any time. Nothing is saved to your AURA record unless you choose to save your results at the end.',
   },
 ];
 
-export const ConsentSafetyModal: React.FC<ConsentSafetyModalProps> = ({ onAccept, onOpenCrisis }) => {
-  const [participantId, setParticipantId] = useState(
-    () => `AURA-USER-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-  );
+export const ConsentSafetyModal: React.FC<ConsentSafetyModalProps> = ({ participantId, onAccept, onOpenCrisis }) => {
   const [agreedPrivacy, setAgreedPrivacy] = useState(false);
   const [agreedSafety, setAgreedSafety] = useState(false);
-  const [researchConsent, setResearchConsent] = useState(true);
+  // Research use is opt-in: an optional permission is never pre-ticked
+  const [researchConsent, setResearchConsent] = useState(false);
 
-  const canProceed = agreedPrivacy && agreedSafety && participantId.trim().length > 0;
+  const canProceed = agreedPrivacy && agreedSafety;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!canProceed) return;
     onAccept({
-      participantId: participantId.trim(),
       acceptedAt: new Date().toISOString(),
       researchConsent,
     });
@@ -85,27 +80,22 @@ export const ConsentSafetyModal: React.FC<ConsentSafetyModalProps> = ({ onAccept
             onClick={onOpenCrisis}
             className="mt-2 font-semibold text-teal-800 underline-offset-2 hover:underline"
           >
-            Get crisis support (988)
+            Get crisis support (Tele MANAS 14416)
           </button>
         </div>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="participant-id" className="mb-1 block text-sm font-medium text-stone-800">
-            Participant ID
-          </label>
-          <input
-            id="participant-id"
-            type="text"
-            value={participantId}
-            onChange={(e) => setParticipantId(e.target.value)}
-            aria-describedby="participant-id-help"
-            className="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm text-stone-900 focus:border-teal-600 focus:outline-hidden"
-            required
-          />
-          <p id="participant-id-help" className="mt-1 text-xs text-stone-500">
-            A random ID that isn't linked to your name. If you were given an ID, you can enter it here.
+          <p className="mb-1 block text-sm font-medium text-stone-800">Participant ID</p>
+          <p
+            className="w-full rounded-lg border border-stone-200 bg-stone-50 px-3 py-2 text-sm text-stone-900"
+            data-no-translate
+          >
+            {participantId}
+          </p>
+          <p className="mt-1 text-xs text-stone-500">
+            Your AURA participant ID. Your results are saved to your AURA record under this ID.
           </p>
         </div>
 
@@ -119,8 +109,9 @@ export const ConsentSafetyModal: React.FC<ConsentSafetyModalProps> = ({ onAccept
               className="mt-0.5 h-4 w-4 rounded border-stone-300 text-teal-700 focus:ring-teal-600"
             />
             <span className="text-sm leading-relaxed text-stone-700">
-              I agree to camera, microphone and window-focus monitoring during the assessment. I understand that
-              video isn't saved and that my answers are kept confidentially for 30 days.
+              I agree to camera, microphone and window-focus monitoring during this assessment only. I understand that
+              video and audio are never recorded or saved, and that if I choose to save my results they are stored
+              in my AURA record, where my counsellor can see them.
             </span>
           </label>
 

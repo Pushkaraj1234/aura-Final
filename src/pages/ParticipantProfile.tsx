@@ -52,6 +52,7 @@ interface Props {
   onOpenChooseCounsellor?: () => void;
   onOpenVoiceCompanion?: () => void;
   onOpenWellbeingIndex?: () => void;
+  onOpenTraumaAssessment?: () => void;
   onOpenWhatToExpect?: () => void;
   onOpenConsent?: () => void;
   onLogout: () => void;
@@ -73,6 +74,7 @@ export const ParticipantProfile: React.FC<Props> = ({
   onOpenChooseCounsellor,
   onOpenVoiceCompanion,
   onOpenWellbeingIndex,
+  onOpenTraumaAssessment,
   onOpenWhatToExpect,
   onOpenConsent,
   onLogout,
@@ -806,6 +808,36 @@ ${
                 className="shrink-0 px-6 py-3 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer"
               >
                 {who5Status.administeredCount === 0 ? "Answer them" : "Answer again"}
+              </button>
+            </div>
+          </section>
+        )}
+
+        {/* The proctored trauma screening. Offered, never prompted: it asks
+            about the worst thing that happened to someone and turns the camera
+            on, so it has to be something a person chooses on a day they feel
+            able to, not a task that appears when a schedule says so. */}
+        {onOpenTraumaAssessment && (
+          <section className="rounded-3xl border border-[#E0D7CE] bg-white p-6 sm:p-7 shadow-xs">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+              <span className="flex items-center justify-center h-14 w-14 rounded-2xl bg-[#FBF3EC] text-[#A55D25] shrink-0">
+                <Shield size={24} aria-hidden="true" />
+              </span>
+
+              <div className="flex-1 min-w-0 space-y-2">
+                <h3 className="text-lg font-bold text-[#3C3530]">Trauma assessment, when you feel ready</h3>
+                <p className="text-sm text-[#6B5B4C] leading-relaxed max-w-xl">
+                  A standard questionnaire (the PCL-5) about how a difficult experience may still be affecting you.
+                  It uses your camera and microphone only to check the session, nothing is recorded, and you can
+                  pause or stop at any time. It is a screening, not a diagnosis.
+                </p>
+              </div>
+
+              <button
+                onClick={onOpenTraumaAssessment}
+                className="shrink-0 px-6 py-3 rounded-2xl bg-[#3C3530] text-white font-bold text-sm hover:bg-[#2A241F] transition-colors cursor-pointer"
+              >
+                Learn more
               </button>
             </div>
           </section>

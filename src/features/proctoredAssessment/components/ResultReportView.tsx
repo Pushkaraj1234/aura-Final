@@ -17,6 +17,10 @@ interface ResultReportViewProps {
   resultDate: string;
   /** Whether this result is already in history (owned by App so it survives remounts) */
   isSaved?: boolean;
+  /** True while the result is being written to the participant's AURA record */
+  isSaving?: boolean;
+  /** Shown when saving failed, so the person knows to try again */
+  saveError?: string | null;
   /** A saved assessment opened from history: read-only, nothing to save */
   isPastRecord?: boolean;
   /** False for older records that were saved without their event log */
@@ -64,6 +68,8 @@ export const ResultReportView: React.FC<ResultReportViewProps> = ({
   participantId,
   resultDate,
   isSaved = false,
+  isSaving = false,
+  saveError = null,
   isPastRecord = false,
   eventsSaved = true,
   onSaveToHistory,
@@ -122,11 +128,16 @@ export const ResultReportView: React.FC<ResultReportViewProps> = ({
             <button
               type="button"
               onClick={onSaveToHistory}
-              disabled={isSaved}
-              className="flex items-center gap-1.5 rounded-lg border border-stone-300 bg-white px-3.5 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100 disabled:cursor-default disabled:border-emerald-200 disabled:bg-emerald-50 disabled:text-emerald-800"
+              disabled={isSaved || isSaving}
+              className={`flex items-center gap-1.5 rounded-lg border px-3.5 py-2 text-sm font-medium transition ${
+                isSaved
+                  ? 'cursor-default border-emerald-200 bg-emerald-50 text-emerald-800'
+                  : 'border-stone-300 bg-white text-stone-700 hover:bg-stone-100 disabled:cursor-wait disabled:opacity-70'
+              }`}
             >
               {isSaved && <Check className="h-4 w-4" aria-hidden="true" />}
-              {isSaved ? 'Saved to history' : 'Save to history'}
+              {isSaving && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
+              {isSaved ? 'Saved to my record' : isSaving ? 'Saving…' : 'Save to my record'}
             </button>
           )}
 
@@ -156,6 +167,19 @@ export const ResultReportView: React.FC<ResultReportViewProps> = ({
           </button>
         </div>
       </div>
+
+      {saveError && (
+        <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-900">
+          {saveError}
+        </p>
+      )}
+
+      {summary.itemsAnswered < 20 && (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-stone-700">
+          You answered {summary.itemsAnswered} of the 20 questions before ending the assessment, so this total only
+          counts the questions you answered and may be lower than a full assessment would show.
+        </p>
+      )}
 
       <div className="flex gap-6 border-b border-stone-200 px-1" role="tablist" aria-label="Report sections">
         <button
@@ -393,7 +417,7 @@ export const ResultReportView: React.FC<ResultReportViewProps> = ({
           <HeartHandshake className="mt-0.5 h-5 w-5 shrink-0 text-teal-800" aria-hidden="true" />
           <div className="text-sm text-teal-950">
             <p className="font-semibold">Need to talk to someone now?</p>
-            <p>Free, confidential support is available any time through the 988 Suicide & Crisis Lifeline.</p>
+            <p>Free, confidential support is available any time through Tele MANAS on 14416. In an emergency, call 112.</p>
           </div>
         </div>
 

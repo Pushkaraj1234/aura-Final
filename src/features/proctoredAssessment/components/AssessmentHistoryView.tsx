@@ -6,13 +6,22 @@ import { INTEGRITY_LABELS } from '../utils/labels';
 
 interface AssessmentHistoryViewProps {
   history: CompletedAssessmentRecord[];
+  /** Saved results load from the participant's AURA record */
+  status?: 'loading' | 'ready' | 'error';
+  onRetry?: () => void;
   onBack: () => void;
   onSelectRecord: (record: CompletedAssessmentRecord) => void;
 }
 
 const signed = (n: number) => (n > 0 ? `+${n}` : `${n}`);
 
-export const AssessmentHistoryView: React.FC<AssessmentHistoryViewProps> = ({ history, onBack, onSelectRecord }) => {
+export const AssessmentHistoryView: React.FC<AssessmentHistoryViewProps> = ({
+  history,
+  status = 'ready',
+  onRetry,
+  onBack,
+  onSelectRecord,
+}) => {
   // With two or more records, compare the most recent two
   const comparison =
     history.length >= 2 ? compareAssessments(history[history.length - 2], history[history.length - 1]) : null;
@@ -78,7 +87,22 @@ export const AssessmentHistoryView: React.FC<AssessmentHistoryViewProps> = ({ hi
       <section className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-base font-semibold text-stone-900">Saved assessments</h2>
 
-        {history.length === 0 ? (
+        {status === 'loading' && history.length === 0 ? (
+          <p className="py-8 text-center text-sm text-stone-500">Loading your saved assessments…</p>
+        ) : status === 'error' ? (
+          <div className="py-8 text-center">
+            <p className="text-sm font-medium text-stone-800">Your saved assessments couldn't be loaded.</p>
+            {onRetry && (
+              <button
+                type="button"
+                onClick={onRetry}
+                className="mt-2 text-sm font-semibold text-teal-800 underline-offset-2 hover:underline"
+              >
+                Try again
+              </button>
+            )}
+          </div>
+        ) : history.length === 0 ? (
           <div className="py-8 text-center">
             <p className="text-sm font-medium text-stone-800">No assessments yet.</p>
             <p className="mt-1 text-sm text-stone-500">When you save your results, they'll appear here.</p>
@@ -93,6 +117,9 @@ export const AssessmentHistoryView: React.FC<AssessmentHistoryViewProps> = ({ hi
                   </p>
                   <p className="mt-0.5 text-sm text-stone-600">
                     Score {rec.totalScore} of 80
+                    {rec.itemsAnswered !== undefined && rec.itemsAnswered < 20 && (
+                      <span> ({rec.itemsAnswered} of 20 answered)</span>
+                    )}
                     <span className="text-stone-400"> · </span>
                     {rec.isClinicallySignificant ? 'Above threshold' : 'Below threshold'}
                     <span className="text-stone-400"> · </span>

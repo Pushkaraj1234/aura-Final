@@ -39,7 +39,8 @@
     "test:voice-mute": "node tests/voice-mute.browser.mjs",
     "test:recovery-dates": "npx esbuild src/services/recoveryDateProjection.ts --bundle --format=esm --outfile=dist-test/recoveryDateProjection.js --log-level=error && npx esbuild src/services/escalationEngine.ts --bundle --format=esm --outfile=dist-test/escalationEngine.js --log-level=error && npx esbuild src/services/caseEvents.ts --bundle --format=esm --outfile=dist-test/caseEvents.js --log-level=error && node tests/recovery-date-sharing.test.mjs",
     "test:day-panel": "npx esbuild src/services/recommendationEngine.ts --bundle --format=esm --outfile=dist-test/recommendationEngine.js --log-level=error && npx esbuild src/services/riskEngine.ts --bundle --format=esm --outfile=dist-test/riskEngine.js --log-level=error && node tests/day-panel.test.mjs",
-    "test:checkin-reflections": "node tests/checkin-reflections.test.mjs"
+    "test:checkin-reflections": "node tests/checkin-reflections.test.mjs",
+    "test:proctored": "npx esbuild src/features/proctoredAssessment/utils/persistence.ts --bundle --format=esm --outfile=dist-test/proctoredPersistence.js --log-level=error && npx esbuild src/features/proctoredAssessment/data/assessmentQuestions.ts --bundle --format=esm --outfile=dist-test/proctoredQuestions.js --log-level=error && npx esbuild src/features/proctoredAssessment/utils/scoring.ts --bundle --format=esm --outfile=dist-test/proctoredScoring.js --log-level=error && npx esbuild server/aiService.ts --bundle --platform=node --packages=external --format=esm --outfile=dist-test/proctoredAiService.js --log-level=error && node tests/proctored-assessment.test.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

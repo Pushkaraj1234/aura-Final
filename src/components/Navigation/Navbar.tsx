@@ -22,7 +22,8 @@ import {
   ShieldCheck,
   MessageCircle,
   BookOpen,
-  UserPlus
+  UserPlus,
+  ClipboardList
 } from "lucide-react";
 import { User, Alert, Participant } from "../../types";
 import { notificationService } from "../../services/notificationService";
@@ -539,6 +540,16 @@ export const Navbar: React.FC<Props> = ({
                           </button>
                           <button
                             onClick={() => {
+                              onNavigate("trauma_assessment");
+                              setUserDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-4 py-2 text-xs font-medium text-[#302C29] hover:bg-[#F3F1EA] flex items-center space-x-2 cursor-pointer"
+                          >
+                            <ClipboardList size={14} className="text-[#68625D]" />
+                            <span>Trauma Assessment</span>
+                          </button>
+                          <button
+                            onClick={() => {
                               onNavigate("support_resources");
                               setUserDropdownOpen(false);
                             }}
@@ -817,6 +828,16 @@ export const Navbar: React.FC<Props> = ({
                   >
                     <Activity size={16} />
                     <span>Start Wellbeing Check-in</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onNavigate("trauma_assessment");
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left p-2.5 rounded-xl text-sm font-medium hover:bg-[#F3F1EA] text-[#302C29] flex items-center space-x-2"
+                  >
+                    <ClipboardList size={16} />
+                    <span>Trauma Assessment</span>
                   </button>
                   <button
                     onClick={() => {

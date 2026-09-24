@@ -147,6 +147,8 @@ export interface Pcl5ResultSummary {
     D: Pcl5ClusterScore; // Negative alterations in cognitions and mood (Items 8-14, max 28)
     E: Pcl5ClusterScore; // Alterations in arousal and reactivity (Items 15-20, max 24)
   };
+  /** How many of the 20 PCL-5 items were answered. Below 20 means the total is incomplete. */
+  itemsAnswered: number;
   functionalImpactTotal: number;
   functionalImpactAverage: number;
   functionalImpactProfile: Record<string, number>;
@@ -192,6 +194,8 @@ export interface CompletedAssessmentRecord {
   cutPoint?: number;
   functionalProfile?: Record<string, number>;
   events?: ProctorEvent[];
+  /** Number of PCL-5 items answered (0-20); fewer than 20 means the session was ended early. */
+  itemsAnswered?: number;
 }
 
 export interface SessionConfiguration {

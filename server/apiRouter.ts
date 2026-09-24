@@ -6,6 +6,11 @@ import {
   generateCaseSummary,
   handleChat,
   AcousticFeatures,
+  assessmentChatReply,
+  generateAssessmentReport,
+  templateAssessmentReport,
+  type AssessmentChatTurn,
+  type AssessmentReportInput,
 } from './aiService.js';
 import {
   crisisAlertAction,
@@ -427,6 +432,161 @@ router.post('/chat', async (req: Request, res: Response) => {
     console.error('Error generating chat reply:', error);
     res.status(500).json({ detail: error.message || 'Failed to generate chat reply' });
   }
+});
+
+// ---------------------------------------------------------
+// Proctored trauma assessment (src/features/proctoredAssessment)
+//
+// Only the two model-backed steps live here. Scoring, the session checks and
+// saving the result all happen in the browser and in Supabase under
+// row-level security, like every other instrument in AURA.
+// ---------------------------------------------------------
+
+// Said when Gemini is not configured or fails. The person has just answered
+// twenty questions about their trauma; an error message is the wrong reply.
+const ASSESSMENT_CHAT_FALLBACKS = [
+  'Thank you for sharing that with me. Please take all the time you need, and remember you are in control of this session.',
+  "I hear you. Dealing with these reactions can feel heavy. Would you like to pause for a moment or continue when you're ready?",
+  'That is completely understandable. Trauma symptoms often show up in unexpected ways throughout daily life.',
+];
+
+const clampNumber = (value: unknown, min: number, max: number): number => {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return min;
+  return Math.min(max, Math.max(min, n));
+};
+
+/**
+ * The same crisis gate as /chat, in front of the assessment's conversation.
+ * Someone who has just been asked twenty questions about their worst
+ * experience is exactly who may disclose something here, so a flagged
+ * message never reaches the model and a counsellor alert is raised.
+ */
+router.post('/assessment/contextual-chat', async (req: Request, res: Response) => {
+  const { messages, userMessage, indexTrauma, completedItemsCount, participantId, language } = req.body || {};
+  const text = typeof userMessage === 'string' ? userMessage.slice(0, 2000) : '';
+  if (!text.trim()) {
+    return res.status(400).json({ detail: 'userMessage is required' });
+  }
+
+  const inbound = detectCrisis(text);
+  if (inbound.triggered && inbound.tier) {
+    const notified = await raiseCrisisAlert(req, participantId, inbound.tier);
+    await logAiAudit(
+      req,
+      'ASSESSMENT_CHAT_CRISIS_INTERCEPT',
+      `Crisis language (${inbound.tier}) detected in the proctored assessment conversation. Model call skipped, ` +
+        `crisis resources returned, alert ${notified ? 'raised' : 'not raised (no participant context)'}.`,
+      participantId,
+      { category: 'SAFETY', severity: 'HIGH' }
+    );
+    return res.json({
+      response: crisisResponse(language, notified),
+      crisis: { tier: inbound.tier, counsellorNotified: notified },
+    });
+  }
+
+  // Earlier turns only. The newest message travels separately as
+  // userMessage, and the model conversation has to open with the person, so
+  // the static welcome line the screen starts with is dropped.
+  const history: AssessmentChatTurn[] = (Array.isArray(messages) ? messages : [])
+    .filter((m: any) => m && (m.sender === 'aura' || m.sender === 'user') && typeof m.text === 'string')
+    .slice(-20)
+    .map((m: any) => ({ sender: m.sender, text: m.text.slice(0, 2000) }));
+  while (history.length > 0 && history[0].sender === 'aura') history.shift();
+
+  try {
+    const reply = await assessmentChatReply(
+      history,
+      text,
+      typeof indexTrauma === 'string' ? indexTrauma.slice(0, 200) : '',
+      clampNumber(completedItemsCount, 0, 20)
+    );
+
+    const outbound = screenAssistantReply(reply);
+    if (outbound.triggered) {
+      const notified = await raiseCrisisAlert(req, participantId, 'self_harm');
+      await logAiAudit(
+        req,
+        'ASSESSMENT_CHAT_UNSAFE_REPLY_SUPPRESSED',
+        'Model reply in the proctored assessment matched an unsafe-content pattern and was replaced with crisis resources.',
+        participantId,
+        { category: 'SAFETY', severity: 'HIGH' }
+      );
+      return res.json({
+        response: crisisResponse(language, notified),
+        crisis: { tier: 'self_harm', counsellorNotified: notified },
+      });
+    }
+
+    res.json({ response: reply });
+  } catch (error: any) {
+    console.warn('[AURA] assessment chat fell back:', error?.message || error);
+    res.json({
+      response: ASSESSMENT_CHAT_FALLBACKS[Math.floor(Math.random() * ASSESSMENT_CHAT_FALLBACKS.length)],
+    });
+  }
+});
+
+/**
+ * The plain-language write-up of a finished assessment. Every number in the
+ * request was computed deterministically in the browser; the model is only
+ * asked to phrase them, and a template built from the same numbers stands in
+ * whenever the model is unavailable.
+ */
+router.post('/assessment/generate-report', async (req: Request, res: Response) => {
+  const body = req.body || {};
+  const clusters = body.clusters || {};
+  const clusterInput = (key: 'B' | 'C' | 'D' | 'E', max: number) => ({
+    score: clampNumber(clusters[key]?.score, 0, max),
+    symptomSeverity: String(clusters[key]?.symptomSeverity || 'Minimal').slice(0, 20),
+  });
+  const stats = body.sensorStats && typeof body.sensorStats === 'object' ? body.sensorStats : null;
+
+  const input: AssessmentReportInput = {
+    totalScore: clampNumber(body.totalScore, 0, 80),
+    cutPoint: clampNumber(body.cutPoint, 0, 80) || 33,
+    isClinicallySignificant: Boolean(body.isClinicallySignificant),
+    itemsAnswered: clampNumber(body.itemsAnswered ?? 20, 0, 20),
+    clusters: { B: clusterInput('B', 20), C: clusterInput('C', 8), D: clusterInput('D', 28), E: clusterInput('E', 24) },
+    functionalImpactAvg: clampNumber(body.functionalImpactAvg, 0, 4),
+    indexTrauma: typeof body.indexTrauma === 'string' ? body.indexTrauma.slice(0, 200) : '',
+    sessionIntegrityRating: String(body.sessionIntegrityRating || 'VERIFIED').slice(0, 40),
+    eventsCount: clampNumber(body.eventsCount, 0, 100000),
+    sensorStats: stats
+      ? {
+          sessionDurationSeconds: Math.round(clampNumber(stats.sessionDurationSeconds, 0, 86400)),
+          faceRetentionPercentage: clampNumber(stats.faceRetentionPercentage, 0, 100),
+          blackScreenFrames: clampNumber(stats.blackScreenFrames, 0, 10000000),
+          multiplePersonsSuspectedCount: clampNumber(stats.multiplePersonsSuspectedCount, 0, 100000),
+          windowFocusPercentage: clampNumber(stats.windowFocusPercentage, 0, 100),
+          tabSwitchCount: clampNumber(stats.tabSwitchCount, 0, 100000),
+          screenShareType: stats.screenShareType === 'display_stream' ? 'display_stream' : 'window_focus_proctor',
+        }
+      : null,
+  };
+
+  let report: { userReport: string; sessionReport: string } | null = null;
+  let source = 'template';
+  if (process.env.GEMINI_API_KEY) {
+    try {
+      report = await generateAssessmentReport(input);
+      source = 'gemini';
+    } catch (error: any) {
+      console.warn('[AURA] assessment report fell back to the template:', error?.message || error);
+    }
+  }
+  if (!report) report = templateAssessmentReport(input);
+
+  const participantId = typeof body.participantId === 'string' ? body.participantId : undefined;
+  await logAiAudit(
+    req,
+    'ASSESSMENT_REPORT_GENERATED',
+    `Proctored assessment report written (${source}). Scores were computed in the browser; the model only phrased them.`,
+    participantId
+  );
+
+  res.json(report);
 });
 
 // ---------------------------------------------------------

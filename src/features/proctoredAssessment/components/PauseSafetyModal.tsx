@@ -5,11 +5,13 @@ interface PauseSafetyModalProps {
   isOpen: boolean;
   onResume: () => void;
   onExit: () => void;
+  /** Opens AURA's Emergency modal with the full list of helplines */
+  onOpenCrisis?: () => void;
 }
 
 const PHASE_LABELS = { Inhale: 'Breathe in', Hold: 'Hold', Exhale: 'Breathe out' } as const;
 
-export const PauseSafetyModal: React.FC<PauseSafetyModalProps> = ({ isOpen, onResume, onExit }) => {
+export const PauseSafetyModal: React.FC<PauseSafetyModalProps> = ({ isOpen, onResume, onExit, onOpenCrisis }) => {
   const [breathPhase, setBreathPhase] = useState<'Inhale' | 'Hold' | 'Exhale'>('Inhale');
   const [breathCount, setBreathCount] = useState(4);
   const resumeButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -59,7 +61,7 @@ export const PauseSafetyModal: React.FC<PauseSafetyModalProps> = ({ isOpen, onRe
           Take your time
         </h2>
         <p className="mt-1 text-sm leading-relaxed text-stone-600">
-          Your answers so far are saved. Come back to the questions whenever you're ready.
+          Your answers so far are kept on this page. Come back to the questions whenever you're ready.
         </p>
 
         <div className="my-6 flex flex-col items-center rounded-xl bg-teal-50 px-6 py-8">
@@ -90,6 +92,15 @@ export const PauseSafetyModal: React.FC<PauseSafetyModalProps> = ({ isOpen, onRe
               </li>
             ))}
           </ul>
+          {onOpenCrisis && (
+            <button
+              type="button"
+              onClick={onOpenCrisis}
+              className="mt-2 text-sm font-semibold text-teal-800 underline-offset-2 hover:underline"
+            >
+              See all support options
+            </button>
+          )}
         </div>
 
         <div className="flex flex-col gap-2 sm:flex-row">
@@ -108,7 +119,7 @@ export const PauseSafetyModal: React.FC<PauseSafetyModalProps> = ({ isOpen, onRe
             id="exit-assessment-btn"
             className="rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:bg-stone-100"
           >
-            Save and exit
+            End assessment
           </button>
         </div>
       </div>

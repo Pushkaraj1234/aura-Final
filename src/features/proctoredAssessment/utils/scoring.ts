@@ -69,8 +69,10 @@ export function calculatePcl5Summary(
 ): Pcl5ResultSummary {
   // 1. PCL-5 Total Score (Items 1 through 20)
   let totalScore = 0;
+  let itemsAnswered = 0;
   for (let i = 1; i <= 20; i++) {
     totalScore += responses[i] !== undefined ? responses[i] : 0;
+    if (responses[i] !== undefined) itemsAnswered++;
   }
 
   const clusterB = calculateClusterScore(responses, 1, 5, 20); // Intrusion
@@ -102,6 +104,7 @@ export function calculatePcl5Summary(
     maxScore: 80,
     cutPoint,
     isClinicallySignificant,
+    itemsAnswered,
     clusters: {
       B: clusterB,
       C: clusterC,
