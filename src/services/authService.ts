@@ -18,6 +18,8 @@ export interface SignUpPayload {
   consentGiven: boolean;
   emergencyContact?: string;
   caseReference?: string;
+  state?: string;
+  district?: string;
 }
 
 export const DEMO_CREDENTIALS = {
@@ -69,6 +71,8 @@ if (typeof window !== "undefined") {
         createdAt: session.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
         caseReference: meta.caseReference || undefined,
+        state: meta.state || undefined,
+        district: meta.district || undefined,
         firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
@@ -132,6 +136,8 @@ export const authService = {
         createdAt: supaAuth.user.created_at || new Date().toISOString(),
         emergencyContact: meta.emergencyContact || undefined,
         caseReference: meta.caseReference || undefined,
+        state: meta.state || undefined,
+        district: meta.district || undefined,
         firstAidKit: normalizeKit(meta.firstAidKit),
         languages: meta.languages || undefined,
         availability: meta.availability || undefined,
@@ -343,6 +349,8 @@ export const authService = {
           consentGiven: data.consentGiven,
           emergencyContact: data.emergencyContact || null,
           caseReference: data.caseReference || null,
+          state: data.state || null,
+          district: data.district || null,
           role: "participant",
         },
       },
@@ -375,6 +383,8 @@ export const authService = {
       createdAt: supaUser?.created_at || new Date().toISOString(),
       emergencyContact: data.emergencyContact || undefined,
       caseReference: data.caseReference || undefined,
+      state: data.state || undefined,
+      district: data.district || undefined,
       firstAidKit: normalizeKit((data as any).firstAidKit),
     };
 

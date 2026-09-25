@@ -58,6 +58,8 @@ function participantFromRow(row: any, name?: string): Participant {
     assignedWorker: row.assigned_worker,
     lastReviewDate: row.last_review_date,
     region: row.region,
+    state: row.state || undefined,
+    district: row.district || undefined,
   };
 }
 
@@ -150,6 +152,10 @@ export const participantsTable = {
     }
     if (participant.userId) payload.user_id = participant.userId;
     if (participant.createdAt) payload.created_at = participant.createdAt;
+    // Sent only when known, like assignment above: a cached record that has
+    // not loaded the person's area yet must never blank it on the server.
+    if (participant.state) payload.state = participant.state;
+    if (participant.district) payload.district = participant.district;
 
     const { data, error } = await supabase.from("participants").upsert(payload).select().maybeSingle();
     if (error) {

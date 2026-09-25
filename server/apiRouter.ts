@@ -24,6 +24,7 @@ import { detectAtrocityExposure } from '../src/services/atrocityLexicon.js';
 import { predictFutureRisk, ML_MODEL_METADATA } from './predictiveModel.js';
 import { getSupabaseForRequest } from './supabaseServer.js';
 import { runEscalationSweep } from './escalationSweep.js';
+import { notifyDistrictOfficers } from './jurisdictionService.js';
 import {
   BHASHINI_LANGUAGES,
   bhashiniConfigSummary,
@@ -81,7 +82,18 @@ router.all('/cron/escalations', async (req: Request, res: Response) => {
     // against real data without paging anyone.
     const notify = req.query.dry !== '1';
     const result = await runEscalationSweep({ notify });
-    res.json({ status: 'ok', notify, ...result });
+
+    // The same pass tells each district's designated official about open
+    // high-risk alerts in their area (de-identified; see jurisdictionService).
+    // Its failure must never stop the counsellor sweep above from reporting.
+    let districtOfficers: unknown;
+    try {
+      districtOfficers = await notifyDistrictOfficers({ dryRun: !notify });
+    } catch (err: any) {
+      districtOfficers = { error: err?.message || 'District officer notices failed.' };
+    }
+
+    res.json({ status: 'ok', notify, ...result, districtOfficers });
   } catch (err: any) {
     console.warn('[AURA] escalation sweep failed:', err?.message || err);
     res.status(500).json({ detail: err?.message || 'Escalation sweep failed.' });

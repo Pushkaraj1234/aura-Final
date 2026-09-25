@@ -11,6 +11,7 @@ import {
   ArrowLeft,
   ScanSearch,
   Scale,
+  Map as MapIcon,
 } from "lucide-react";
 import { adminApiService } from "../services/adminApiService";
 import { OverviewTab } from "./tabs/OverviewTab";
@@ -21,11 +22,22 @@ import { AuditLogTab } from "./tabs/AuditLogTab";
 import { SettingsTab } from "./tabs/SettingsTab";
 import { FlagReviewTab } from "./tabs/FlagReviewTab";
 import { FairnessTab } from "./tabs/FairnessTab";
+import { JurisdictionsTab } from "./tabs/JurisdictionsTab";
 
-type Tab = "overview" | "queue" | "workers" | "assignments" | "flagreview" | "fairness" | "audit" | "settings";
+type Tab =
+  | "overview"
+  | "jurisdictions"
+  | "queue"
+  | "workers"
+  | "assignments"
+  | "flagreview"
+  | "fairness"
+  | "audit"
+  | "settings";
 
 const TABS: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: "overview", label: "Oversight Dashboard", icon: LayoutDashboard },
+  { id: "jurisdictions", label: "District & State", icon: MapIcon },
   { id: "queue", label: "Verification Queue", icon: ClipboardCheck },
   { id: "workers", label: "Counselors", icon: UserCog },
   { id: "assignments", label: "User Assignments", icon: Users2 },
@@ -99,6 +111,7 @@ export const AdminDashboard: React.FC<Props> = ({ onLogout }) => {
 
       <main className="flex-1 p-6 sm:p-8 overflow-y-auto max-h-screen">
         {tab === "overview" && <OverviewTab onNavigate={(t) => setTab(t as Tab)} />}
+        {tab === "jurisdictions" && <JurisdictionsTab />}
         {tab === "queue" && <PendingQueueTab />}
         {tab === "workers" && <WorkersTab />}
         {tab === "assignments" && <AssignmentsTab />}

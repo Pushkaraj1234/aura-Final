@@ -1,4 +1,4 @@
-import { Alert } from "../types";
+import { Alert } from "../types/index.js";
 
 /**
  * How long an alert is allowed to sit before somebody has answered it.

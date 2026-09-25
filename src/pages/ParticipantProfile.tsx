@@ -39,6 +39,7 @@ import { MyRecordings } from "../components/MyRecordings";
 import { CheckInDayPanel } from "../components/CheckInDayPanel";
 import { useChartDayOpener, SCORE_DOT_CLASS } from "../hooks/useChartDayOpener";
 import { ParticipantTestCard } from "../components/ParticipantTestCard";
+import { ParticipantAreaCard } from "../components/ParticipantAreaCard";
 import { supabaseService } from "../services/supabaseService";
 import { who5Due, type InstrumentAdministration, type InstrumentDue } from "../services/instruments";
 
@@ -841,6 +842,18 @@ ${
               </button>
             </div>
           </section>
+        )}
+
+        {/* Where they live, optional: feeds only the de-identified district /
+            State totals and the district official's case-number notices. */}
+        {participantRecord && (
+          <ParticipantAreaCard
+            key={participantRecord.id}
+            participantId={participantRecord.id}
+            state={participantRecord.state}
+            district={participantRecord.district}
+            onSaved={onDataReset}
+          />
         )}
 
         {/* Reading. Offered without a prompt or a nudge, because the person

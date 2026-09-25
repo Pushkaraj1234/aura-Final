@@ -176,6 +176,9 @@ export const participantStore = {
           assignedWorker: bp.assignedWorker || bp.assigned_worker,
           lastReviewDate: bp.lastReviewDate || bp.last_review_date,
           createdAt: bp.createdAt || bp.created_at || new Date().toISOString(),
+          region: bp.region,
+          state: bp.state,
+          district: bp.district,
           notes: [],
           checkIns: []
         }));
@@ -360,6 +363,8 @@ export const participantStore = {
       checkIns: [],
       caseReference: user.caseReference,
       intakeSource: user.caseReference ? "NHAA helpline 14566" : undefined,
+      state: user.state,
+      district: user.district,
     };
 
     const updated = [newParticipant, ...participants];
@@ -383,6 +388,8 @@ export const participantStore = {
       language: user.language || "English",
       ageGroup: user.ageRange || "25-34",
       status: "Stable",
+      state: user.state,
+      district: user.district,
       notes: [],
       checkIns: []
     };
@@ -751,6 +758,27 @@ export const participantStore = {
       caseEvents: (participants[idx].caseEvents || []).filter((e) => e.id !== eventId),
     };
     saveStoredParticipants(participants);
+  },
+
+  /**
+   * Where the participant says they live. Optional, and used only for
+   * de-identified district / State / national totals and district routing.
+   * Saved locally and to Supabase; returns false if the server rejected it.
+   */
+  setLocation: async (participantId: string, state: string, district: string): Promise<boolean> => {
+    const participants = getStoredParticipants();
+    const idx = participants.findIndex((p) => p.id === participantId);
+    if (idx < 0) return false;
+    const clean = (s: string) => s.replace(/\s+/g, " ").trim().slice(0, 120);
+    participants[idx] = {
+      ...participants[idx],
+      state: clean(state) || undefined,
+      district: clean(district) || undefined,
+    };
+    saveStoredParticipants(participants);
+    const { assignedWorker, ...withoutAssignment } = participants[idx];
+    const saved = await apiService.participants.create(withoutAssignment).catch(() => null);
+    return !!saved;
   },
 
   /** The complaint reference someone arrived with, e.g. from the 14566 helpline. */

@@ -358,6 +358,90 @@ class AdminApiService {
       body: JSON.stringify({ thresholds }),
     });
   }
+
+  // District / State / national oversight (de-identified; see
+  // src/services/jurisdictionAggregates.ts for what may be returned).
+  getJurisdictionView(state?: string, district?: string) {
+    const params = new URLSearchParams();
+    if (state) params.set("state", state);
+    if (state && district) params.set("district", district);
+    const qs = params.toString();
+    return this.request<JurisdictionViewResponse>(`/jurisdictions${qs ? `?${qs}` : ""}`);
+  }
+
+  getDistrictOfficers() {
+    return this.request<DistrictOfficerRecord[]>("/district-officers");
+  }
+
+  saveDistrictOfficer(officer: Omit<DistrictOfficerRecord, "id">) {
+    return this.request<DistrictOfficerRecord[]>("/district-officers", {
+      method: "POST",
+      body: JSON.stringify(officer),
+    });
+  }
+
+  removeDistrictOfficer(id: string) {
+    return this.request<DistrictOfficerRecord[]>(`/district-officers/${encodeURIComponent(id)}`, {
+      method: "DELETE",
+    });
+  }
+
+  notifyDistrictOfficers() {
+    return this.request<{
+      districtsWithCases: number;
+      notified: number;
+      alertsMarked: number;
+      withoutOfficer: Array<{ state: string; district: string; cases: number }>;
+      note?: string;
+    }>("/jurisdictions/notify", { method: "POST", body: JSON.stringify({}) });
+  }
+}
+
+export interface DistrictOfficerRecord {
+  id: string;
+  state: string;
+  district: string;
+  officerName: string;
+  designation: string | null;
+  email: string;
+  phone: string | null;
+}
+
+export interface JurisdictionAreaMetrics {
+  name: string;
+  participants: number | null;
+  suppressed: boolean;
+  activeLast30d: number | null;
+  quiet14d: number | null;
+  meanLatestScore: number | null;
+  highRisk: number | null;
+  elevated: number | null;
+  trendDelta: number | null;
+  openHighAlerts: number | null;
+  overdueAlerts: number | null;
+  unassigned: number | null;
+}
+
+export interface JurisdictionCaseRow {
+  caseRef: string;
+  latestScore: number | null;
+  latestCheckInAt: string | null;
+  trendDelta: number | null;
+  status: string | null;
+  openAlertSeverity: string | null;
+  alertRaisedAt: string | null;
+  responseState: "pending" | "overdue" | "acknowledged" | null;
+  counsellorAssigned: boolean;
+}
+
+export interface JurisdictionViewResponse {
+  level: "national" | "state" | "district";
+  state?: string;
+  district?: string;
+  totals: JurisdictionAreaMetrics;
+  groups: JurisdictionAreaMetrics[];
+  cases: JurisdictionCaseRow[];
+  officer: DistrictOfficerRecord | null;
 }
 
 export const adminApiService = new AdminApiService();

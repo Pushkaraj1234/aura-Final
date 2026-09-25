@@ -76,6 +76,61 @@ export async function sendPasswordReset(toEmail: string, name: string, temporary
 }
 
 /**
+ * Tells a district's designated official about high-risk cases in their area.
+ *
+ * De-identified by construction: it is built only from case references,
+ * severities and times. No name, contact detail, check-in answer or anything
+ * the person wrote can reach this function, because none is passed in. The
+ * official coordinates through the assigned counsellor, who holds the person's
+ * identity and consent.
+ */
+export async function sendDistrictNotice(
+  toEmail: string,
+  officerName: string,
+  notice: {
+    state: string;
+    district: string;
+    cases: Array<{ caseRef: string; severity: string; raisedAt: string | null; counsellorAssigned: boolean }>;
+  }
+): Promise<void> {
+  if (!notice.cases.length) return;
+  const transporter = getTransporter();
+  const from = process.env.SMTP_FROM || process.env.SMTP_USER;
+  const when = (iso: string | null) => (iso ? new Date(iso).toUTCString() : 'time not recorded');
+  const n = notice.cases.length;
+  // District and State are typed by participants, so they are escaped before
+  // they go anywhere near HTML.
+  const esc = (s: string) =>
+    s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const place = `${esc(notice.district)}, ${esc(notice.state)}`;
+
+  const lines = notice.cases
+    .map(
+      (c) =>
+        `- ${c.caseRef}: ${c.severity}, raised ${when(c.raisedAt)}, ${
+          c.counsellorAssigned ? 'counsellor assigned' : 'NO counsellor assigned yet'
+        }`
+    )
+    .join('\n');
+  const rows = notice.cases
+    .map(
+      (c) =>
+        `<li><strong>${esc(c.caseRef)}</strong>: ${esc(c.severity)}, raised ${when(c.raisedAt)}, ${
+          c.counsellorAssigned ? 'counsellor assigned' : '<strong>no counsellor assigned yet</strong>'
+        }</li>`
+    )
+    .join('');
+
+  await transporter.sendMail({
+    from,
+    to: toEmail,
+    subject: `AURA: ${n} high-risk case${n === 1 ? '' : 's'} in ${notice.district}, ${notice.state}`,
+    text: `Dear ${officerName},\n\nAURA has recorded the following high-risk case${n === 1 ? '' : 's'} in ${notice.district}, ${notice.state}:\n\n${lines}\n\nFor the privacy of survivors, this notice contains case references only. Please coordinate protection, relocation, medical, legal or financial support through the AURA administrator and the assigned counsellor, quoting the case reference.\n\n— AURA`,
+    html: `<p>Dear ${esc(officerName)},</p><p>AURA has recorded the following high-risk case${n === 1 ? '' : 's'} in <strong>${place}</strong>:</p><ul>${rows}</ul><p>For the privacy of survivors, this notice contains case references only. Please coordinate protection, relocation, medical, legal or financial support through the AURA administrator and the assigned counsellor, quoting the case reference.</p><p>— AURA</p>`,
+  });
+}
+
+/**
  * Tells a counsellor that one of their cases needs attention.
  *
  * Deliberately plain and specific: a subject line naming the window, a body

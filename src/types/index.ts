@@ -76,6 +76,13 @@ export interface User {
    * everywhere: a wellbeing check-in is never gated behind a case number.
    */
   caseReference?: string;
+  /**
+   * Where the person lives, if they chose to say (optional). Only ever used
+   * for de-identified district / State / national totals and to route a
+   * high-risk alert to that district's designated official by case reference.
+   */
+  state?: string;
+  district?: string;
   // Counsellor-only, self-edited profile fields. Stored in Supabase Auth
   // user_metadata; surfaced on the support dashboard.
   languages?: string;
@@ -844,6 +851,9 @@ export interface Participant {
   assignedWorker?: string;
   lastReviewDate?: string;
   region?: string;
+  /** Self-reported State / UT and district (optional). See User.state. */
+  state?: string;
+  district?: string;
   consentPreferences?: ConsentPreferences;
   followUps?: InterventionFollowUp[];
   /** Hearings and incidents. See CaseEvent. */

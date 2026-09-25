@@ -14,6 +14,13 @@ import {
 import { getAdminSupabase } from './adminSupabase.js';
 import { sendSupportWorkerCredentials, sendSupportWorkerRejection, sendPasswordReset } from './mailService.js';
 import { analyzeCredentialDocument } from './aiService.js';
+import {
+  getJurisdictionView,
+  listDistrictOfficers,
+  notifyDistrictOfficers,
+  JurisdictionSetupError,
+} from './jurisdictionService.js';
+import { areaKey, cleanArea } from '../src/services/jurisdictionAggregates.js';
 
 const router = Router();
 const upload = multer({
@@ -906,6 +913,135 @@ router.get('/escalations', requireAdmin, async (_req: AdminRequest, res: Respons
   } catch (err: any) {
     console.error('[AURA Admin] escalations error:', err);
     res.status(500).json({ detail: err.message || 'Failed to load escalations' });
+  }
+});
+
+// ---------------------------------------------------------------------------
+// District / State / national oversight
+//
+// De-identified by construction: jurisdictionAggregates.ts decides what may
+// leave the server (counts, risk bands, response-time status, and at district
+// level high-risk cases by case reference only). No route here returns a
+// participant's name, contact details or anything they wrote.
+// ---------------------------------------------------------------------------
+
+const setupError = (res: Response, err: any) =>
+  err instanceof JurisdictionSetupError
+    ? res.status(503).json({ detail: err.message, setupRequired: true })
+    : null;
+
+const cleanField = (value: unknown, max: number): string =>
+  typeof value === 'string' ? cleanArea(value).slice(0, max) : '';
+
+router.get('/jurisdictions', requireAdmin, async (req: AdminRequest, res: Response) => {
+  try {
+    const state = cleanField(req.query.state, 120) || undefined;
+    const district = state ? cleanField(req.query.district, 120) || undefined : undefined;
+    const view = await getJurisdictionView(state, district);
+    let officer = null;
+    if (view.level === 'district') {
+      const officers = await listDistrictOfficers();
+      officer =
+        officers.find((o) => areaKey(o.state) === areaKey(state) && areaKey(o.district) === areaKey(district)) || null;
+    }
+    res.json({ ...view, officer });
+  } catch (err: any) {
+    if (setupError(res, err)) return;
+    console.error('[AURA Admin] jurisdictions error:', err);
+    res.status(500).json({ detail: err.message || 'Failed to load the jurisdiction view' });
+  }
+});
+
+router.get('/district-officers', requireAdmin, async (_req: AdminRequest, res: Response) => {
+  try {
+    res.json(await listDistrictOfficers());
+  } catch (err: any) {
+    if (setupError(res, err)) return;
+    res.status(500).json({ detail: err.message || 'Failed to load district officers' });
+  }
+});
+
+/** Adds the officer for a district, or replaces the one already on file. */
+router.post('/district-officers', requireAdmin, async (req: AdminRequest, res: Response) => {
+  const state = cleanField(req.body?.state, 120);
+  const district = cleanField(req.body?.district, 120);
+  const officerName = cleanField(req.body?.officerName, 120);
+  const designation = cleanField(req.body?.designation, 120) || null;
+  const email = cleanField(req.body?.email, 200).toLowerCase();
+  const phone = cleanField(req.body?.phone, 40) || null;
+
+  if (!state || !district || !officerName) {
+    return res.status(400).json({ detail: 'State, district and officer name are required.' });
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ detail: 'A valid email address is required.' });
+  }
+
+  try {
+    const supabase = getAdminSupabase();
+    const existing = (await listDistrictOfficers()).find(
+      (o) => areaKey(o.state) === areaKey(state) && areaKey(o.district) === areaKey(district)
+    );
+    const row = {
+      state,
+      district,
+      officer_name: officerName,
+      designation,
+      email,
+      phone,
+      updated_at: new Date().toISOString(),
+    };
+    const { error } = existing
+      ? await supabase.from('district_officers').update(row).eq('id', existing.id)
+      : await supabase.from('district_officers').insert(row);
+    if (error) return res.status(500).json({ detail: error.message });
+
+    await logAdminAudit(
+      existing ? 'UPDATE_DISTRICT_OFFICER' : 'ADD_DISTRICT_OFFICER',
+      `${existing ? 'Updated' : 'Added'} the district officer for ${district}, ${state}.`,
+      { state, district }
+    );
+    res.json(await listDistrictOfficers());
+  } catch (err: any) {
+    if (setupError(res, err)) return;
+    res.status(500).json({ detail: err.message || 'Failed to save the district officer' });
+  }
+});
+
+router.delete('/district-officers/:id', requireAdmin, async (req: AdminRequest, res: Response) => {
+  const { id } = req.params;
+  if (!isUuid(id)) return res.status(400).json({ detail: 'Invalid officer id.' });
+  try {
+    const supabase = getAdminSupabase();
+    const { data, error } = await supabase.from('district_officers').delete().eq('id', id).select('state, district');
+    if (error) return res.status(500).json({ detail: error.message });
+    const removed = (data || [])[0];
+    if (removed) {
+      await logAdminAudit('REMOVE_DISTRICT_OFFICER', `Removed the district officer for ${removed.district}, ${removed.state}.`, {
+        state: removed.state,
+        district: removed.district,
+      });
+    }
+    res.json(await listDistrictOfficers());
+  } catch (err: any) {
+    if (setupError(res, err)) return;
+    res.status(500).json({ detail: err.message || 'Failed to remove the district officer' });
+  }
+});
+
+/** Sends pending de-identified notices now, instead of waiting for the daily sweep. */
+router.post('/jurisdictions/notify', requireAdmin, async (req: AdminRequest, res: Response) => {
+  try {
+    const result = await notifyDistrictOfficers({ dryRun: req.body?.dryRun === true });
+    await logAdminAudit(
+      'NOTIFY_DISTRICT_OFFICERS',
+      `District officer notices: ${result.notified} sent, ${result.alertsMarked} alerts covered${result.note ? ` (${result.note})` : ''}.`,
+      { notified: result.notified, alertsMarked: result.alertsMarked, withoutOfficer: result.withoutOfficer.length }
+    );
+    res.json(result);
+  } catch (err: any) {
+    if (setupError(res, err)) return;
+    res.status(500).json({ detail: err.message || 'Failed to notify district officers' });
   }
 });
 

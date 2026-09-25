@@ -17,6 +17,7 @@ import {
   ExternalLink
 , HeartPulse } from "lucide-react";
 import { authService } from "../../services/authService";
+import { INDIAN_STATES } from "../../services/indianStates";
 
 interface Props {
   onComplete: () => void;
@@ -57,6 +58,10 @@ export const ParticipantSignUp: React.FC<Props> = ({
     // plenty of people arrive without it, or would rather not type it, and a
     // wellbeing check-in must never be gated behind a case number.
     caseReference: "",
+    // Where they live, optional. Only ever used for de-identified district /
+    // State totals and to route a high-risk alert to that district's official.
+    state: "",
+    district: "",
     // Seeded from the language already chosen, so the stored preference
     // matches what the person is actually reading even if they never touch
     // the field.
@@ -111,6 +116,8 @@ export const ParticipantSignUp: React.FC<Props> = ({
           supportPreference: formData.supportPreference,
           emergencyContact: formData.emergencyContact.trim() || undefined,
           caseReference: formData.caseReference.trim() || undefined,
+          state: formData.state.trim() || undefined,
+          district: formData.district.trim() || undefined,
           consentGiven: true
         });
         setIsSuccess(true);
@@ -359,6 +366,42 @@ export const ParticipantSignUp: React.FC<Props> = ({
                 <p className="text-[11px] text-[#68625D] mt-1.5 leading-relaxed">
                   Lets your counsellor connect this wellbeing record to your complaint. You can
                   leave it blank and still use everything here.
+                </p>
+              </div>
+
+              {/* Where they live. Optional, like the complaint number: nobody is
+                  turned away for leaving it blank. */}
+              <div>
+                <label className="block text-xs font-bold text-[#68625D] uppercase tracking-wider mb-1.5">
+                  Your State and district (optional)
+                </label>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <select
+                    value={formData.state}
+                    onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                    aria-label="State or Union Territory"
+                    className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] focus:outline-none focus:ring-2 focus:ring-[#5A5049] text-sm"
+                  >
+                    <option value="">State / UT</option>
+                    {INDIAN_STATES.map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    type="text"
+                    value={formData.district}
+                    maxLength={120}
+                    onChange={(e) => setFormData({ ...formData, district: e.target.value })}
+                    placeholder="District"
+                    aria-label="District"
+                    className="w-full px-4 py-3 rounded-xl border border-[#EFE8E2] bg-[#FDF9F5] text-[#3C3530] placeholder:text-[#B9B0A6] focus:outline-none focus:ring-2 focus:ring-[#5A5049] text-sm"
+                  />
+                </div>
+                <p className="text-[11px] text-[#68625D] mt-1.5 leading-relaxed">
+                  Used only for anonymous district and State totals, and so the right district office can be
+                  told about urgent cases by case number, never by name.
                 </p>
               </div>
 
