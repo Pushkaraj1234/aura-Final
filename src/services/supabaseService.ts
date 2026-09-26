@@ -176,6 +176,36 @@ export const participantsTable = {
     warn("participants.update", error);
   },
 
+  /**
+   * Sets only the person's State and district.
+   *
+   * Deliberately an UPDATE and not upsert(): an upsert is an INSERT … ON
+   * CONFLICT, and Postgres checks the INSERT policy's WITH CHECK
+   * (user_id = auth.uid()) on the proposed row even when the row already
+   * exists. upsert() only sends user_id when the caller passes userId, so a
+   * participant saving their area was refused. An UPDATE is checked against
+   * the row that is already there, and touches nothing but these two columns.
+   *
+   * RLS filters an UPDATE silently (no error, zero rows), so success is
+   * judged by a row coming back, not by the absence of an error.
+   */
+  async setArea(id: string, state: string | null, district: string | null): Promise<boolean> {
+    const { data, error } = await supabase
+      .from("participants")
+      .update({ state, district, updated_at: new Date().toISOString() })
+      .eq("id", id)
+      .select("id");
+    if (error) {
+      warn("participants.setArea", error);
+      return false;
+    }
+    if (!data || data.length === 0) {
+      console.warn("[AURA] participants.setArea: no row updated (not signed in, or not this person's record).");
+      return false;
+    }
+    return true;
+  },
+
   async markReviewed(id: string): Promise<void> {
     const { error } = await supabase
       .from("participants")

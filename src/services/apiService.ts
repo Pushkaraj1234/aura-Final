@@ -71,6 +71,8 @@ class ApiService {
     addNote: async (id: string, note: any) => supabaseService.supportNotes.create(id, note),
     getNotes: async (id: string) => supabaseService.supportNotes.getAll(id),
     markReviewed: async (id: string) => supabaseService.participants.markReviewed(id),
+    setArea: async (id: string, state: string | null, district: string | null) =>
+      supabaseService.participants.setArea(id, state, district),
   };
 
   // Check-ins

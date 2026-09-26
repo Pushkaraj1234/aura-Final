@@ -37,7 +37,7 @@ export const ParticipantAreaCard: React.FC<Props> = ({ participantId, state = ""
     setMessage(
       ok
         ? { ok: true, text: "Saved." }
-        : { ok: false, text: "Saved on this device, but it couldn't reach the server. It will be sent next time." }
+        : { ok: false, text: "Couldn't save this to your account. Check your connection and press Save again." }
     );
     if (ok) onSaved?.();
   };

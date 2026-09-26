@@ -766,19 +766,28 @@ export const participantStore = {
    * Saved locally and to Supabase; returns false if the server rejected it.
    */
   setLocation: async (participantId: string, state: string, district: string): Promise<boolean> => {
+    const clean = (s: string) => s.replace(/\s+/g, " ").trim().slice(0, 120);
+    const cleanState = clean(state);
+    const cleanDistrict = clean(district);
+
+    // The local copy is a cache: update it when it has this person, but never
+    // let a missing cache entry stop the server write.
     const participants = getStoredParticipants();
     const idx = participants.findIndex((p) => p.id === participantId);
-    if (idx < 0) return false;
-    const clean = (s: string) => s.replace(/\s+/g, " ").trim().slice(0, 120);
-    participants[idx] = {
-      ...participants[idx],
-      state: clean(state) || undefined,
-      district: clean(district) || undefined,
-    };
-    saveStoredParticipants(participants);
-    const { assignedWorker, ...withoutAssignment } = participants[idx];
-    const saved = await apiService.participants.create(withoutAssignment).catch(() => null);
-    return !!saved;
+    if (idx >= 0) {
+      participants[idx] = {
+        ...participants[idx],
+        state: cleanState || undefined,
+        district: cleanDistrict || undefined,
+      };
+      saveStoredParticipants(participants);
+    }
+
+    // A targeted update of these two columns only (see supabaseService.setArea
+    // for why this is not an upsert).
+    return apiService.participants
+      .setArea(participantId, cleanState || null, cleanDistrict || null)
+      .catch(() => false);
   },
 
   /** The complaint reference someone arrived with, e.g. from the 14566 helpline. */
